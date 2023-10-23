@@ -1,0 +1,56 @@
+{
+  "name": "azure-search-openai-javascript",
+  "version": "1.0.0",
+  "description": "ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search",
+  "private": true,
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "concurrently \"npm:start:*\" --kill-others",
+    "start:webapp": "npm run dev --workspace=webapp",
+    "start:search": "npm run dev --workspace=search",
+    "start:indexer": "npm run dev --workspace=indexer",
+    "test": "npm run test -ws --if-present",
+    "build": "npm run build -ws --if-present",
+    "clean": "npm run clean -ws --if-present",
+    "docker:build": "npm run docker:build -ws --if-present",
+    "format": "prettier --list-different --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "prepare": "simple-git-hooks || echo 'simple-git-hooks install skipped'"
+  },
+  "keywords": [],
+  "author": "Microsoft",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@tapjs/nock": "^3.1.13",
+    "concurrently": "^8.2.1",
+    "eslint-config-shared": "^1.0.0",
+    "lint-staged": "^14.0.1",
+    "prettier": "^3.0.3",
+    "simple-git-hooks": "^2.9.0",
+    "tap": "^18.5.2"
+  },
+  "engines": {
+    "node": ">=18",
+    "npm": ">=9"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true,
+    "printWidth": 120,
+    "bracketSpacing": true
+  },
+  "eslintConfig": {
+    "extends": "eslint-config-shared"
+  }
+}
