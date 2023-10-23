@@ -1,0 +1,45 @@
+{
+  "name": "website",
+  "version": "1.0.0",
+  "description": "Chat web component implementing Azure ML Chat backend protocol",
+  "private": true,
+  "type": "module",
+  "main": "./dist/azc-chat.umd.cjs",
+  "module": "./dist/azc-chat.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/azc-chat.js",
+      "require": "./dist/azc-chat.umd.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "vite --port 8000",
+    "build": "vite build && tsc",
+    "watch": "vite build --watch --minify false",
+    "lint": "lit-analyzer",
+    "clean": "rimraf dist *.tgz"
+  },
+  "author": "Microsoft",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Azure-Samples/azure-search-openai-javascript.git"
+  },
+  "homepage": "https://github.com/Azure-Samples/azure-search-openai-javascript",
+  "bugs": {
+    "url": "https://github.com/Azure-Samples/azure-search-openai-javascript/issues"
+  },
+  "dependencies": {
+    "lit": "^3.0.0"
+  },
+  "devDependencies": {
+    "lit-analyzer": "^1.2.1",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0"
+  },
+  "files": [
+    "dist"
+  ]
+}
