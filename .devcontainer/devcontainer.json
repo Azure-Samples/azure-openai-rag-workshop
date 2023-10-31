@@ -1,10 +1,10 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node
 {
-  "name": "Node.js",
+  "name": "OpenAI Workshop",
 
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:0-18",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
@@ -32,14 +32,14 @@
         "ms-azuretools.vscode-docker",
         "esbenp.prettier-vscode",
         "humao.rest-client",
-        "GitHub.copilot",
+        "ms-python.python",
         "runem.lit-plugin"
       ]
     }
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [3000, 3001, 5173],
+  "forwardPorts": [3000, 8001],
 
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "npm install",
