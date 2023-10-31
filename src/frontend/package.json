@@ -1,5 +1,5 @@
 {
-  "name": "website",
+  "name": "frontend",
   "version": "1.0.0",
   "description": "Chat web component implementing Azure ML Chat backend protocol",
   "private": true,
@@ -10,7 +10,8 @@
   "exports": {
     ".": {
       "import": "./dist/azc-chat.js",
-      "require": "./dist/azc-chat.umd.cjs"
+      "require": "./dist/azc-chat.umd.cjs",
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
@@ -24,11 +25,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Azure-Samples/azure-search-openai-javascript.git"
+    "url": "https://github.com/Azure-Samples/azure-openai-rag-workshop.git"
   },
-  "homepage": "https://github.com/Azure-Samples/azure-search-openai-javascript",
+  "homepage": "https://github.com/Azure-Samples/azure-openai-rag-workshop",
   "bugs": {
-    "url": "https://github.com/Azure-Samples/azure-search-openai-javascript/issues"
+    "url": "https://github.com/Azure-Samples/azure-openai-rag-workshop/issues"
   },
   "dependencies": {
     "lit": "^3.0.0"
