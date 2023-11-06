@@ -27,7 +27,7 @@ export async function run(arguments_: string[] = process.argv) {
     .arguments('<files...>')
     .description('CLI utility to send files to an indexer service instance')
     .option('-u, --indexer-url <url>', 'The indexer service URL', 'http://localhost:3001')
-    .option('-i, --index-name <name>', 'The name of the target index', process.env.AZURE_SEARCH_INDEX)
+    .option('-i, --index-name <name>', 'The name of the target index', process.env.AZURE_SEARCH_INDEX || 'kbindex')
     .option('-c, --category <name>', 'Set document category')
     .option('-w, --wait', 'Wait for the indexer to finish processing the files', false)
     .option('--no-vectors', 'Disable vectors generation for the files')
@@ -77,7 +77,7 @@ async function ensureSearchIndex(options: IndexFilesOptions) {
     }),
   });
   if (!response.ok) {
-    const errorDetails = await response.json();
+    const errorDetails = await response.json() as any;
     throw new Error(`Index creating "${indexName}": ${errorDetails.message}`);
   }
 }
@@ -100,7 +100,7 @@ async function indexFile(file: string, options: IndexFilesOptions) {
     body: formData,
   });
   if (!response.ok) {
-    const errorDetails = await response.json();
+    const errorDetails = await response.json() as any;
     throw new Error(`Error indexing file "${file}": ${errorDetails.message}`);
   }
   console.log(`File "${file}" indexed successfully`);

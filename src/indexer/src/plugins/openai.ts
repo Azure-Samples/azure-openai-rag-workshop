@@ -1,5 +1,5 @@
 import fp from 'fastify-plugin';
-import { type AccessToken } from '@azure/core-http';
+import { type AccessToken } from '@azure/identity';
 import { OpenAI } from 'openai';
 import { type Embeddings } from 'openai/resources/index';
 
