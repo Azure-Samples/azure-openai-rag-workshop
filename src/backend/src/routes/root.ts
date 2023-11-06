@@ -1,5 +1,6 @@
 import { Readable } from 'node:stream';
-import { type FastifyPluginAsync } from 'fastify';
+import { FastifyReply, type FastifyPluginAsync } from 'fastify';
+import { ChatResponseChunk } from '../lib';
 
 const root: FastifyPluginAsync = async (fastify, _options): Promise<void> => {
   fastify.get('/', async function (_request, _reply) {
@@ -10,17 +11,8 @@ const root: FastifyPluginAsync = async (fastify, _options): Promise<void> => {
     const { messages, stream } = request.body as any;
     try {
       if (stream) {
-        const buffer = new Readable();
-        // Dummy implementation needed
-        buffer._read = () => {};
-        reply.type('application/x-ndjson').send(buffer);
-
         const chunks = await fastify.chat.runWithStreaming(messages);
-        for await (const chunk of chunks) {
-          buffer.push(JSON.stringify(chunk) + '\n');
-        }
-        // eslint-disable-next-line unicorn/no-null
-        buffer.push(null);
+        await replyNdJsonStream(reply, chunks);
       } else {
         return await fastify.chat.run(messages);
       }
@@ -31,5 +23,20 @@ const root: FastifyPluginAsync = async (fastify, _options): Promise<void> => {
     }
   });
 };
+
+async function replyNdJsonStream(reply: FastifyReply, chunks: AsyncGenerator<ChatResponseChunk>) {
+  // Create new buffer stream
+  const buffer = new Readable();  
+  buffer._read = () => {};   // Dummy implementation needed
+
+  reply.type('application/x-ndjson').send(buffer);
+
+  for await (const chunk of chunks) {
+    buffer.push(JSON.stringify(chunk) + '\n');
+  }
+
+  // eslint-disable-next-line unicorn/no-null
+  buffer.push(null);
+}
 
 export default root;

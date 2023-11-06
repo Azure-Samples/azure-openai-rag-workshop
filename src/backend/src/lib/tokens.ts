@@ -1,5 +1,5 @@
 import { encoding_for_model, type TiktokenModel } from '@dqbd/tiktoken';
-import { type Message } from './message.js';
+import { type Message } from './models.js';
 
 const MODEL_TOKEN_LIMITS: Record<string, number> = {
   'gpt-35-turbo': 4000,
