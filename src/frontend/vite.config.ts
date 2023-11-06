@@ -7,12 +7,17 @@ console.log(`Using search API base URL: "${process.env.VITE_BACKEND_API_URI}"`);
 
 export default defineConfig({
   build: {
+    outDir: './dist',
     emptyOutDir: true,
-    lib: {
-      // eslint-disable-next-line unicorn/prefer-module
-      entry: resolve(__dirname, 'src/index.ts'),
-      name: 'azc-chat',
-      fileName: 'azc-chat',
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        },
+      },
     },
   },
   server: {
