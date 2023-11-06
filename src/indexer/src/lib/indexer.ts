@@ -26,8 +26,7 @@ export class Indexer {
     private azure: AzureClients,
     private openai: OpenAiService,
     private embeddingModelName: string = 'text-embedding-ada-002',
-  ) {
-  }
+  ) {}
 
   async createSearchIndex(indexName: string) {
     this.logger.debug(`Ensuring search index "${indexName}" exists`);

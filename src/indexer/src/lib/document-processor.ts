@@ -1,5 +1,7 @@
 import path from 'node:path';
 import { type BaseLogger } from 'pino';
+import * as pdfjs from 'pdfjs-dist';
+import { type TextItem } from 'pdfjs-dist/types/src/display/api.js';
 
 export interface Document {
   filename: string;
@@ -28,6 +30,8 @@ export interface ContentSection {
   page: number;
 }
 
+const SENTENCE_ENDINGS = new Set(['.', '!', '?']);
+const WORD_BREAKS = new Set([',', ';', ':', ' ', '(', ')', '[', ']', '{', '}', '\t', '\n']);
 const MAX_SECTION_LENGTH = 1000;
 const SENTENCE_SEARCH_LIMIT = 100;
 const SECTION_OVERLAP = 100;
@@ -37,7 +41,7 @@ export class DocumentProcessor {
 
   async createDocumentFromFile(filename: string, data: Buffer, type: string, category: string) {
     const pages = await this.extractText(data, type);
-    const contentSections = this.splitText(filename, pages);
+    const contentSections = this.splitPages(filename, pages);
     const sections = await this.createSections(filename, contentSections, category);
     return { filename, type, category, sections };
   }
@@ -47,8 +51,11 @@ export class DocumentProcessor {
     if (type === 'text/plain' || type === 'text/markdown') {
       const text = data.toString('utf8');
       pages.push({ content: text, offset: 0, page: 0 });
+    } else if (type === 'application/pdf') {
+      const pdfContent = await extractTextFromPdf(data);
+      pages.push(...pdfContent);
     } else {
-      // TODO: support other file types (PDF...)
+      // You can add support for other file types here
       throw new Error(`Unsupported file type: ${type}`);
     }
 
@@ -59,12 +66,12 @@ export class DocumentProcessor {
     const fileId = filenameToId(filename);
     const sections: Section[] = [];
 
-    for (const [index, { content }] of contentSections.entries()) {
+    for (const [index, { content, page }] of contentSections.entries()) {
       const section: Section = {
-        id: `${fileId}-section-${index}`,
+        id: `${fileId}-page-${page}-section-${index}`,
         content,
         category: category,
-        sourcepage: path.basename(filename),
+        sourcepage: `${path.basename(filename)}-${page}`,
         sourcefile: filename,
       };
 
@@ -73,24 +80,25 @@ export class DocumentProcessor {
     return sections;
   }
 
-  // TODO: use langchain splitters: https://js.langchain.com/docs/modules/data_connection/document_transformers/text_splitters/code_splitter
-  private splitText(filename: string, pages: ContentPage[]) {
-    const SENTENCE_ENDINGS = new Set(['.', '!', '?']);
-    const WORDS_BREAKS = new Set([',', ';', ':', ' ', '(', ')', '[', ']', '{', '}', '\t', '\n']);
-
+  private splitPages(filename: string, pages: ContentPage[]): ContentSection[] {
     this.logger.debug(`Splitting '${filename}' into sections`);
 
-    const findPage = (pages: ContentPage[], offset: number) =>
-      pages.findIndex((page, index, array) => {
-        const nextPage = array[index + 1];
-        return !nextPage || (offset >= page.offset && offset < nextPage.offset);
-      });
+    const findPage = (offset: number): number => {
+      const pageCount = pages.length;
+      for (let i = 0; i < pageCount - 1; i++) {
+        if (offset >= pages[i].offset && offset < pages[i + 1].offset) {
+          return pages[i].page;
+        }
+      }
+      return pages[pageCount - 1].page;
+    };
 
     const contentSections: ContentSection[] = [];
-    const allText = pages.map((p) => p.content).join('');
+    const allText = pages.map((page) => page.content).join('');
     const length = allText.length;
     let start = 0;
     let end = length;
+
     while (start + SECTION_OVERLAP < length) {
       let lastWord = -1;
       end = start + MAX_SECTION_LENGTH;
@@ -104,7 +112,7 @@ export class DocumentProcessor {
           end - start - MAX_SECTION_LENGTH < SENTENCE_SEARCH_LIMIT &&
           !SENTENCE_ENDINGS.has(allText[end])
         ) {
-          if (WORDS_BREAKS.has(allText[end])) {
+          if (WORD_BREAKS.has(allText[end])) {
             lastWord = end;
           }
           end += 1;
@@ -112,9 +120,9 @@ export class DocumentProcessor {
         if (end < length && !SENTENCE_ENDINGS.has(allText[end]) && lastWord > 0) {
           end = lastWord; // Fall back to at least keeping a whole word
         }
-      }
-      if (end < length) {
-        end += 1;
+        if (end < length) {
+          end += 1;
+        }
       }
 
       // Try to find the start of the sentence or at least a whole word boundary
@@ -124,7 +132,7 @@ export class DocumentProcessor {
         start > end - MAX_SECTION_LENGTH - 2 * SENTENCE_SEARCH_LIMIT &&
         !SENTENCE_ENDINGS.has(allText[start])
       ) {
-        if (WORDS_BREAKS.has(allText[start])) {
+        if (WORD_BREAKS.has(allText[start])) {
           lastWord = start;
         }
         start -= 1;
@@ -137,14 +145,14 @@ export class DocumentProcessor {
       }
 
       const sectionText = allText.slice(start, end);
-      contentSections.push({ content: sectionText, page: findPage(pages, start) });
+      contentSections.push({ page: findPage(start), content: sectionText });
 
       const lastTableStart = sectionText.lastIndexOf('<table');
       if (lastTableStart > 2 * SENTENCE_SEARCH_LIMIT && lastTableStart > sectionText.lastIndexOf('</table')) {
         // If the section ends with an unclosed table, we need to start the next section with the table.
         // If table starts inside SENTENCE_SEARCH_LIMIT, we ignore it, as that will cause an infinite loop for tables longer than MAX_SECTION_LENGTH
         // If last table starts inside SECTION_OVERLAP, keep overlapping
-        const page = findPage(pages, start);
+        const page = findPage(start);
         this.logger.debug(
           `Section ends with unclosed table, starting next section with the table at page ${page} offset ${start} table start ${lastTableStart}`,
         );
@@ -155,7 +163,7 @@ export class DocumentProcessor {
     }
 
     if (start + SECTION_OVERLAP < end) {
-      contentSections.push({ content: allText.slice(start, end), page: findPage(pages, start) });
+      contentSections.push({ content: allText.slice(start, end), page: findPage(start) });
     }
 
     return contentSections;
@@ -166,4 +174,29 @@ function filenameToId(filename: string) {
   const filenameAscii = filename.replaceAll(/[^\w-]/g, '_');
   const filenameHash = Buffer.from(filename, 'utf8').toString('hex');
   return `file-${filenameAscii}-${filenameHash}`;
+}
+
+async function extractTextFromPdf(data: Buffer): Promise<ContentPage[]> {
+  const pages: ContentPage[] = [];
+  const pdf = await pdfjs.getDocument(new Uint8Array(data)).promise;
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const textContent = await page.getTextContent();
+    let previousY = 0;
+    const text = textContent.items
+      .filter((item) => 'str' in item)
+      .map((item) => {
+        const text = item as TextItem;
+        const y = text.transform[5];
+        let string_ = text.str;
+        if (y !== previousY && previousY !== 0) {
+          string_ = '\n' + string_;
+        }
+        previousY = y;
+        return string_;
+      })
+      .join('');
+    pages.push({ content: text + '\n', offset: 0, page: i });
+  }
+  return pages;
 }

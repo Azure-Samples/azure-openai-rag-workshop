@@ -20,14 +20,14 @@ DELETE {{api_host}}/indexes/test
 
 ###
 
-# Index a file
+# Index a text file
 POST {{api_host}}/indexes/test/files
 Accept: */*
 Content-Type: multipart/form-data; boundary=Boundary
 
 --Boundary
-Content-Disposition: form-data; name="file"; filename="test.txt"
-Content-Type: text/plain
+Content-Disposition: form-data; name="file"; filename="readme.md"
+Content-Type: text/markdown
 
 < ../../README.md
 --Boundary
@@ -36,7 +36,28 @@ Content-Disposition: form-data; name="options"
 {
   "category": "test-category",
   "wait": true,
-  "uploadToStorage": true,
+  "useVectors": true
+}
+--Boundary--
+
+###
+
+# Index a pdf file
+POST {{api_host}}/indexes/test/files
+Accept: */*
+Content-Type: multipart/form-data; boundary=Boundary
+
+--Boundary
+Content-Disposition: form-data; name="file"; filename="test.pdf"
+Content-Type: application/pdf
+
+< ../../data/PerksPlus.pdf
+--Boundary
+Content-Disposition: form-data; name="options"
+
+{
+  "category": "test-category",
+  "wait": true,
   "useVectors": true
 }
 --Boundary--
@@ -44,4 +65,4 @@ Content-Disposition: form-data; name="options"
 ###
 
 # Delete a file
-DELETE {{api_host}}/indexes/test/files/sample.txt
+DELETE {{api_host}}/indexes/test/files/readme.md
