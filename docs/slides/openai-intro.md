@@ -91,6 +91,7 @@ class: center, middle, hide-handle
 
 ---
 
+exclude: true
 class: center, cover, hide-handle
 background-image: url(./images/ai-landscape.jpg)
 
