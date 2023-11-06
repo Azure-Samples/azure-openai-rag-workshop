@@ -18,7 +18,7 @@
       "value": "${AZURE_OPENAI_LOCATION=eastus2}"
     },
     "searchIndexName": {
-      "value": "${AZURE_SEARCH_INDEX=gptkbindex}"
+      "value": "${AZURE_SEARCH_INDEX=kbindex}"
     },
     "searchServiceSkuName": {
       "value": "${AZURE_SEARCH_SERVICE_SKU=standard}"
