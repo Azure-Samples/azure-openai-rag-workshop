@@ -1,4 +1,4 @@
-import { getTokenCountFromMessages } from './tokens.js';
+import { encoding_for_model, type TiktokenModel } from '@dqbd/tiktoken';
 import { type Message, type MessageRole } from './models.js';
 
 export class MessageBuilder {
@@ -12,9 +12,9 @@ export class MessageBuilder {
    * @param {string} chatgptModel The name of the ChatGPT model.
    */
   constructor(systemContent: string, chatgptModel: string) {
-    this.messages = [{ role: 'system', content: systemContent }];
     this.model = chatgptModel;
-    this.tokens = getTokenCountFromMessages(this.messages[this.messages.length - 1], this.model);
+    this.messages = [{ role: 'system', content: systemContent }];
+    this.tokens = this.getTokenCountFromMessages(this.messages[this.messages.length - 1], this.model);
   }
 
   /**
@@ -25,6 +25,29 @@ export class MessageBuilder {
    */
   appendMessage(role: MessageRole, content: string, index = 1) {
     this.messages.splice(index, 0, { role, content });
-    this.tokens += getTokenCountFromMessages(this.messages[index], this.model);
+    this.tokens += this.getTokenCountFromMessages(this.messages[index], this.model);
+  }
+
+  /**
+   * Calculate the number of tokens required to encode a message.
+   * @param {Message} message The message to encode.
+   * @param {string} model The name of the model to use for encoding.
+   * @returns {number} The total number of tokens required to encode the message.
+   * @example
+   * const message = { role: 'user', content: 'Hello, how are you?' };
+   * const model = 'gpt-3.5-turbo';
+   * getTokenCountFromMessages(message, model);
+   * // output: 11
+   */
+  private getTokenCountFromMessages(message: Message, model: string): number {
+    // GPT3.5 tiktoken model name is slightly different than Azure OpenAI model name
+    const tiktokenModel = model.replace('gpt-35', 'gpt-3.5') as TiktokenModel;
+    const encoder = encoding_for_model(tiktokenModel);
+    let tokens = 2; // For "role" and "content" keys
+    for (const value of Object.values(message)) {
+      tokens += encoder.encode(value).length;
+    }
+    encoder.free();
+    return tokens;
   }
 }

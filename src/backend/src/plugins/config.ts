@@ -15,7 +15,7 @@ export interface AppConfig {
   kbFieldsSourcePage: string;
 }
 
-const camelCaseToUpperSnakeCase = (string_: string) => string_.replaceAll(/[A-Z]/g, (l) => `_${l}`).toUpperCase();
+const camelCaseToUpperSnakeCase = (s: string) => s.replaceAll(/[A-Z]/g, (l) => `_${l}`).toUpperCase();
 
 export default fp(
   async (fastify, _options) => {
@@ -26,11 +26,11 @@ export default fp(
 
     const config: AppConfig = {
       azureSearchService: process.env.AZURE_SEARCH_SERVICE || '',
-      azureSearchIndex: process.env.AZURE_SEARCH_INDEX || '',
+      azureSearchIndex: process.env.AZURE_SEARCH_INDEX || 'kbindex',
       azureOpenAiService: process.env.AZURE_OPENAI_SERVICE || '',
-      azureOpenAiChatGptDeployment: process.env.AZURE_OPENAI_CHATGPT_DEPLOYMENT || '',
+      azureOpenAiChatGptDeployment: process.env.AZURE_OPENAI_CHATGPT_DEPLOYMENT || 'chat',
       azureOpenAiChatGptModel: process.env.AZURE_OPENAI_CHATGPT_MODEL || 'gpt-35-turbo',
-      azureOpenAiEmbeddingDeployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT || '',
+      azureOpenAiEmbeddingDeployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT || 'embedding',
       azureOpenAiEmbeddingModel: process.env.AZURE_OPENAI_EMBEDDING_MODEL || 'text-embedding-ada-002',
       kbFieldsContent: process.env.KB_FIELDS_CONTENT || 'content',
       kbFieldsSourcePage: process.env.KB_FIELDS_SOURCEPAGE || 'sourcepage',

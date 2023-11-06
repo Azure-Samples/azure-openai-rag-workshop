@@ -1,8 +1,9 @@
 import fp from 'fastify-plugin';
 import { DefaultAzureCredential } from '@azure/identity';
 import { SearchClient } from '@azure/search-documents';
-import { OpenAI } from 'openai';
-import { type Chat, type Embeddings } from 'openai/resources/index.js';
+import { ChatOpenAI, type OpenAIChatInput } from 'langchain/chat_models/openai';
+import { OpenAIEmbeddings, type OpenAIEmbeddingsParams } from 'langchain/embeddings/openai';
+import { AIMessage, HumanMessage, SystemMessage } from 'langchain/schema';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
 
 const SYSTEM_MESSAGE_CHAT_CONVERSATION = `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
@@ -31,8 +32,8 @@ export class ChatService {
 
   constructor(
     private search: SearchClient<any>,
-    private chatClient: Chat,
-    private embeddingsClient: Embeddings,
+    private chatClient: (options?: Partial<OpenAIChatInput>) => ChatOpenAI,
+    private embeddingsClient: (options?: Partial<OpenAIEmbeddingsParams>) => OpenAIEmbeddings,
     private chatGptModel: string,
     private embeddingModel: string,
     private sourcePageField: string,
@@ -46,11 +47,8 @@ export class ChatService {
     const query = messages[messages.length - 1].content;
 
     // Compute an embedding for the query
-    const result = await this.embeddingsClient.create({
-      model: this.embeddingModel,
-      input: query,
-    });
-    const queryVector = result.data[0].embedding;
+    const embeddingsClient = this.embeddingsClient({ modelName: this.embeddingModel });
+    const queryVector = await embeddingsClient.embedQuery(query);
 
     // Performs a hybrid search (vectors + text)
     // For a vector search, replace the query by an empty string
@@ -102,15 +100,14 @@ export class ChatService {
     // STEP 3: Generate the completion (answer) using the prompt
     // ---------------------------------------------------------
 
-    const completion = await this.chatClient.completions.create({
-      model: this.chatGptModel,
-      messages: messageBuilder.messages,
+    const chatClient = this.chatClient({
       // Controls randomness. 0 = deterministic, 1 = maximum randomness
       temperature: 0.7,
-      max_tokens: 1024,
+      maxTokens: 1024,
       n: 1,
     });
-    const answer = completion.choices[0].message.content ?? '';
+    const completion = await chatClient.predictMessages(messagesToLangchainMessages(messageBuilder.messages));
+    const answer = completion.content ?? '';
 
     return {
       choices: [
@@ -137,11 +134,8 @@ export class ChatService {
     const query = messages[messages.length - 1].content;
 
     // Compute an embedding for the query
-    const result = await this.embeddingsClient.create({
-      model: this.embeddingModel,
-      input: query,
-    });
-    const queryVector = result.data[0].embedding;
+    const embeddingsClient = this.embeddingsClient({ modelName: this.embeddingModel });
+    const queryVector = await embeddingsClient.embedQuery(query);
 
     // Performs a hybrid search (vectors + text)
     // For a vector search, replace the query by an empty string
@@ -193,16 +187,13 @@ export class ChatService {
     // STEP 3: Generate the completion (answer) using the prompt
     // ---------------------------------------------------------
 
-    const completion = await this.chatClient.completions.create({
-      model: this.chatGptModel,
-      messages: messageBuilder.messages,
+    const chatClient = this.chatClient({
       // Controls randomness. 0 = deterministic, 1 = maximum randomness
       temperature: 0.7,
-      max_tokens: 1024,
+      maxTokens: 1024,
       n: 1,
-      stream: true,
     });
-
+    const completion = await chatClient.stream(messagesToLangchainMessages(messageBuilder.messages));
     let id = 0;
 
     // Process the completion in chunks
@@ -212,14 +203,14 @@ export class ChatService {
           {
             index: 0,
             delta: {
-              content: chunk.choices[0].delta.content ?? '',
+              content: chunk.content ?? '',
               role: 'assistant' as const,
               context: {
                 data_points: id === 0 ? results : undefined,
                 thoughts: id === 0 ? thoughts : undefined,
               },
             },
-            finish_reason: chunk.choices[0].finish_reason,
+            finish_reason: '',
           },
         ],
         object: 'chat.completion.chunk' as const,
@@ -232,6 +223,18 @@ export class ChatService {
 
 function removeNewlines(s: string = ''): string {
   return s.replaceAll(/[\n\r]+/g, ' ');
+}
+
+function messagesToLangchainMessages(messages: Message[]) {
+  return messages.map((message) => {
+    if (message.role === 'system') {
+      return new SystemMessage(message.content);
+    } else if (message.role === 'assistant') {
+      return new AIMessage(message.content);
+    } else {
+      return new HumanMessage(message.content);
+    } 
+  });
 }
 
 export default fp(
@@ -249,27 +252,28 @@ export default fp(
       credential,
     );
 
-    // Set up OpenAI clients
+    // Set up Langchain clients
     const openAiUrl = `https://${config.azureOpenAiService}.openai.azure.com`;
     fastify.log.info(`Using OpenAI at ${openAiUrl}`);
 
     const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
     const commonOptions = {
-      apiKey: openAiToken.token,
-      defaultQuery: { 'api-version': '2023-05-15' },
-      defaultHeaders: { 'api-key': openAiToken.token },
+      openAIApiKey: openAiToken.token,
+      azureOpenAIApiVersion: '2023-05-15',
+      azureOpenAIApiKey: openAiToken.token,
+      azureOpenAIApiInstanceName: config.azureOpenAiService,
     };
 
-    // We need two different OpenAI clients, due to limitations with the
-    // support for Azure OpenAI within the OpenAI JS SDK
-    const chatClient = new OpenAI({
+    const chatClient = (options?: Partial<OpenAIChatInput>) => new ChatOpenAI({
+      ...options,
       ...commonOptions,
-      baseURL: `${openAiUrl}/openai/deployments/${config.azureOpenAiChatGptDeployment}`,
-    }).chat;
-    const embeddingsClient = new OpenAI({
+      azureOpenAIApiDeploymentName: config.azureOpenAiChatGptDeployment,
+    } as any);
+    const embeddingsClient = (options?: Partial<OpenAIEmbeddingsParams>) => new OpenAIEmbeddings({
+      ...options,
       ...commonOptions,
-      baseURL: `${openAiUrl}/openai/deployments/${config.azureOpenAiEmbeddingDeployment}`,
-    }).embeddings;
+      azureOpenAIApiDeploymentName: config.azureOpenAiEmbeddingDeployment,
+    } as any);
 
     const chatService = new ChatService(
       searchClient,
@@ -281,10 +285,10 @@ export default fp(
       config.kbFieldsContent,
     );
 
-    fastify.decorate('chat', chatService);
+    fastify.decorate('chatlc', chatService);
   },
   {
-    name: 'chat',
+    name: 'chatlc',
     dependencies: ['config'],
   },
 );
@@ -292,6 +296,6 @@ export default fp(
 // When using .decorate you have to specify added properties for Typescript
 declare module 'fastify' {
   export interface FastifyInstance {
-    chat: ChatService;
+    chatlc: ChatService;
   }
 }
