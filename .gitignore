@@ -1,4 +1,4 @@
-# compiled output
+# Compiled output
 node_modules/
 dist/
 .tmp/
@@ -11,6 +11,10 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+
+# Deployment
+*.env
+.azure
 
 # OS
 .DS_Store
