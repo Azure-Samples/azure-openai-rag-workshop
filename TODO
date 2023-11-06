@@ -1,9 +1,31 @@
-- [ ] Infra client
-- [ ] Front
-- [ ] Data
-- [ ] Import script
-- [ ] Back Python
-- [ ] Docs
-- [ ] Slides
-- [ ] Tests
+# Tasks
+- [x] frontend deployment
+- [x] infra client
+- [x] indexer
+  * [x] allow PDFs import
+- [x] create example data
+- [x] slides
+- [x] backend nodejs
 
+- [ ] backend
+  * add model for SearchClient (to remove all any)
+
+- [ ] infra
+  * allow to use existing OpenAI URL
+
+- [ ] trainer infra
+  * [ ] infra
+  * [ ] proxy
+  * [ ] docs
+
+- [ ] improve frontend client
+  * [ ] max width
+  * [ ] add clear button
+  * [ ] top navbar
+  * [ ] disable citation link
+
+- [ ] workshop docs
+
+- [ ] template repo
+
+- [ ] move to Azure Samples
