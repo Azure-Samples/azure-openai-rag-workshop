@@ -91,9 +91,8 @@ class: center, middle, hide-handle
 
 ---
 
-exclude: true
 class: center, cover, hide-handle
-background-image: url(./images/ai-landscape.jpg)
+background-image: url(./images/ai-landscape.png)
 
 .full-layer.full-top.blur.with-padding[
 # What are we talking about?
@@ -110,10 +109,10 @@ by Matt Turck - https://mad.firstmark.com/
 <style>
 .here {
   position: absolute;
-  top: 150px;
-  bottom: 340px;
-  left: 370px;
-  right: 570px;
+  top: 270px;
+  bottom: 300px;
+  left: 420px;
+  right: 460px;
 }
 </style>
 <script>
@@ -409,11 +408,86 @@ A program that perceives its environment, make decisions and takes actions to ac
 - 🦜️🔗 [LangChain](https://www.langchain.com/)
 - [Semantic Kernel](https://github.com/microsoft/semantic-kernel)
 
+Their goal is to make it easier to build and deploy LLMs by providing an abstraction layer on top of the underlying APIs, and
+by facilitating the assembly (or "chain") of different components.
+
+.small[
+.up[
+```python
+from langchain.prompts.chat import ChatPromptTemplate
+
+system_template = "You are a helpful assistant that translates English to French."
+human_template = "{text}"
+
+chat_prompt = ChatPromptTemplate.from_messages([
+    ("system", system_template),
+    ("human", human_template),
+])
+
+chat_prompt.format_messages(text="I love programming.")
+```
+]
+]
+
 ---
 
-# TODO
+# OpenAI
 
-introduce OpenAI, API, Azure
+- OpenAI is a non-profit artificial intelligence research company
+- OpenAI is known for its groundbreaking research on generative models, such as GPT-4, which can produce natural language, images, sounds, and code from a given prompt
+- OpenAI also offers a platform for developers to access and use its latest models and products, such as ChatGPT, DALL·E 3, and GPT-4
+
+.center[
+.w-65.responsive[
+  <object data="images/openai.png"></object>
+]
+]
+
+---
+
+# The OpenAI API
+
+The OpenAI API provides several models with different capabilities and price points. You can find the list of models and their features on the [Models](https://platform.openai.com/docs/models) page. You can also learn how to use the models by following the [examples](https://platform.openai.com/examples) and the [API reference](https://platform.openai.com/docs/api-reference).
+
+You can interact with the API through HTTP requests from any language, or using language-specific bindings such as the official Python bindings.
+
+To use the OpenAI API, you need to have an account and an API key.
+
+.small[
+.up[
+```python
+import os
+import openai
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+response = openai.ChatCompletion.create(
+  model="gpt-3.5-turbo",
+  messages=[],
+  temperature=0,
+  max_tokens=256
+)
+```
+]
+]
+
+---
+
+# Azure
+
+
+.full-layer.with-margins.right.space-right.noclick[
+<br>
+.w-35.responsive[![](images/microsoft-azure.png)]
+]
+
+Microsoft Azure is a cloud computing platform that offers <br> a wide range of services and solutions for developers, <br>businesses, and organizations.
+
+- It is open and flexible, allowing you to use the tools, languages, and frameworks of your choice.
+- It is scalable and reliable, enabling you to handle any workload and demand with high availability and performance.
+- It is secure and compliant, protecting your data and applications with advanced security features and certifications.
+
+*There is a specific agreement between Azure and OpenAI, allowing you to use the OpenAI API on Azure. This service, called Azure OpenAI, is what we will be using in this workshop.*
 
 ---
 
