@@ -46,6 +46,7 @@
     ],
     "n/no-extraneous-import": "off",
     "n/no-missing-import": "off",
+    "unicorn/no-null": "off",
     "unicorn/prefer-at": "off",
     "unicorn/prefer-query-selector": "off",
     "unicorn/prevent-abbreviations": [
