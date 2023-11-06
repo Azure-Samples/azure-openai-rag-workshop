@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: azure-openai-rag-workshop
+metadata:
+  template: azure-openai-rag-workshop@1.0.0
+
+services:
+  frontend:
+    project: ./src/frontend
+    dist: dist
+    language: ts
+    host: staticwebapp
+    hooks:
+      predeploy:
+        windows:
+          shell: pwsh
+          run: npm run build # TODO export variable
+          interactive: true
+          continueOnError: false
+        posix:
+          shell: sh
+          run: export BACKEND_API_URI && npm run build
+          interactive: true
+          continueOnError: false
+
+  backend:
+    project: ./src/backend
+    language: ts
+    host: containerapp
+
+  # indexer:
+  #   project: ./packages/indexer
+  #   language: ts
+  #   host: containerapp
+  #   docker:
+  #     context: ../..
+
+hooks:
+  postup:
+    windows:
+      shell: pwsh
+      run: ./scripts/index-data.ps1
+      interactive: true
+      continueOnError: false
+    posix:
+      shell: sh
+      run: ./scripts/index-data.sh
+      interactive: true
+      continueOnError: false

@@ -12,9 +12,9 @@ param location string
 param resourceGroupName string = ''
 param containerAppsEnvironmentName string = ''
 param containerRegistryName string = ''
-param webAppName string = 'webapp'
-param searchApiName string = 'search'
-param searchApiImageName string = ''
+param frontendName string = 'frontend'
+param backendApiName string = 'backend'
+param backendApiImageName string = ''
 param indexerApiName string = 'indexer'
 param indexerApiImageName string = ''
 
@@ -28,12 +28,6 @@ param searchServiceLocation string = ''
 @allowed(['basic', 'standard', 'standard2', 'standard3', 'storage_optimized_l1', 'storage_optimized_l2'])
 param searchServiceSkuName string
 param searchIndexName string
-
-param storageAccountName string = ''
-param storageResourceGroupName string = ''
-param storageResourceGroupLocation string = location
-param storageContainerName string = 'content'
-param storageSkuName string
 
 param openAiServiceName string = ''
 param openAiResourceGroupName string = ''
@@ -54,13 +48,8 @@ param openAiSkuName string = 'S0'
     type: 'location'
   }
 })
-param webAppLocation string
 
-param formRecognizerServiceName string = ''
-param formRecognizerResourceGroupName string = ''
-param formRecognizerResourceGroupLocation string = location
-
-param formRecognizerSkuName string = 'S0'
+param frontendLocation string // Set in main.parameters.json
 
 param chatGptDeploymentName string // Set in main.parameters.json
 param chatGptDeploymentCapacity int = 30
@@ -76,15 +65,9 @@ param principalId string = ''
 @description('Use Application Insights for monitoring and performance tracing')
 param useApplicationInsights bool = false
 
-param allowedOrigin string
-
-// Only needed for CD due to internal policies restrictions
-param aliasTag string = ''
-
 var abbrs = loadJsonContent('abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
-var tags = union({ 'azd-env-name': environmentName }, empty(aliasTag) ? {} : { alias: aliasTag })
-var allowedOrigins = empty(allowedOrigin) ? [webApp.outputs.uri] : [webApp.outputs.uri, allowedOrigin]
+var tags = { 'azd-env-name': environmentName }
 
 // Organize resources in a resource group
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -97,16 +80,8 @@ resource openAiResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' exi
   name: !empty(openAiResourceGroupName) ? openAiResourceGroupName : resourceGroup.name
 }
 
-resource formRecognizerResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = if (!empty(formRecognizerResourceGroupName)) {
-  name: !empty(formRecognizerResourceGroupName) ? formRecognizerResourceGroupName : resourceGroup.name
-}
-
 resource searchServiceResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = if (!empty(searchServiceResourceGroupName)) {
   name: !empty(searchServiceResourceGroupName) ? searchServiceResourceGroupName : resourceGroup.name
-}
-
-resource storageResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = if (!empty(storageResourceGroupName)) {
-  name: !empty(storageResourceGroupName) ? storageResourceGroupName : resourceGroup.name
 }
 
 // Monitor application with Azure Monitor
@@ -136,28 +111,27 @@ module containerApps './core/host/container-apps.bicep' = {
 }
 
 // The application frontend
-module webApp './core/host/staticwebapp.bicep' = {
-  name: 'webapp'
+module frontend './core/host/staticwebapp.bicep' = {
+  name: 'frontend'
   scope: resourceGroup
   params: {
-    name: !empty(webAppName) ? webAppName : '${abbrs.webStaticSites}web-${resourceToken}'
-    location: webAppLocation
-    tags: union(tags, { 'azd-service-name': webAppName })
+    name: !empty(frontendName) ? frontendName : '${abbrs.webStaticSites}web-${resourceToken}'
+    location: frontendLocation
+    tags: union(tags, { 'azd-service-name': frontendName })
   }
 }
 
 // The search API
-module searchApi './core/host/container-app.bicep' = {
-  name: 'search-api'
+module backendApi './core/host/container-app.bicep' = {
+  name: 'backend-api'
   scope: resourceGroup
   params: {
-    name: !empty(searchApiName) ? searchApiName : '${abbrs.appContainerApps}search-${resourceToken}'
+    name: !empty(backendApiName) ? backendApiName : '${abbrs.appContainerApps}search-${resourceToken}'
     location: location
-    tags: union(tags, { 'azd-service-name': searchApiName })
+    tags: union(tags, { 'azd-service-name': backendApiName })
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
     managedIdentity: true
-    allowedOrigins: allowedOrigins
     containerCpuCoreCount: '1.0'
     containerMemory: '2.0Gi'
     secrets: useApplicationInsights ? [
@@ -195,19 +169,11 @@ module searchApi './core/host/container-app.bicep' = {
         name: 'AZURE_SEARCH_SERVICE'
         value: searchService.outputs.name
       }
-      {
-        name: 'AZURE_STORAGE_ACCOUNT'
-        value: storage.outputs.name
-      }
-      {
-        name: 'AZURE_STORAGE_CONTAINER'
-        value: storageContainerName
-      }
     ], useApplicationInsights ? [{
       name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
       secretRef: 'appinsights-cs'
     }] : [])
-    imageName: !empty(searchApiImageName) ? searchApiImageName : 'nginx:latest'
+    imageName: !empty(backendApiImageName) ? backendApiImageName : 'nginx:latest'
     targetPort: 3000
   }
 }
@@ -260,14 +226,6 @@ module indexerApi './core/host/container-app.bicep' = {
         name: 'AZURE_SEARCH_SERVICE'
         value: searchService.outputs.name
       }
-      {
-        name: 'AZURE_STORAGE_ACCOUNT'
-        value: storage.outputs.name
-      }
-      {
-        name: 'AZURE_STORAGE_CONTAINER'
-        value: storageContainerName
-      }
     ], useApplicationInsights ? [{
       name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
       secretRef: 'appinsights-cs'
@@ -313,20 +271,6 @@ module openAi 'core/ai/cognitiveservices.bicep' = {
   }
 }
 
-module formRecognizer 'core/ai/cognitiveservices.bicep' = {
-  name: 'formrecognizer'
-  scope: formRecognizerResourceGroup
-  params: {
-    name: !empty(formRecognizerServiceName) ? formRecognizerServiceName : '${abbrs.cognitiveServicesFormRecognizer}${resourceToken}'
-    kind: 'FormRecognizer'
-    location: formRecognizerResourceGroupLocation
-    tags: tags
-    sku: {
-      name: formRecognizerSkuName
-    }
-  }
-}
-
 module searchService 'core/search/search-services.bicep' = {
   name: 'search-service'
   scope: searchServiceResourceGroup
@@ -346,29 +290,6 @@ module searchService 'core/search/search-services.bicep' = {
   }
 }
 
-module storage 'core/storage/storage-account.bicep' = {
-  name: 'storage'
-  scope: storageResourceGroup
-  params: {
-    name: !empty(storageAccountName) ? storageAccountName : '${abbrs.storageStorageAccounts}${resourceToken}'
-    location: storageResourceGroupLocation
-    tags: tags
-    publicNetworkAccess: 'Enabled'
-    sku: {
-      name: storageSkuName
-    }
-    deleteRetentionPolicy: {
-      enabled: true
-      days: 2
-    }
-    containers: [
-      {
-        name: storageContainerName
-        publicAccess: 'None'
-      }
-    ]
-  }
-}
 
 // USER ROLES
 module openAiRoleUser 'core/security/role.bicep' = {
@@ -378,28 +299,6 @@ module openAiRoleUser 'core/security/role.bicep' = {
     principalId: principalId
     // Cognitive Services OpenAI User
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
-    principalType: 'User'
-  }
-}
-
-module formRecognizerRoleUser 'core/security/role.bicep' = {
-  scope: formRecognizerResourceGroup
-  name: 'formrecognizer-role-user'
-  params: {
-    principalId: principalId
-    // Cognitive Services User
-    roleDefinitionId: 'a97b65f3-24c7-4388-baec-2e87135dc908'
-    principalType: 'User'
-  }
-}
-
-module storageContribRoleUser 'core/security/role.bicep' = {
-  scope: storageResourceGroup
-  name: 'storage-contribrole-user'
-  params: {
-    principalId: principalId
-    // Storage Blob Data Contributor
-    roleDefinitionId: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
     principalType: 'User'
   }
 }
@@ -427,33 +326,22 @@ module searchSvcContribRoleUser 'core/security/role.bicep' = {
 }
 
 // SYSTEM IDENTITIES
-module openAiRoleSearchApi 'core/security/role.bicep' = {
+module openAiRoleBackendApi 'core/security/role.bicep' = {
   scope: openAiResourceGroup
-  name: 'openai-role-searchapi'
+  name: 'openai-role-backendapi'
   params: {
-    principalId: searchApi.outputs.identityPrincipalId
+    principalId: backendApi.outputs.identityPrincipalId
     // Cognitive Services OpenAI User
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
     principalType: 'ServicePrincipal'
   }
 }
 
-module storageRoleSearchApi 'core/security/role.bicep' = {
-  scope: storageResourceGroup
-  name: 'storage-role-searchapi'
-  params: {
-    principalId: searchApi.outputs.identityPrincipalId
-    // Storage Blob Data Reader
-    roleDefinitionId: '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1'
-    principalType: 'ServicePrincipal'
-  }
-}
-
-module searchRoleSearchApi 'core/security/role.bicep' = {
+module searchRoleBackendApi 'core/security/role.bicep' = {
   scope: searchServiceResourceGroup
-  name: 'search-role-searchapi'
+  name: 'search-role-backendapi'
   params: {
-    principalId: searchApi.outputs.identityPrincipalId
+    principalId: backendApi.outputs.identityPrincipalId
     // Search Index Data Reader
     roleDefinitionId: '1407120a-92aa-4202-b7e9-c0e197c71c8f'
     principalType: 'ServicePrincipal'
@@ -467,17 +355,6 @@ module openAiRoleIndexerApi 'core/security/role.bicep' = {
     principalId: indexerApi.outputs.identityPrincipalId
     // Cognitive Services OpenAI User
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
-    principalType: 'ServicePrincipal'
-  }
-}
-
-module storageContribRoleIndexerApi 'core/security/role.bicep' = {
-  scope: storageResourceGroup
-  name: 'storage-contribrole-indexer'
-  params: {
-    principalId: indexerApi.outputs.identityPrincipalId
-    // Storage Blob Data Contributor
-    roleDefinitionId: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
     principalType: 'ServicePrincipal'
   }
 }
@@ -518,19 +395,10 @@ output AZURE_OPENAI_CHATGPT_MODEL string = chatGptModelName
 output AZURE_OPENAI_EMBEDDING_DEPLOYMENT string = embeddingDeploymentName
 output AZURE_OPENAI_EMBEDDING_MODEL string = embeddingModelName
 
-output AZURE_FORMRECOGNIZER_SERVICE string = formRecognizer.outputs.name
-output AZURE_FORMRECOGNIZER_RESOURCE_GROUP string = formRecognizerResourceGroup.name
-
 output AZURE_SEARCH_INDEX string = searchIndexName
 output AZURE_SEARCH_SERVICE string = searchService.outputs.name
 output AZURE_SEARCH_SERVICE_RESOURCE_GROUP string = searchServiceResourceGroup.name
 
-output AZURE_STORAGE_ACCOUNT string = storage.outputs.name
-output AZURE_STORAGE_CONTAINER string = storageContainerName
-output AZURE_STORAGE_RESOURCE_GROUP string = storageResourceGroup.name
-
-output WEBAPP_URI string = webApp.outputs.uri
-output SEARCH_API_URI string = searchApi.outputs.uri
+output FRONTEND_URI string = frontend.outputs.uri
+output BACKEND_API_URI string = backendApi.outputs.uri
 output INDEXER_API_URI string = indexerApi.outputs.uri
-
-output ALLOWED_ORIGINS string = join(allowedOrigins, ',')

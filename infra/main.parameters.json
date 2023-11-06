@@ -26,17 +26,8 @@
     "openAiSkuName": {
       "value": "S0"
     },
-    "webAppLocation": {
-      "value": "${AZURE_WEBAPP_LOCATION=eastus2}"
-    },
-    "formRecognizerServiceName": {
-      "value": "${AZURE_FORMRECOGNIZER_SERVICE}"
-    },
-    "formRecognizerResourceGroupName": {
-      "value": "${AZURE_FORMRECOGNIZER_RESOURCE_GROUP}"
-    },
-    "formRecognizerSkuName": {
-      "value": "S0"
+    "frontendLocation": {
+      "value": "${AZURE_FRONTEND_LOCATION=eastus2}"
     },
     "searchIndexName": {
       "value": "${AZURE_SEARCH_INDEX=gptkbindex}"
@@ -53,26 +44,11 @@
     "searchServiceSkuName": {
       "value": "${AZURE_SEARCH_SERVICE_SKU=standard}"
     },
-    "storageAccountName": {
-      "value": "${AZURE_STORAGE_ACCOUNT}"
-    },
-    "storageResourceGroupName": {
-      "value": "${AZURE_STORAGE_RESOURCE_GROUP}"
-    },
-    "storageSkuName": {
-      "value": "${AZURE_STORAGE_SKU=Standard_LRS}"
-    },
     "chatGptDeploymentName": {
       "value": "${AZURE_OPENAI_CHATGPT_DEPLOYMENT=chat}"
     },
     "useApplicationInsights": {
       "value": "${AZURE_USE_APPLICATION_INSIGHTS=false}"
-    },
-    "allowedOrigin": {
-      "value": "${ALLOWED_ORIGIN}"
-    },
-    "aliasTag": {
-      "value": "${AZURE_ALIAS}"
     }
   }
 }
