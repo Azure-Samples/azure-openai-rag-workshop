@@ -10,27 +10,17 @@ param environmentName string
 param location string
 
 param resourceGroupName string = ''
-param containerAppsEnvironmentName string = ''
-param containerRegistryName string = ''
 param frontendName string = 'frontend'
 param backendApiName string = 'backend'
 param backendApiImageName string = ''
 param indexerApiName string = 'indexer'
 param indexerApiImageName string = ''
 
-param logAnalyticsName string = ''
-param applicationInsightsName string = ''
-
-param searchServiceName string = ''
-param searchServiceResourceGroupName string = ''
-param searchServiceLocation string = ''
 // The free tier does not support managed identity (required) or semantic search (optional)
 @allowed(['basic', 'standard', 'standard2', 'standard3', 'storage_optimized_l1', 'storage_optimized_l2'])
-param searchServiceSkuName string
-param searchIndexName string
+param searchServiceSkuName string // Set in main.parameters.json
+param searchIndexName string // Set in main.parameters.json
 
-param openAiServiceName string = ''
-param openAiResourceGroupName string = ''
 @description('Location for the OpenAI resource group')
 @allowed(['australiaeast', 'canadaeast', 'eastus', 'eastus2', 'francecentral', 'japaneast', 'northcentralus', 'swedencentral', 'switzerlandnorth', 'uksouth', 'westeurope'])
 @metadata({
@@ -38,9 +28,11 @@ param openAiResourceGroupName string = ''
     type: 'location'
   }
 })
-param openAiResourceGroupLocation string
+param openAiLocation string // Set in main.parameters.json
 param openAiSkuName string = 'S0'
 
+// Location is not relevant here as it's only for the built-in api
+// which is not used here. Static Web App is a global service otherwise
 @description('Location for the Static Web App')
 @allowed(['westus2', 'centralus', 'eastus2', 'westeurope', 'eastasia', 'eastasiastage'])
 @metadata({
@@ -48,8 +40,7 @@ param openAiSkuName string = 'S0'
     type: 'location'
   }
 })
-
-param frontendLocation string // Set in main.parameters.json
+param frontendLocation string = 'eastus2'
 
 param chatGptDeploymentName string // Set in main.parameters.json
 param chatGptDeploymentCapacity int = 30
@@ -76,14 +67,6 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   tags: tags
 }
 
-resource openAiResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = if (!empty(openAiResourceGroupName)) {
-  name: !empty(openAiResourceGroupName) ? openAiResourceGroupName : resourceGroup.name
-}
-
-resource searchServiceResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = if (!empty(searchServiceResourceGroupName)) {
-  name: !empty(searchServiceResourceGroupName) ? searchServiceResourceGroupName : resourceGroup.name
-}
-
 // Monitor application with Azure Monitor
 module monitoring './core/monitor/monitoring.bicep' = {
   name: 'monitoring'
@@ -91,8 +74,8 @@ module monitoring './core/monitor/monitoring.bicep' = {
   params: {
     location: location
     tags: tags
-    logAnalyticsName: !empty(logAnalyticsName) ? logAnalyticsName : '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
-    applicationInsightsName: useApplicationInsights ? (!empty(applicationInsightsName) ? applicationInsightsName : '${abbrs.insightsComponents}${resourceToken}') : ''
+    logAnalyticsName: '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
+    applicationInsightsName: useApplicationInsights ? '${abbrs.insightsComponents}${resourceToken}' : ''
   }
 }
 
@@ -102,8 +85,8 @@ module containerApps './core/host/container-apps.bicep' = {
   scope: resourceGroup
   params: {
     name: 'containerapps'
-    containerAppsEnvironmentName: !empty(containerAppsEnvironmentName) ? containerAppsEnvironmentName : '${abbrs.appManagedEnvironments}${resourceToken}'
-    containerRegistryName: !empty(containerRegistryName) ? containerRegistryName : '${abbrs.containerRegistryRegistries}${resourceToken}'
+    containerAppsEnvironmentName: '${abbrs.appManagedEnvironments}${resourceToken}'
+    containerRegistryName: '${abbrs.containerRegistryRegistries}${resourceToken}'
     location: location
     tags: tags
     logAnalyticsWorkspaceName: monitoring.outputs.logAnalyticsWorkspaceName
@@ -121,7 +104,7 @@ module frontend './core/host/staticwebapp.bicep' = {
   }
 }
 
-// The search API
+// The backend API
 module backendApi './core/host/container-app.bicep' = {
   name: 'backend-api'
   scope: resourceGroup
@@ -237,10 +220,10 @@ module indexerApi './core/host/container-app.bicep' = {
 
 module openAi 'core/ai/cognitiveservices.bicep' = {
   name: 'openai'
-  scope: openAiResourceGroup
+  scope: resourceGroup
   params: {
-    name: !empty(openAiServiceName) ? openAiServiceName : '${abbrs.cognitiveServicesAccounts}${resourceToken}'
-    location: openAiResourceGroupLocation
+    name: '${abbrs.cognitiveServicesAccounts}${resourceToken}'
+    location: openAiLocation
     tags: tags
     sku: {
       name: openAiSkuName
@@ -273,10 +256,10 @@ module openAi 'core/ai/cognitiveservices.bicep' = {
 
 module searchService 'core/search/search-services.bicep' = {
   name: 'search-service'
-  scope: searchServiceResourceGroup
+  scope: resourceGroup
   params: {
-    name: !empty(searchServiceName) ? searchServiceName : 'gptkb-${resourceToken}'
-    location: !empty(searchServiceLocation) ? searchServiceLocation : location
+    name: 'gptkb-${resourceToken}'
+    location: location
     tags: tags
     authOptions: {
       aadOrApiKey: {
@@ -293,7 +276,7 @@ module searchService 'core/search/search-services.bicep' = {
 
 // USER ROLES
 module openAiRoleUser 'core/security/role.bicep' = {
-  scope: openAiResourceGroup
+  scope: resourceGroup
   name: 'openai-role-user'
   params: {
     principalId: principalId
@@ -304,7 +287,7 @@ module openAiRoleUser 'core/security/role.bicep' = {
 }
 
 module searchContribRoleUser 'core/security/role.bicep' = {
-  scope: searchServiceResourceGroup
+  scope: resourceGroup
   name: 'search-contrib-role-user'
   params: {
     principalId: principalId
@@ -315,7 +298,7 @@ module searchContribRoleUser 'core/security/role.bicep' = {
 }
 
 module searchSvcContribRoleUser 'core/security/role.bicep' = {
-  scope: searchServiceResourceGroup
+  scope: resourceGroup
   name: 'search-svccontrib-role-user'
   params: {
     principalId: principalId
@@ -327,7 +310,7 @@ module searchSvcContribRoleUser 'core/security/role.bicep' = {
 
 // SYSTEM IDENTITIES
 module openAiRoleBackendApi 'core/security/role.bicep' = {
-  scope: openAiResourceGroup
+  scope: resourceGroup
   name: 'openai-role-backendapi'
   params: {
     principalId: backendApi.outputs.identityPrincipalId
@@ -338,7 +321,7 @@ module openAiRoleBackendApi 'core/security/role.bicep' = {
 }
 
 module searchRoleBackendApi 'core/security/role.bicep' = {
-  scope: searchServiceResourceGroup
+  scope: resourceGroup
   name: 'search-role-backendapi'
   params: {
     principalId: backendApi.outputs.identityPrincipalId
@@ -349,7 +332,7 @@ module searchRoleBackendApi 'core/security/role.bicep' = {
 }
 
 module openAiRoleIndexerApi 'core/security/role.bicep' = {
-  scope: openAiResourceGroup
+  scope: resourceGroup
   name: 'openai-role-indexer'
   params: {
     principalId: indexerApi.outputs.identityPrincipalId
@@ -360,7 +343,7 @@ module openAiRoleIndexerApi 'core/security/role.bicep' = {
 }
 
 module searchContribRoleIndexerApi 'core/security/role.bicep' = {
-  scope: searchServiceResourceGroup
+  scope: resourceGroup
   name: 'search-contrib-role-indexer'
   params: {
     principalId: indexerApi.outputs.identityPrincipalId
@@ -371,7 +354,7 @@ module searchContribRoleIndexerApi 'core/security/role.bicep' = {
 }
 
 module searchSvcContribRoleIndexerApi 'core/security/role.bicep' = {
-  scope: searchServiceResourceGroup
+  scope: resourceGroup
   name: 'search-svccontrib-role-indexer'
   params: {
     principalId: indexerApi.outputs.identityPrincipalId
@@ -389,7 +372,6 @@ output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerApps.outputs.registry
 output AZURE_CONTAINER_REGISTRY_NAME string = containerApps.outputs.registryName
 
 output AZURE_OPENAI_SERVICE string = openAi.outputs.name
-output AZURE_OPENAI_RESOURCE_GROUP string = openAiResourceGroup.name
 output AZURE_OPENAI_CHATGPT_DEPLOYMENT string = chatGptDeploymentName
 output AZURE_OPENAI_CHATGPT_MODEL string = chatGptModelName
 output AZURE_OPENAI_EMBEDDING_DEPLOYMENT string = embeddingDeploymentName
@@ -397,7 +379,6 @@ output AZURE_OPENAI_EMBEDDING_MODEL string = embeddingModelName
 
 output AZURE_SEARCH_INDEX string = searchIndexName
 output AZURE_SEARCH_SERVICE string = searchService.outputs.name
-output AZURE_SEARCH_SERVICE_RESOURCE_GROUP string = searchServiceResourceGroup.name
 
 output FRONTEND_URI string = frontend.outputs.uri
 output BACKEND_API_URI string = backendApi.outputs.uri

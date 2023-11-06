@@ -14,41 +14,17 @@
     "principalId": {
       "value": "${AZURE_PRINCIPAL_ID}"
     },
-    "openAiServiceName": {
-      "value": "${AZURE_OPENAI_SERVICE}"
-    },
-    "openAiResourceGroupName": {
-      "value": "${AZURE_OPENAI_RESOURCE_GROUP}"
-    },
-    "openAiResourceGroupLocation": {
-      "value": "${AZURE_OPENAI_RESOURCE_GROUP_LOCATION=eastus2}"
-    },
-    "openAiSkuName": {
-      "value": "S0"
-    },
-    "frontendLocation": {
-      "value": "${AZURE_FRONTEND_LOCATION=eastus2}"
+    "openAiLocation": {
+      "value": "${AZURE_OPENAI_LOCATION=eastus2}"
     },
     "searchIndexName": {
       "value": "${AZURE_SEARCH_INDEX=gptkbindex}"
-    },
-    "searchServiceName": {
-      "value": "${AZURE_SEARCH_SERVICE}"
-    },
-    "searchServiceResourceGroupName": {
-      "value": "${AZURE_SEARCH_SERVICE_RESOURCE_GROUP}"
-    },
-    "searchServiceLocation": {
-      "value": "${AZURE_SEARCH_SERVICE_LOCATION}"
     },
     "searchServiceSkuName": {
       "value": "${AZURE_SEARCH_SERVICE_SKU=standard}"
     },
     "chatGptDeploymentName": {
       "value": "${AZURE_OPENAI_CHATGPT_DEPLOYMENT=chat}"
-    },
-    "useApplicationInsights": {
-      "value": "${AZURE_USE_APPLICATION_INSIGHTS=false}"
     }
   }
 }
