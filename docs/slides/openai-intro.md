@@ -475,7 +475,19 @@ response = openai.ChatCompletion.create(
 
 # Azure
 
-What is Azure
+
+.full-layer.with-margins.right.space-right.noclick[
+<br>
+.w-35.responsive[![](images/microsoft-azure.png)]
+]
+
+Microsoft Azure is a cloud computing platform that offers <br> a wide range of services and solutions for developers, <br>businesses, and organizations.
+
+- It is open and flexible, allowing you to use the tools, languages, and frameworks of your choice.
+- It is scalable and reliable, enabling you to handle any workload and demand with high availability and performance.
+- It is secure and compliant, protecting your data and applications with advanced security features and certifications.
+
+*There is a specific agreement between Azure and OpenAI, allowing you to use the OpenAI API on Azure. This service, called Azure OpenAI, is what we will be using in this workshop.*
 
 ---
 
