@@ -5,7 +5,7 @@
 FROM node:18-alpine as build
 WORKDIR /app
 COPY ./package*.json ./
-COPY ./packages/indexer ./packages/indexer
+COPY ./src/indexer ./src/indexer
 RUN npm ci --cache /tmp/empty-cache
 RUN npm run build --workspace=indexer
 
@@ -16,8 +16,8 @@ ENV NODE_ENV=production
 
 WORKDIR /app
 COPY ./package*.json ./
-COPY ./packages/indexer/package.json ./packages/indexer/
+COPY ./src/indexer/package.json ./src/indexer/
 RUN npm ci --omit=dev --workspace=indexer --cache /tmp/empty-cache
-COPY --from=build app/packages/indexer/dist packages/indexer/dist
+COPY --from=build app/src/indexer/dist src/indexer/dist
 EXPOSE 3001
 CMD [ "npm", "start", "--workspace=indexer" ]
