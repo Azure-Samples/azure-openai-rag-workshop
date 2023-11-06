@@ -2,8 +2,8 @@ import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
 // Expose environment variables to the client
-process.env.VITE_CHAT_API_URI = process.env.CHAT_API_URI ?? '';
-console.log(`Using search API base URL: "${process.env.VITE_CHAT_API_URI}"`);
+process.env.VITE_BACKEND_API_URI = process.env.BACKEND_API_URI ?? '';
+console.log(`Using search API base URL: "${process.env.VITE_BACKEND_API_URI}"`);
 
 export default defineConfig({
   build: {
@@ -17,9 +17,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/ask': 'http://127.0.0.1:3000',
-      '/chat': 'http://127.0.0.1:3000',
-      '/content': 'http://127.0.0.1:3000',
+      '/chat': 'http://127.0.0.1:3000'
     },
   },
 });
