@@ -1,5 +1,5 @@
 import { type HTMLTemplateResult, html, nothing } from 'lit';
-import { ChatMessage, type ChatMessageContext } from './models.js';
+import { type ChatMessage, type ChatMessageContext } from './models.js';
 
 export type ParsedMessage = {
   html: HTMLTemplateResult;

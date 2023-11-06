@@ -9,15 +9,15 @@ import {
   type ChatResponse,
   type ChatMessage,
   type ChatResponseChunk,
-  ChatDebugDetails,
-  ChatMessageContext,
+  type ChatDebugDetails,
+  type ChatMessageContext,
 } from '../models.js';
 import { getCitationUrl, getCompletion } from '../api.js';
 import { type ParsedMessage, parseMessageIntoHtml } from '../message-parser.js';
 import sendSvg from '../../assets/send.svg?raw';
 import questionSvg from '../../assets/question.svg?raw';
 import lightbulbSvg from '../../assets/lightbulb.svg?raw';
-import './debug';
+import './debug.js';
 
 export type ChatComponentState = {
   hasError: boolean;

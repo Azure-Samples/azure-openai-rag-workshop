@@ -3,7 +3,7 @@ import { LitElement, css, html } from 'lit';
 import { map } from 'lit/directives/map.js';
 import { customElement, property } from 'lit/decorators.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { ChatDebugDetails } from '../models';
+import { type ChatDebugDetails } from '../models.js';
 
 export type DebugComponentOptions = {
   strings: {
