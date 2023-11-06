@@ -29,7 +29,7 @@ services:
     host: containerapp
 
   indexer:
-    project: ./packages/indexer
+    project: ./src/indexer
     language: ts
     host: containerapp
     docker:
