@@ -1,0 +1,48 @@
+{
+  "name": "indexer",
+  "version": "1.0.0",
+  "description": "Document indexer service",
+  "private": true,
+  "type": "module",
+  "exports": "./src/app.ts",
+  "directories": {
+    "test": "test"
+  },
+  "bin": {
+    "index-files": "./bin/index-files.js"
+  },
+  "scripts": {
+    "start": "fastify start -l info dist/app.js -p 3001",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch\" \"npm:dev:start\"",
+    "dev:start": "fastify start --pretty-logs --ignore-watch=.ts$ -w -l debug -p 3001 dist/app.js",
+    "docker:build": "docker build --tag indexer --file ./Dockerfile ../..",
+    "docker:run": "docker run --rm --publish 3001:3001 --env-file ../../.env indexer"
+  },
+  "dependencies": {
+    "@azure/identity": "^3.3.0",
+    "@azure/search-documents": "12.0.0-beta.3",
+    "@dqbd/tiktoken": "^1.0.7",
+    "@fastify/autoload": "^5.0.0",
+    "@fastify/cors": "^8.3.0",
+    "@fastify/multipart": "^7.7.3",
+    "@fastify/sensible": "^5.0.0",
+    "@fastify/type-provider-json-schema-to-ts": "^2.2.2",
+    "commander": "^11.0.0",
+    "dotenv": "^16.3.1",
+    "fastify": "^4.22.2",
+    "fastify-cli": "^5.7.0",
+    "fastify-plugin": "^4.0.0",
+    "mime": "^3.0.0",
+    "openai": "^4.4.0"
+  },
+  "devDependencies": {
+    "@types/mime": "^3.0.1",
+    "@types/node": "^18.0.0",
+    "concurrently": "^8.2.0",
+    "fastify-tsconfig": "^2.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}

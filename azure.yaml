@@ -28,12 +28,12 @@ services:
     language: ts
     host: containerapp
 
-  # indexer:
-  #   project: ./packages/indexer
-  #   language: ts
-  #   host: containerapp
-  #   docker:
-  #     context: ../..
+  indexer:
+    project: ./packages/indexer
+    language: ts
+    host: containerapp
+    docker:
+      context: ../..
 
 hooks:
   postup:

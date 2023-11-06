@@ -1,0 +1,47 @@
+##################################################################
+# VS Code with REST Client extension is needed to use this file.
+# Download at: https://aka.ms/vscode/rest-client
+##################################################################
+
+@api_host = http://localhost:3001
+
+# Create an index
+POST {{api_host}}/indexes
+Content-Type: application/json
+
+{
+  "name": "test"
+}
+
+###
+
+# Delete an index
+DELETE {{api_host}}/indexes/test
+
+###
+
+# Index a file
+POST {{api_host}}/indexes/test/files
+Accept: */*
+Content-Type: multipart/form-data; boundary=Boundary
+
+--Boundary
+Content-Disposition: form-data; name="file"; filename="test.txt"
+Content-Type: text/plain
+
+< ../../README.md
+--Boundary
+Content-Disposition: form-data; name="options"
+
+{
+  "category": "test-category",
+  "wait": true,
+  "uploadToStorage": true,
+  "useVectors": true
+}
+--Boundary--
+
+###
+
+# Delete a file
+DELETE {{api_host}}/indexes/test/files/sample.txt
