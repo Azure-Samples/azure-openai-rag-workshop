@@ -10,8 +10,7 @@ audience: students, devs
 level: intermediate
 tags: node.js, containers, docker, azure, static web apps, javascript, typescript, OpenAI, Langchain
 published: false
-wt_id: javascript-0000-yolasors
-oc_id: AID3057430
+wt_id: javascript-0000-cxa
 sections_title:
   - Welcome
 ---
@@ -236,25 +235,25 @@ In our use-case, text will be extracted out of PDF files, and this text will be 
 
 That's how our system will be able to find the most relevant data, coming from the orginial PDF files.
 
-This will be used in the first component (the Retriever) of the Retrieval Augmented Generation (RAG) pattern that we will use to build our custom ChatGPT.
+This will be used in the first component (the *Retriever*) of the Retrieval Augmented Generation (RAG) pattern that we will use to build our custom ChatGPT.
 
 There are many available vector databases, and a good list can be found in the supported Vector stores list from the LangChain project: [https://js.langchain.com/docs/integrations/vectorstores/](https://js.langchain.com/docs/integrations/vectorstores/).
 
-The most popular ones are:
+Some of the most popular ones are:
 
 - [MemoryVectorStore](https://js.langchain.com/docs/integrations/vectorstores/memory) which is an in-memory vector store, which is great for testing and development, but not for production.
+- [Qdrant](https://qdrant.tech/)
 - [Redis](https://redis.io)
-- [ElasticSearch](https://www.elastic.co/)
 
 ### Introducing Azure Cognitive Search
 
 ![Screenshot of Azure Cognitive Search](./assets/azure-cognitive-search.png)
 
-Azure Cognitive Search can be used as a vector database that can store, index, and query vector embeddings from a search index. You can use it to power similarity search, multi-modal search, recommendation systems, or applications implementing the Retrieval Augmented Generation (RAG) architecture. Azure Cognitive Search supports various data types, such as text, images, audio, video, and graphs, and can perform fast and accurate searches based on the similarity or distance between the vectors, rather than exact matches. Azure Cognitive Search also offers hybrid search, which combines keyword and vector search in the same query.
+Azure Cognitive Search can be used as a vector database that can store, index, and query vector embeddings from a search index. You can use it to power similarity search, multi-modal search, recommendation systems, or applications implementing the RAG architecture. Azure Cognitive Search supports various data types, such as text, images, audio, video, and graphs, and can perform fast and accurate searches based on the similarity or distance between the vectors, rather than exact matches. It also offers **hybrid search**, which combines semantic and vector search in the same query.
 
-For this workshop, we'll use Azure Cognitive Search as our vector database as it's easy to create and manage within Azure. For our specific use-case, most vector database will work in a similar way.
+For this workshop, we'll use Azure Cognitive Search as our vector database as it's easy to create and manage within Azure. For the RAG use-case, most vector databases will work in a similar way.
 
-You can find more information on Azure Cognitive Search at [https://azure.microsoft.com/products/ai-services/cognitive-search/](https://azure.microsoft.com/products/ai-services/cognitive-search/).
+You can find more information on Azure Cognitive Search [here](https://azure.microsoft.com/products/ai-services/cognitive-search/).
 
 ### Exploring Azure Cognitive Search
 
