@@ -1,0 +1,45 @@
+##################################################################
+# VS Code with REST Client extension is needed to use this file.
+# Download at: https://aka.ms/vscode/rest-client
+##################################################################
+
+@api_host = http://localhost:3000
+
+# Chat with the bot
+POST {{api_host}}/openai/deployments/chat/chat/completions?api-version=2023-05-15
+Content-Type: application/json
+api-key: toto
+
+{
+  "messages": [{
+    "content": "Test",
+    "role": "user"
+  }],
+  "max_tokens": 128,
+  "temperature": 0.7,
+  "frequency_penalty": 0,
+  "presence_penalty": 0,
+  "top_p": 0.95,
+  "stop": null
+}
+
+###
+
+# Chat with the bot using streaming
+POST {{api_host}}/openai/deployments/chat/chat/completions?api-version=2023-05-15
+content-type: application/json
+api-key: toto
+
+{
+  "messages": [{
+    "content": "Test",
+    "role": "user"
+  }],
+  "max_tokens": 128,
+  "temperature": 0.7,
+  "frequency_penalty": 0,
+  "presence_penalty": 0,
+  "top_p": 0.95,
+  "stop": null,
+  "stream": true
+}

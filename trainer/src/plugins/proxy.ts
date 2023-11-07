@@ -28,15 +28,21 @@ export default fp(
       prefix: '/openai',
       rewritePrefix: '/openai',
       preHandler: async (req, reply) => {
-        fastify.log.info({ headers: req.headers});
-        await refreshOpenAiToken();
-        fastify.log.info({ token: openAiToken.token });
+        if (!config.azureOpenAiApiKey) {
+          await refreshOpenAiToken();
+        }
       },
       replyOptions: {
-        rewriteRequestHeaders: (req, headers) => ({
-          ...headers,
-          'api-key': openAiToken.token,
-        })
+        getUpstream: (req, base) => {
+          // TODO: load balance
+          return openAiUrl;
+        },
+        rewriteRequestHeaders: (req, headers) => {
+          return {
+            ...headers,
+            'api-key': config.azureOpenAiApiKey || openAiToken.token,
+          };
+        }
       },
     });
   },

@@ -5,6 +5,7 @@ import fp from 'fastify-plugin';
 
 export interface AppConfig {
   azureOpenAiService: string;
+  azureOpenAiApiKey: string;
   azureOpenAiChatGptDeployment: string;
   azureOpenAiChatGptModel: string;
   azureOpenAiEmbeddingDeployment: string;
@@ -22,6 +23,7 @@ export default fp(
 
     const config: AppConfig = {
       azureOpenAiService: process.env.AZURE_OPENAI_SERVICE || '',
+      azureOpenAiApiKey: process.env.AZURE_OPENAI_API_KEY || '',
       azureOpenAiChatGptDeployment: process.env.AZURE_OPENAI_CHATGPT_DEPLOYMENT || 'chat',
       azureOpenAiChatGptModel: process.env.AZURE_OPENAI_CHATGPT_MODEL || 'gpt-35-turbo',
       azureOpenAiEmbeddingDeployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT || 'embedding',
@@ -30,7 +32,7 @@ export default fp(
 
     // Check that all config values are set
     for (const [key, value] of Object.entries(config)) {
-      if (!value) {
+      if (!value && key !== 'azureOpenAiApiKey') {
         const variableName = camelCaseToUpperSnakeCase(key).replace('OPEN_AI', 'OPENAI');
         const message = `${variableName} environment variable must be set`;
         fastify.log.error(message);

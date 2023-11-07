@@ -1,5 +1,5 @@
 ---
-short_title: Create Custom ChatGPT on your data with Node.js and LangChain
+short_title: Create your own ChatGPT with RAG
 description: Discover how to create and populate a vector database, create a web chat interface and an API to expose your agent to the web interface. 
 type: workshop
 authors: Yohan Lasorsa, Julien Dubois, Christopher Maneu
@@ -10,24 +10,25 @@ audience: students, devs
 level: intermediate
 tags: node.js, containers, docker, azure, static web apps, javascript, typescript, OpenAI, Langchain
 published: false
-wt_id: javascript-0000-yolasors
-oc_id: AID3057430
+wt_id: javascript-0000-cxa
 sections_title:
   - Welcome
 ---
 
-# Create Custom ChatGPT on your data with Node.js and LangChain
+# Create your own ChatGPT with Retrieval-Augmented-Generation
 
-In this workshop, we'll explore the fundamentals of custom ChatGPT experiences based on your document. We will create a vector database and fill-in with data from PDF, and then build a chat website and API to be able to ask questions about information contained in these documents. 
+In this workshop, we'll explore the fundamentals of custom ChatGPT experiences based on a corpus of documents. We will create a vector database and fill-in with data from PDF, and then build a chat website and API to be able to ask questions about information contained in these documents. 
 
 
 ## You'll learn how to...
 
-- Create an ingestion application to index documents in a vector database
-- Create an api to query a vector database and augment a prompt to generate responses
-- Create a web chat interface
-- Deploy the service on Azure
-- Integrate LangChain
+- Create a knowledgebase using a vector database
+- Ingest documents in a vector database
+- Create a web API with [Fastify](https://www.fastify.io)
+- Use [OpenAI](https://openai.com) models and [LangChain](https://js.langchain.com/docs/) to generate answers based on a prompt
+- Query a vector database and augment a prompt to generate responses
+- Connect your web API to ChatGPT-like website
+- Deploy your application on Azure
 
 ## Prerequisites
 
@@ -35,7 +36,7 @@ In this workshop, we'll explore the fundamentals of custom ChatGPT experiences b
 |----------------------|------------------------------------------------------|
 | GitHub account       | [Get a free GitHub account](https://github.com/join) |
 | Azure account        | [Get a free Azure account](https://azure.microsoft.com/free) |
-| Access to OpenAI API | [Request access to Azure OpenAI](https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR7en2Ais5pxKtso_Pz4b1_xUOFA5Qk1UWDRBMjg0WFhPMkIzTzhKQ1dWNyQlQCN0PWcu&culture=en-us&country=us) |
+| Access to OpenAI API | [Request access to Azure OpenAI](https://aka.ms/oaiapply) |
 | A web browser        | [Get Microsoft Edge](https://www.microsoft.com/edge) |
 | JavaScript knowledge | [JavaScript tutorial on MDN documentation](https://developer.mozilla.org/docs/Web/JavaScript)<br>[JavaScript for Beginners on YouTube](https://www.youtube.com/playlist?list=PLlrxD0HtieHhW0NCG7M536uHGOtJ95Ut2) |
 
@@ -48,7 +49,6 @@ If you prefer to work locally, we'll also provide instructions to setup a local 
 ## Introduction
 
 Organizations of all sizes have created a massive amount of documents over time. While Generative AIs like ChatGPT can answer questions about general knowledge and historical events with a certain level of accuracy, they can also be used to answers questions based on internal knowledge. 
-
 
 <div class="info" data-title="note">
 
@@ -66,33 +66,37 @@ Here's the architecture of the application we'll build in this workshop:
 
 Our application is split into 4 main components:
 
-1. **A vector database and an ingestion service**, The vector database contains a mathematical representation of our documents - called embeddings. They will be used by the Chat API to search documents based on user question. A process needs to run to feed data from your documents into this vector database. This is the ingestion service.
+1. **A vector database and an ingestion service**. The vector database contains a mathematical representation of our documents - called embeddings. They will be used by the Chat API to search documents based on user question. A process needs to run to feed data from your documents into this vector database. This is the ingestion service.
 
-2. **A Chat API**, This API allows a client application to send a chat message and to receive a generated answer based on documents ingested in the vector database. 
+2. **A Chat API**. This API allows a client application to send chat messages and receive a generated answer based on documents ingested in the vector database. 
 
-3. **A Chat website**, This website is a chat interface that allows end users to chat with GPT and get their questions answered.
+3. **A Chat website**. This website is a provides a ChatGPT-like interface that allows users to chat and get their questions answered.
 
-4. **A deployment of Azure OpenAI GPT**, for this workshop, we will use GPT 3.5 model hosted on Azure. The code should work with little modification with OpenAI APIs.
+4. **A deployment of OpenAI models**. For this workshop, we will use the `gpt-3.5-turbo` model (also known as ChatGPT) hosted on Azure. The code can also work with little modifications using OpenAI APIs.
 
-### How Retrievial-augmented Generation works?
+### What is Retrievial-Augmented Generation?
 
-Retrieval-augmented generation (RAG) is a powerful technique that combines the strengths of two different approaches in natural language processing: retrieval-based methods and generative models. This hybrid approach allows for the generation of responses that are both contextually relevant and rich in content. Let's break down how this works in the context of creating a custom ChatGPT-like model.
+Retrieval-Augmented generation (RAG) is a powerful technique that combines the strengths of two different approaches in natural language processing: retrieval-based methods and generative models. This hybrid approach allows for the generation of responses that are both contextually relevant and rich in content. Let's break down how this works in the context of creating a custom ChatGPT-like model.
 
 At its core, RAG involves two main components:
 
 - **Retriever**: This is the component responsible for fetching relevant information from a database or knowledge source. The retriever searches through a large corpus of documents to find pieces of text that are relevant to the input query or prompt.
+
 - **Generator**: This is a language model (like GPT-3 or a fine-tuned version of it) that takes the input prompt and the retrieved documents to generate a coherent and contextually appropriate response.
 
 The process of retrieval-augmented generation typically follows these steps:
 
 1. **Embedding computation**: The system receives a prompt or a query from the user. It's converted into an embedding, a numerical representation that can be used to measure similarity with other text embeddings.
+
 2. **Document Retrieval**: The retriever uses the prompt embedding to search through a database of document embeddings to find the most relevant documents. This is where systems like Azure Cognitive Search come into play, allowing for efficient vector similarity searches.
+
 3. **Contextual Augmentation**: The retrieved documents are combined with the original prompt to create an augmented prompt. This step is crucial as it provides additional context and information to the generator.
+
 4. **Response Generation**: The generator, which is a language model, takes the augmented prompt and generates a response. The model uses the additional context provided by the retrieved documents to produce a more informed and accurate output.
 
-<div class="info" data-title="It's quite simple">
+<div class="info" data-title="Note">
 
-> Don't get overwhelmed by all these terms! What we do is like if you are doing a Google/Bing search, and copy/pasting the results in  In the previous explaination, the _retriever_ is the _Chat API_ we will develop, and the "generator" is simply the LLM, in our case GPT3.5/4.
+> TODO: Don't get overwhelmed by all these terms! What we do is like if you are doing a Google/Bing search, and copy/pasting the results in. In the previous explaination, the _retriever_ is the _Chat API_ we will develop, and the "generator" is simply the generative model, in our case GPT3.5/4.
 
 </div>
 
@@ -107,7 +111,7 @@ Before starting the development, we'll need to setup our project and development
 
 ### Creating the project
 
-Open [this GitHub repository](https://github.com/azure-samples/nodejs-microservices-template), select the **Fork** button and click on **Create fork** to create a copy of the project in your own GitHub account.
+Open [this GitHub repository](https://github.com/Azure-Samples/azure-openai-rag-workshop-template), select the **Fork** button and click on **Create fork** to create a copy of the project in your own GitHub account.
 
 ![Screenshot of GitHub showing the Fork button](./assets/fork-project.png)
 
@@ -153,7 +157,7 @@ git clone <your_repo_url>
 
 The first time it will take some time to download and setup the container image, meanwhile you can go ahead and read the next sections.
 
-Once the container is ready, you will see "Dev Container: Node.js" in the bottom left corner of VSCode:
+Once the container is ready, you will see "Dev Container: OpenAI Workshop" in the bottom left corner of VSCode:
 
 ![Screenshot of VS Code showing the Dev Container status](./assets/vscode-dev-container-status.png)
 
@@ -167,12 +171,9 @@ If you want to work locally without using a dev container, you need to clone the
 | Docker v20+   | [Get Docker](https://docs.docker.com/get-docker) |
 | Node.js v18+  | [Get Node.js](https://nodejs.org) |
 | Azure CLI     | [Get Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli#install) |
+| Azure Developer CLI | [Get Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd) |
 | GitHub CLI    | [Get GitHub CLI](https://cli.github.com/manual/installation) |
-| Azure Static Web Apps CLI | [Get Azure Static Web Apps CLI](https://github.com/Azure/static-web-apps-cli#installing-the-cli-with-npm-yarn-or-pnpm) |
-| pino-pretty log formatter | [Get pino-pretty](https://github.com/pinojs/pino-pretty#install) |
 | Bash v3+      | [Get bash](https://www.gnu.org/software/bash/) (Windows users can use **Git bash** that comes with Git) |
-| Perl v5+      | [Get Perl](https://www.perl.org/get.html) |
-| jq            | [Get jq](https://stedolan.github.io/jq/download) |
 | A code editor | [Get VS Code](https://aka.ms/get-vscode) |
 
 You can test your setup by opening a terminal and typing:
@@ -182,11 +183,9 @@ git --version
 docker --version
 node --version
 az --version
+azd version
 gh --version
-swa --version
 bash --version
-perl --version
-jq --version
 ```
 
 ---
@@ -196,20 +195,19 @@ jq --version
 The project template you forked is a monorepo, a single repository containing multiple projects. It's organized as follows (for the most important files):
 
 ```sh
-infra/          # Azure infrastructure templates and scripts
 .devcontainer/  # Dev container configuration
-scripts/        # TK
+infra/          # Azure infrastructure templates and scripts
+scripts/        # Scripts to help with document ingestion
 src/            # The different services of our app
-|- backend/     # The API gateway, created with generator-express
-|- frontend/    # The settings API, created with Fastify CLI
-|- indexer/     # The dice API, created with NestJS CLI
-api.http        # HTTP requests to test our APIs
+|- backend/     # The Chat API
+|- frontend/    # The Chat website
+|- indexer/     # The document ingestion service
 package.json    # NPM workspace configuration
 ```
 
 As we'll be using Node.js to build our APIs and website, we had setup a [NPM workspace](https://docs.npmjs.com/cli/using-npm/workspaces) to manage the dependencies of all the projects in a single place. This means that when you run `npm install` in the root of the project, it will install all the dependencies of all the projects and make it easier to work in a monorepo.
 
-For example, you can run `npm run <script_name> --workspaces` in the root of the project to run a script in all the projects, or `npm run <script_name> --workspace=packages/gateway-api` to run a script for a specific project. 
+For example, you can run `npm run <script_name> --workspaces` in the root of the project to run a script in all the projects, or `npm run <script_name> --workspace=backend` to run a script for a specific project. 
 
 Otherwise, you can use your regular `npm` commands in any project folder and it will work as usual.
 
@@ -217,19 +215,11 @@ Otherwise, you can use your regular `npm` commands in any project folder and it 
 
 We generated the base code of our differents services with the respective CLI or generator of the frameworks we'll be using, with very few modifications made so we can start working quickly on the most important parts of the workshop.
 
-The only changes we made to the generated code is to remove the files we don't need, configure the ports for each API, and setup [pino-http](https://github.com/pinojs/pino-http) as the logger to have a consistent logging format across all the services.
-
-<div class="info" data-title="note">
-
-> If you want to see how the services were generated and the details of the changes we made, you can look at [this script](https://github.com/Azure-Samples/nodejs-microservices/blob/main/scripts/create-projects.sh) we used to generate the projects.
-
-</div>
-
-<div class="info" data-title="skip notice">
+<!-- <div class="info" data-title="skip notice">
 
 > If you want to skip the Settings API implementation and jump directly to the next section, run this command in the terminal at the root of the project to get the completed code directly: `curl -fsSL https://github.com/Azure-Samples/nodejs-microservices/releases/download/latest/settings-api.tar.gz | tar -xvz`
 
-</div>
+</div> -->
 
 ### The Chat protocol
 
@@ -245,25 +235,25 @@ In our use-case, text will be extracted out of PDF files, and this text will be 
 
 That's how our system will be able to find the most relevant data, coming from the orginial PDF files.
 
-This will be used in the first component (the Retriever) of the Retrieval Augmented Generation (RAG) pattern that we will use to build our custom ChatGPT.
+This will be used in the first component (the *Retriever*) of the Retrieval Augmented Generation (RAG) pattern that we will use to build our custom ChatGPT.
 
 There are many available vector databases, and a good list can be found in the supported Vector stores list from the LangChain project: [https://js.langchain.com/docs/integrations/vectorstores/](https://js.langchain.com/docs/integrations/vectorstores/).
 
-The most popular ones are:
+Some of the most popular ones are:
 
 - [MemoryVectorStore](https://js.langchain.com/docs/integrations/vectorstores/memory) which is an in-memory vector store, which is great for testing and development, but not for production.
+- [Qdrant](https://qdrant.tech/)
 - [Redis](https://redis.io)
-- [ElasticSearch](https://www.elastic.co/)
 
 ### Introducing Azure Cognitive Search
 
 ![Screenshot of Azure Cognitive Search](./assets/azure-cognitive-search.png)
 
-Azure Cognitive Search can be used as a vector database that can store, index, and query vector embeddings from a search index. You can use it to power similarity search, multi-modal search, recommendation systems, or applications implementing the Retrieval Augmented Generation (RAG) architecture. Azure Cognitive Search supports various data types, such as text, images, audio, video, and graphs, and can perform fast and accurate searches based on the similarity or distance between the vectors, rather than exact matches. Azure Cognitive Search also offers hybrid search, which combines keyword and vector search in the same query.
+Azure Cognitive Search can be used as a vector database that can store, index, and query vector embeddings from a search index. You can use it to power similarity search, multi-modal search, recommendation systems, or applications implementing the RAG architecture. Azure Cognitive Search supports various data types, such as text, images, audio, video, and graphs, and can perform fast and accurate searches based on the similarity or distance between the vectors, rather than exact matches. It also offers **hybrid search**, which combines semantic and vector search in the same query.
 
-For this workshop, we'll use Azure Cognitive Search as our vector database as it's easy to create and manage within Azure. For our specific use-case, most vector database will work in a similar way.
+For this workshop, we'll use Azure Cognitive Search as our vector database as it's easy to create and manage within Azure. For the RAG use-case, most vector databases will work in a similar way.
 
-You can find more information on Azure Cognitive Search at [https://azure.microsoft.com/products/ai-services/cognitive-search/](https://azure.microsoft.com/products/ai-services/cognitive-search/).
+You can find more information on Azure Cognitive Search [here](https://azure.microsoft.com/products/ai-services/cognitive-search/).
 
 ### Exploring Azure Cognitive Search
 
