@@ -6,7 +6,7 @@ import fp from 'fastify-plugin';
 export interface AppConfig {
   azureSearchService: string;
   azureSearchIndex: string;
-  azureOpenAiService: string;
+  azureOpenAiUrl: string;
   azureOpenAiChatGptDeployment: string;
   azureOpenAiChatGptModel: string;
   azureOpenAiEmbeddingDeployment: string;
@@ -27,7 +27,7 @@ export default fp(
     const config: AppConfig = {
       azureSearchService: process.env.AZURE_SEARCH_SERVICE || '',
       azureSearchIndex: process.env.AZURE_SEARCH_INDEX || 'kbindex',
-      azureOpenAiService: process.env.AZURE_OPENAI_SERVICE || '',
+      azureOpenAiUrl: process.env.AZURE_OPENAI_URL || '',
       azureOpenAiChatGptDeployment: process.env.AZURE_OPENAI_CHATGPT_DEPLOYMENT || 'chat',
       azureOpenAiChatGptModel: process.env.AZURE_OPENAI_CHATGPT_MODEL || 'gpt-35-turbo',
       azureOpenAiEmbeddingDeployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT || 'embedding',

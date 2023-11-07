@@ -226,7 +226,7 @@ export class ChatService {
       id++;
     }
   }
-}
+} 
 
 function removeNewlines(s: string = ''): string {
   return s.replaceAll(/[\n\r]+/g, ' ');
@@ -248,8 +248,7 @@ export default fp(
     );
 
     // Set up OpenAI clients
-    const openAiUrl = `https://${config.azureOpenAiService}.openai.azure.com`;
-    fastify.log.info(`Using OpenAI at ${openAiUrl}`);
+    fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);
 
     const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
     const commonOptions = {
@@ -262,11 +261,11 @@ export default fp(
     // support for Azure OpenAI within the OpenAI JS SDK
     const chatClient = new OpenAI({
       ...commonOptions,
-      baseURL: `${openAiUrl}/openai/deployments/${config.azureOpenAiChatGptDeployment}`,
+      baseURL: `${config.azureOpenAiUrl}/openai/deployments/${config.azureOpenAiChatGptDeployment}`,
     }).chat;
     const embeddingsClient = new OpenAI({
       ...commonOptions,
-      baseURL: `${openAiUrl}/openai/deployments/${config.azureOpenAiEmbeddingDeployment}`,
+      baseURL: `${config.azureOpenAiUrl}/openai/deployments/${config.azureOpenAiEmbeddingDeployment}`,
     }).embeddings;
 
     const chatService = new ChatService(

@@ -251,7 +251,7 @@ export default fp(
     );
 
     // Set up Langchain clients
-    const openAiUrl = `https://${config.azureOpenAiService}.openai.azure.com`;
+    const openAiUrl = `https://${config.azureOpenAiUrl}.openai.azure.com`;
     fastify.log.info(`Using OpenAI at ${openAiUrl}`);
 
     const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');

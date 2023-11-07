@@ -29,6 +29,7 @@ param searchIndexName string // Set in main.parameters.json
   }
 })
 param openAiLocation string // Set in main.parameters.json
+param openAiUrl string = ''
 param openAiSkuName string = 'S0'
 
 // Location is not relevant here as it's only for the built-in api
@@ -59,6 +60,7 @@ param useApplicationInsights bool = false
 var abbrs = loadJsonContent('abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
+var finalOpenAiUrl = empty(openAiUrl) ? 'https://${openAi.outputs.name}.openai.azure.com' : openAiUrl
 
 // Organize resources in a resource group
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -141,8 +143,8 @@ module backendApi './core/host/container-app.bicep' = {
         value: embeddingModelName
       }
       {
-        name: 'AZURE_OPENAI_SERVICE'
-        value: openAi.outputs.name
+        name: 'AZURE_OPENAI_URL'
+        value: finalOpenAiUrl
       }
       {
         name: 'AZURE_SEARCH_INDEX'
@@ -198,8 +200,8 @@ module indexerApi './core/host/container-app.bicep' = {
         value: embeddingModelName
       }
       {
-        name: 'AZURE_OPENAI_SERVICE'
-        value: openAi.outputs.name
+        name: 'AZURE_OPENAI_URL'
+        value: finalOpenAiUrl
       }
       {
         name: 'AZURE_SEARCH_INDEX'
@@ -218,7 +220,7 @@ module indexerApi './core/host/container-app.bicep' = {
   }
 }
 
-module openAi 'core/ai/cognitiveservices.bicep' = {
+module openAi 'core/ai/cognitiveservices.bicep' = if (empty(openAiUrl)) {
   name: 'openai'
   scope: resourceGroup
   params: {
@@ -275,7 +277,7 @@ module searchService 'core/search/search-services.bicep' = {
 
 
 // USER ROLES
-module openAiRoleUser 'core/security/role.bicep' = {
+module openAiRoleUser 'core/security/role.bicep' = if (empty(openAiUrl)) {
   scope: resourceGroup
   name: 'openai-role-user'
   params: {
@@ -309,7 +311,7 @@ module searchSvcContribRoleUser 'core/security/role.bicep' = {
 }
 
 // SYSTEM IDENTITIES
-module openAiRoleBackendApi 'core/security/role.bicep' = {
+module openAiRoleBackendApi 'core/security/role.bicep' = if (empty(openAiUrl)) {
   scope: resourceGroup
   name: 'openai-role-backendapi'
   params: {
@@ -331,7 +333,7 @@ module searchRoleBackendApi 'core/security/role.bicep' = {
   }
 }
 
-module openAiRoleIndexerApi 'core/security/role.bicep' = {
+module openAiRoleIndexerApi 'core/security/role.bicep' = if (empty(openAiUrl)) {
   scope: resourceGroup
   name: 'openai-role-indexer'
   params: {
@@ -371,7 +373,7 @@ output AZURE_RESOURCE_GROUP string = resourceGroup.name
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerApps.outputs.registryLoginServer
 output AZURE_CONTAINER_REGISTRY_NAME string = containerApps.outputs.registryName
 
-output AZURE_OPENAI_SERVICE string = openAi.outputs.name
+output AZURE_OPENAI_URL string = finalOpenAiUrl
 output AZURE_OPENAI_CHATGPT_DEPLOYMENT string = chatGptDeploymentName
 output AZURE_OPENAI_CHATGPT_MODEL string = chatGptModelName
 output AZURE_OPENAI_EMBEDDING_DEPLOYMENT string = embeddingDeploymentName
