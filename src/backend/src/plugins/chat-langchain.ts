@@ -244,15 +244,14 @@ export default fp(
     );
 
     // Set up Langchain clients
-    const openAiUrl = `https://${config.azureOpenAiUrl}.openai.azure.com`;
-    fastify.log.info(`Using OpenAI at ${openAiUrl}`);
+    fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);
 
     const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
     const commonOptions = {
       openAIApiKey: openAiToken.token,
       azureOpenAIApiVersion: '2023-05-15',
       azureOpenAIApiKey: openAiToken.token,
-      azureOpenAIBasePath: `${openAiUrl}/openai/deployments`,
+      azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,
     };
 
     const chatClient = (options?: Partial<OpenAIChatInput>) =>

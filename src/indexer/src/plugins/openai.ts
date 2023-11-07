@@ -18,9 +18,8 @@ const AZURE_COGNITIVE_SERVICES_AD_SCOPE = 'https://cognitiveservices.azure.com/.
 export default fp(
   async (fastify, _options) => {
     const config = fastify.config;
-    const openAiUrl = `https://${config.azureOpenAiService}.openai.azure.com`;
 
-    fastify.log.info(`Using OpenAI at ${openAiUrl}`);
+    fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);
 
     let openAiToken: AccessToken;
     let embeddingsClient: OpenAI;
@@ -37,7 +36,7 @@ export default fp(
 
         embeddingsClient = new OpenAI({
           ...commonOptions,
-          baseURL: `${openAiUrl}/openai/deployments/${config.azureOpenAiEmbeddingDeployment}`,
+          baseURL: `${config.azureOpenAiUrl}/openai/deployments/${config.azureOpenAiEmbeddingDeployment}`,
         });
       }
     };
@@ -53,7 +52,7 @@ export default fp(
       },
       config: {
         apiVersion: AZURE_OPENAI_API_VERSION,
-        apiUrl: openAiUrl,
+        apiUrl: config.azureOpenAiUrl,
       },
     });
   },
