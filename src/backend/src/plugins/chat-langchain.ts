@@ -231,7 +231,7 @@ function messagesToLangchainMessages(messages: Message[]) {
       return new AIMessage(message.content);
     } else {
       return new HumanMessage(message.content);
-    } 
+    }
   });
 }
 
@@ -262,16 +262,18 @@ export default fp(
       azureOpenAIApiInstanceName: config.azureOpenAiService,
     };
 
-    const chatClient = (options?: Partial<OpenAIChatInput>) => new ChatOpenAI({
-      ...options,
-      ...commonOptions,
-      azureOpenAIApiDeploymentName: config.azureOpenAiChatGptDeployment,
-    } as any);
-    const embeddingsClient = (options?: Partial<OpenAIEmbeddingsParams>) => new OpenAIEmbeddings({
-      ...options,
-      ...commonOptions,
-      azureOpenAIApiDeploymentName: config.azureOpenAiEmbeddingDeployment,
-    } as any);
+    const chatClient = (options?: Partial<OpenAIChatInput>) =>
+      new ChatOpenAI({
+        ...options,
+        ...commonOptions,
+        azureOpenAIApiDeploymentName: config.azureOpenAiChatGptDeployment,
+      } as any);
+    const embeddingsClient = (options?: Partial<OpenAIEmbeddingsParams>) =>
+      new OpenAIEmbeddings({
+        ...options,
+        ...commonOptions,
+        azureOpenAIApiDeploymentName: config.azureOpenAiEmbeddingDeployment,
+      } as any);
 
     const chatService = new ChatService(
       searchClient,

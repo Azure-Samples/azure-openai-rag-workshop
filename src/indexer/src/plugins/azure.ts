@@ -24,7 +24,7 @@ export default fp(
 
     fastify.decorate('azure', {
       credential,
-      searchIndex: searchIndexClient
+      searchIndex: searchIndexClient,
     });
   },
   {

@@ -77,7 +77,7 @@ async function ensureSearchIndex(options: IndexFilesOptions) {
     }),
   });
   if (!response.ok) {
-    const errorDetails = await response.json() as any;
+    const errorDetails = (await response.json()) as any;
     throw new Error(`Index creating "${indexName}": ${errorDetails.message}`);
   }
 }
@@ -100,7 +100,7 @@ async function indexFile(file: string, options: IndexFilesOptions) {
     body: formData,
   });
   if (!response.ok) {
-    const errorDetails = await response.json() as any;
+    const errorDetails = (await response.json()) as any;
     throw new Error(`Error indexing file "${file}": ${errorDetails.message}`);
   }
   console.log(`File "${file}" indexed successfully`);
