@@ -247,7 +247,7 @@ Some of the most popular ones are:
 
 ### Introducing Azure Cognitive Search
 
-![Screenshot of Azure Cognitive Search](./assets/azure-cognitive-search.png)
+![Logo of Azure Cognitive Search](./assets/azure-cognitive-search-logo.png)
 
 Azure Cognitive Search can be used as a vector database that can store, index, and query vector embeddings from a search index. You can use it to power similarity search, multi-modal search, recommendation systems, or applications implementing the RAG architecture. Azure Cognitive Search supports various data types, such as text, images, audio, video, and graphs, and can perform fast and accurate searches based on the similarity or distance between the vectors, rather than exact matches. It also offers **hybrid search**, which combines semantic and vector search in the same query.
 
@@ -259,9 +259,16 @@ You can find more information on Azure Cognitive Search [here](https://azure.mic
 
 An Azure Cognitive Search service was created in the setup process by the AZD command. In your resource group, you can find the service named `gptkb-<your_random_name>`.
 
+This instance is currently empty, and we will create an index and populate it with data in the next section.
+
+![Screenshot of Azure Cognitive Search](./assets/azure-cognitive-search.png)
+
 ---
 
 ## Ingest data in the vector database
+
+We are going to ingest the content of PDF documents in the vector database. We'll use a
+tool located in the `src/indexer` folder of the project. This tool will extract the text from the PDF files, and send it to the vector database.
 
 azd deploy indexer
 source .env
@@ -269,27 +276,116 @@ source .env
 
 ### The ingestion process
 
-// TODO: Write
+The `src/indexer/src/lib/indexer.ts` file contains the code that will be used to ingest the data in the vector database. This will run inside a Node.js application, deployed to Azure Container Apps.
 
-### Read PDF content
+PDFs files, which are stored in the `data` folder, will be sent to this Node.js application using the command line.
 
-### Compute embedding
+### Reading the PDF files content
 
+PDFs files are stored in the `data` folder: the files provided here are for demo purpose only, and you can replace them with your own PDF files if you want to use your custom data.
 
-<div class="tip" data-title="tip">
+The content of those files will be used as part of the Retriever component of the RAG architecture, to have custom answers to your questions on top of the GPT-3.5 model.
 
-> The `{ result }` syntax is a shorthand for `{ result: result }`, and is allowed in JavaScript since ES6.
+Text from the PDF files is extracted in the `src/indexer/src/lib/document-processor.ts` file, using the [pdfjs library](https://github.com/rkusa/pdfjs):
 
-</div>
+```ts
+async function extractTextFromPdf(data: Buffer): Promise<ContentPage[]> {
+  const pages: ContentPage[] = [];
+  const pdf = await pdfjs.getDocument(new Uint8Array(data)).promise;
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const textContent = await page.getTextContent();
+    let previousY = 0;
+    const text = textContent.items
+      .filter((item) => 'str' in item)
+      .map((item) => {
+        const text = item as TextItem;
+        const y = text.transform[5];
+        let string_ = text.str;
+        if (y !== previousY && previousY !== 0) {
+          string_ = '\n' + string_;
+        }
+        previousY = y;
+        return string_;
+      })
+      .join('');
+    pages.push({ content: text + '\n', offset: 0, page: i });
+  }
+  return pages;
+}
+```
 
-### Add the document to the vector database
+### Computing the embeddings
 
+This text is then transformed into embeddings using the [OpenAI JavaScript library](https://github.com/openai/openai-node):
+
+```ts
+async createEmbedding(text: string): Promise<number[]> {
+  const embeddingsClient = await this.openai.getEmbeddings();
+  const result = await embeddingsClient.create({ input: text, model: this.embeddingModelName });
+  return result.data[0].embedding;
+}
+```
+
+### Adding the documents to the vector database
+
+The embeddings are then added to the vector database using the [Azure Cognitive Search JavaScript client library](https://www.npmjs.com/package/@azure/search-documents):
+
+```ts
+const searchClient = this.azure.searchIndex.getSearchClient(indexName);
+
+const batchSize = INDEXING_BATCH_SIZE;
+let batch: Section[] = [];
+
+for (let index = 0; index < sections.length; index++) {
+  batch.push(sections[index]);
+
+  if (batch.length === batchSize || index === sections.length - 1) {
+    const { results } = await searchClient.uploadDocuments(batch);
+    const succeeded = results.filter((r) => r.succeeded).length;
+    const indexed = batch.length;
+    this.logger.debug(`Indexed ${indexed} sections, ${succeeded} succeeded`);
+    batch = [];
+  }
+}
+```
 
 ### Execute the ingestion process
 
-### Test our vector database
+Let's now execute this process.
 
-//TODO: Test with Search Explorer within Azure Portal
+First you need to deploy the indexer process using the AZD command:
+
+```bash
+azd provision indexer
+```
+
+<div class="tip" data-title="tip">
+
+> This command requires your environment variables to be set up. They are stored in a `.env` file, so you can run `source .env` to load them in your current terminal session.
+
+</div>
+
+![Screenshot of the indexer deployement](./assets/indexer-deployement.png)
+
+Once the indexer is deployed, you can run the ingestion process using the `scripts/index-data.sh` script on Linux or macOS, or `scripts/index-data.ps1` on Windows:
+
+```bash
+cd script
+./index-data.sh
+```
+
+![Screenshot of the indexer CLI](./assets/indexer-cli.png)
+
+Once this process is executed, a new index will be available in your Azure Cognitive Search service, where you can see the documents that were ingested.
+
+### Test the vector database
+
+In the Azure Portal, you can now find again the service named `gptkb-<your_random_name>`, which will have a new index named `kbindex`.
+
+You can select that index and browse it. For example, in the "Search explorer" tab, if you ingested the original PDF files that were about the "Northwind Traders" company, you can search for "Northwind" and see the results:
+
+![Screenshot of the Northwind request in the index](./assets/azure-cognitive-search-northwind.png)
 
 ---
 
