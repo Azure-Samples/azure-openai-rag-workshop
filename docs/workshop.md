@@ -221,7 +221,7 @@ We generated the base code of our differents services with the respective CLI or
 
 </div> -->
 
-### The Chat protocol
+### The chat protocol
 
 TK
 
@@ -391,11 +391,38 @@ You can select that index and browse it. For example, in the "Search explorer" t
 
 ## Chat API
 
-### Introducing Express
+### Introducing Fastify
 
-Does [Express](https://expressjs.com) really need an introduction? It's one of the most popular Node.js web frameworks, used by many applications in production. It's minimalistic, flexible, and benefits from a large ecosystem of plugins and a huge active developer community.
+We'll be using [Fastify](https://www.fastify.io/) to create our Chat API. Fastify is a web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture.
 
-While it doesn't provide a lot of features out of the box compared to more modern frameworks like [NestJS](https://nestjs.com) or [Fastify](https://www.fastify.io), it's still a great choice for building services especially if your want something unopinionated that you can easily customize to your needs.
+It's very similar to [Express](https://expressjs.com), but it's much faster and more lightweight making it a good choice for microservices. It also comes with first-class TypeScript support, and that's what we'll use in our base template.
+
+### Setting up the chat plugin
+
+### Initializing the SDK clients
+
+#### Managing Azure credentials
+
+#### Azure Cognitive Search client
+
+#### OpenAI clients
+
+### Creating the ChatService
+
+#### Retrieving the documents
+
+#### Creating the prompt
+
+#### Generating the response
+
+### Creating the API route
+
+### Testing our API
+
+
+
+
+
 
 ### Using OpenAI SDK
 
@@ -490,12 +517,15 @@ For testing though, running all 3 services separately is a bit tedious (as you s
 
 ## Chat website
 
+### Intro
+
+### The Chat web component
+
+
+
+### Calling the Chat API
+
 // TODO: Write
-
-### The Chat Component
-
-### Call backend api
-
 
 
 ---
