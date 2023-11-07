@@ -27,6 +27,8 @@ services:
     project: ./src/backend
     language: ts
     host: containerapp
+    docker:
+      context: ../..
 
   indexer:
     project: ./src/indexer
