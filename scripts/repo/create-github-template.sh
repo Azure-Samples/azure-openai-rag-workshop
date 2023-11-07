@@ -33,6 +33,8 @@ rm -rf scripts/repo
 rm -rf docs
 rm -rf .prettierignore
 rm -rf trainer
+rm -rf .azure
+rm -rf .env
 
 # Prepare files
 rm -rf src/backend/src/plugins/chat-langchain.ts
