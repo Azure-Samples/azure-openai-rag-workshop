@@ -17,6 +17,7 @@ import { type ParsedMessage, parseMessageIntoHtml } from '../message-parser.js';
 import sendSvg from '../../assets/send.svg?raw';
 import questionSvg from '../../assets/question.svg?raw';
 import lightbulbSvg from '../../assets/lightbulb.svg?raw';
+import newChatSvg from '../../assets/new-chat.svg?raw';
 import './debug.js';
 
 export type ChatComponentState = {
@@ -44,7 +45,7 @@ export type ChatComponentOptions = ChatRequestOptions & {
     assistant: string;
     user: string;
     errorMessage: string;
-    cleanChatButton: string;
+    newChatButton: string;
     retryButton: string;
   };
 };
@@ -77,7 +78,7 @@ export const defaultOptions: ChatComponentOptions = {
     assistant: 'Support Assistant',
     user: 'You',
     errorMessage: 'We are currently experiencing an issue.',
-    cleanChatButton: 'Clear chat',
+    newChatButton: 'New chat',
     retryButton: 'Retry',
   },
 };
@@ -335,6 +336,9 @@ export class ChatComponent extends LitElement {
   protected renderChatInput = () => {
     return html`
       <div class="chat-input">
+        <button class="button new-chat-button" @click=${() => this.messages = []} title=${this.options.strings.newChatButton} .disabled=${this.message?.length === 0}>
+        ${unsafeSVG(newChatSvg)}
+      </button>
         <form class="input-form">
           <textarea
             class="text-input"
@@ -431,10 +435,13 @@ export class ChatComponent extends LitElement {
       --bot-message-bg: var(--azc-bot-message-bg, var(--card-bg));
       --citation-bg: var(--azc-citation-bg, var(--primary));
       --citation-bg-hover: var(--azc-citation-bg, color-mix(in srgb, var(--primary), #000 10%));
+      --new-chat-button-color: var(--azc-button-color, var(--text-invert-color));
+      --new-chat-button-bg: var(--azc-new-chat-button-bg, var(--primary));
+      --new-chat-button-bg-hover: var(--azc-new-chat-button-bg, color-mix(in srgb, var(--primary), #000 10%));
       --chat-input-color: var(--azc-chat-input-color, var(--text-color));
       --chat-input-border: var(--azc-chat-input-border, none);
-      --submit-button-color: var(--azc-button-color, var(--primary));
       --chat-input-bg: var(--azc-chat-input-bg, var(--card-bg));
+      --submit-button-color: var(--azc-button-color, var(--primary));
       --submit-button-border: var(--azc-submit-button-border, none);
       --submit-button-bg: var(--azc-submit-button-bg, none);
       --submit-button-bg-hover: var(--azc-submit-button-color, #f0f0f0);
@@ -666,9 +673,25 @@ export class ChatComponent extends LitElement {
       padding-top: var(--half-space-xl);
       background: var(--bg);
       box-shadow: 0 calc(-1 * var(--half-space-xl)) var(--half-space-xl) var(--bg);
+      display: flex;
+      gap: var(--space-md);
+    }
+    .new-chat-button {
+      width: 48px;
+      height: 48px;
+      padding: var(--space-md);
+      border-radius: 50%;
+      background: var(--new-chat-button-bg);
+      color: var(--new-chat-button-color);
+      font-size: 1.5rem;
+      &:hover:not(:disabled) {
+        background: var(--new-chat-button-bg-hover);
+        color: var(--new-chat-button-color);
+      }
     }
     .input-form {
       display: flex;
+      flex: 1 auto;
       background: var(--chat-input-bg);
       border: var(--chat-input-border);
       border-radius: var(--border-radius);
