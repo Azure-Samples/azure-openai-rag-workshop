@@ -1,14 +1,18 @@
-# azure-opena-ai-rag-workshop
+# 🤖 azure-openai-rag-workshop
 
-TODO: desc
+In this workshop, we will build a chatbot from based on OpenAI language models and implementing the Retrieval Augmented Generation (RAG) pattern. You'll use [Fastify](https://fastify.dev) to create a [Node.js](https://nodejs.org/en/) service that leverage [OpenAI SDK](https://platform.openai.com/docs/libraries/) and [LangChain](https://js.langchain.com/) to build a chatbot that will answer questions based on a corpus of documents, as well as a website to test it.
+Finally, we will deploy everything on Azure with a CI/CD pipeline.
 
-👉 [See the workshop](TODO aka.ms link)
+👉 [See the workshop](https://aka.ms/ws/openai-rag)
 
 ## Prerequisites
 
-TODO
-
-- An Azure account ([sign up for free here](https://azure.microsoft.com/free/?WT.mc_id=javascript-0000-cxa))
+- **Node.js v18+**
+- **Docker v20+**
+- **Azure account**. If you're new to Azure, [get an Azure account for free](https://azure.microsoft.com/free/?WT.mc_id=javascript-0000-cxa) to get free Azure credits to get started.
+  - Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner).
+- Your Azure account also needs `Microsoft.Resources/deployments/write` permissions at a subscription level.
+- **Azure subscription with access enabled for the Azure OpenAI service**. You can request access with [this form](https://aka.ms/oaiapply).
 
 You can use [GitHub Codespaces](https://github.com/features/codespaces) to work on this project directly from your browser: select the **Code** button, then the **Codespaces** tab and click on **Create Codespaces on main**.
 
@@ -16,15 +20,41 @@ You can also use the [Dev Containers extension for VS Code](https://aka.ms/vscod
 
 ## Project details
 
-TODO
+This project is structured as monorepo and makes use of [NPM Workspaces](https://docs.npmjs.com/cli/using-npm/workspaces).
 
 ## How to run locally
 
-TODO
+```bash
+npm install
+npm start
+```
 
-## How to setup deployment
+This command will start the frontend and backend services.
+For these services to work, you need to have a `.env` file at the root of the project with at least the following content:
 
-TODO
+```bash
+AZURE_SEARCH_SERVICE=<your_azure_cognitive_search_instance_name>
+AZURE_OPENAI_URL=<you_openai_instance_url>
+```
+
+The application will then be available at `http://localhost:8000`.
+
+## How to build Docker images
+
+```bash
+npm run docker:build
+```
+
+This command will build the container images for all services.
+
+## How deploy to Azure
+
+```bash
+azd auth login
+azd up
+```
+
+This commands will first ask you to log in into Azure. Then it will provison the Azure resources, package the services and deploy them to Azure.
 
 ## Contributing
 
