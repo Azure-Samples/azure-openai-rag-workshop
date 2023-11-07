@@ -65,8 +65,7 @@ export class ChatService {
 
     const results: string[] = [];
     for await (const result of searchResults.results) {
-      // TODO: ensure typings
-      const document = result.document as any;
+      const document = result.document;
       results.push(`${document[this.sourcePageField]}: ${removeNewlines(document[this.contentField])}`);
     }
 
@@ -152,8 +151,7 @@ export class ChatService {
 
     const results: string[] = [];
     for await (const result of searchResults.results) {
-      // TODO: ensure typings
-      const document = result.document as any;
+      const document = result.document;
       results.push(`${document[this.sourcePageField]}: ${removeNewlines(document[this.contentField])}`);
     }
 
@@ -238,7 +236,7 @@ function messagesToLangchainMessages(messages: Message[]) {
 }
 
 export default fp(
-  async (fastify, _options) => {
+  async (fastify, options) => {
     const config = fastify.config;
 
     // Use the current user identity to authenticate with Azure OpenAI and Cognitive Search.
@@ -285,10 +283,10 @@ export default fp(
       config.kbFieldsContent,
     );
 
-    fastify.decorate('chatlc', chatService);
+    fastify.decorate('chat_lc', chatService);
   },
   {
-    name: 'chatlc',
+    name: 'chat_lc',
     dependencies: ['config'],
   },
 );
@@ -296,6 +294,6 @@ export default fp(
 // When using .decorate you have to specify added properties for Typescript
 declare module 'fastify' {
   export interface FastifyInstance {
-    chatlc: ChatService;
+    chat_lc: ChatService;
   }
 }

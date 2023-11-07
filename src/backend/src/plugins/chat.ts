@@ -67,8 +67,7 @@ export class ChatService {
 
     const results: string[] = [];
     for await (const result of searchResults.results) {
-      // TODO: ensure typings
-      const document = result.document as any;
+      const document = result.document;
       results.push(`${document[this.sourcePageField]}: ${removeNewlines(document[this.contentField])}`);
     }
 
@@ -158,8 +157,7 @@ export class ChatService {
 
     const results: string[] = [];
     for await (const result of searchResults.results) {
-      // TODO: ensure typings
-      const document = result.document as any;
+      const document = result.document;
       results.push(`${document[this.sourcePageField]}: ${removeNewlines(document[this.contentField])}`);
     }
 
@@ -235,7 +233,7 @@ function removeNewlines(s: string = ''): string {
 }
 
 export default fp(
-  async (fastify, _options) => {
+  async (fastify, options) => {
     const config = fastify.config;
 
     // Use the current user identity to authenticate with Azure OpenAI and Cognitive Search.

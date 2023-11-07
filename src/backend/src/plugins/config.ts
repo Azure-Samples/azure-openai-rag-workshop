@@ -18,7 +18,7 @@ export interface AppConfig {
 const camelCaseToUpperSnakeCase = (s: string) => s.replaceAll(/[A-Z]/g, (l) => `_${l}`).toUpperCase();
 
 export default fp(
-  async (fastify, _options) => {
+  async (fastify, options) => {
     const environmentPath = path.resolve(process.cwd(), '../../.env');
 
     console.log(`Loading .env config from ${environmentPath}...`);
