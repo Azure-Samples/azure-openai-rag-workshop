@@ -158,7 +158,7 @@ export async function getCompletion(options: ChatRequestOptions, oneShot = false
 }
 
 export function getCitationUrl(citation: string): string {
-  return `${apiBaseUrl}/content/${citation}`;
+  return \`\${apiBaseUrl}/content/\${citation}\`;
 }
 
 export class NdJsonParserStream extends TransformStream<string, JSON> {
