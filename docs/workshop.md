@@ -279,9 +279,13 @@ While it doesn't provide a lot of features out of the box compared to more moder
 
 </div>
 
+### Call the Vector database
+
 ### Inject Vector search results in prompt
 
 // TODO: Write
+
+### Call OpenAI API
 
 ### Testing our API
 
@@ -360,6 +364,11 @@ For testing though, running all 3 services separately is a bit tedious (as you s
 
 // TODO: Write
 
+### The Chat Component
+
+### Call backend api
+
+
 
 ---
 
@@ -369,7 +378,7 @@ For testing though, running all 3 services separately is a bit tedious (as you s
 
 </div>
 
-## Improve your prompts
+## Add follow-up questions
 
 ---
 
