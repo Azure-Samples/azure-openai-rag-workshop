@@ -68,7 +68,7 @@ async function replyNdJsonStream(reply: FastifyReply, chunks: AsyncGenerator<obj
 
   for await (const chunk of chunks) {
     // Send JSON chunks, separated by newlines
-    buffer.push(JSON.stringify(chunk) + '\\n');
+    buffer.push(JSON.stringify(chunk) + '\\\\n');
   }
 
   // Signal end of stream
@@ -172,7 +172,7 @@ export class NdJsonParserStream extends TransformStream<string, JSON> {
         controller = _controller;
       },
       transform: (chunk) => {
-        const jsonChunks = chunk.split('\\n').filter(Boolean);
+        const jsonChunks = chunk.split('\\\\n').filter(Boolean);
         for (const jsonChunk of jsonChunks) {
           try {
             this.buffer += jsonChunk;
