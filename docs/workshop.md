@@ -237,19 +237,37 @@ TK
 
 ---
 
-## Vector database
+## The vector database
 
-We'll start by creating a vector database. This type of database allows us to do a semantic query on top your data instead of doing a keyword-based search.
+We'll start by creating a vector database. Vectors are arrays of numbers that represent the features or characteristics of the data. For example, an image can be converted into a vector of pixels, or a word can be converted into a vector of semantic meaning. A vector database can perform fast and accurate searches based on the similarity or distance between the vectors, rather than exact matches. This enables applications such as image recognition, natural language processing, recommendation systems, and more.
 
-// TODO: Module intro
+In our use-case, text will be extracted out of PDF files, and this text will be "tokenized". Tokenization is the process of splitting our text into different tokens, which will be short portions of text. Those tokens will be converted into a vectors, and the vector database will be able to search for similar vectors based on the distance between them.
+
+That's how our system will be able to find the most relevant data, coming from the orginial PDF files.
+
+This will be used in the first component (the Retriever) of the Retrieval Augmented Generation (RAG) pattern that we will use to build our custom ChatGPT.
+
+There are many available vector databases, and a good list can be found in the supported Vector stores list from the LangChain project: [https://js.langchain.com/docs/integrations/vectorstores/](https://js.langchain.com/docs/integrations/vectorstores/).
+
+The most popular ones are:
+
+- [MemoryVectorStore](https://js.langchain.com/docs/integrations/vectorstores/memory) which is an in-memory vector store, which is great for testing and development, but not for production.
+- [Redis](https://redis.io)
+- [ElasticSearch](https://www.elastic.co/)
 
 ### Introducing Azure Cognitive Search
 
-// TODO: Write
+![Screenshot of Azure Cognitive Search](./assets/azure-cognitive-search.png)
 
-### Creating the database
+Azure Cognitive Search can be used as a vector database that can store, index, and query vector embeddings from a search index. You can use it to power similarity search, multi-modal search, recommendation systems, or applications implementing the Retrieval Augmented Generation (RAG) architecture. Azure Cognitive Search supports various data types, such as text, images, audio, video, and graphs, and can perform fast and accurate searches based on the similarity or distance between the vectors, rather than exact matches. Azure Cognitive Search also offers hybrid search, which combines keyword and vector search in the same query.
 
-// TODO: Write
+For this workshop, we'll use Azure Cognitive Search as our vector database as it's easy to create and manage within Azure. For our specific use-case, most vector database will work in a similar way.
+
+You can find more information on Azure Cognitive Search at [https://azure.microsoft.com/products/ai-services/cognitive-search/](https://azure.microsoft.com/products/ai-services/cognitive-search/).
+
+### Exploring Azure Cognitive Search
+
+An Azure Cognitive Search service was created in the setup process by the AZD command. In your resource group, you can find the service named `gptkb-<your_random_name>`.
 
 ---
 
