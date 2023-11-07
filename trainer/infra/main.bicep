@@ -25,11 +25,11 @@ param openAiUrl string = ''
 param openAiSkuName string = 'S0'
 
 param chatGptDeploymentName string // Set in main.parameters.json
-param chatGptDeploymentCapacity int = 500
+param chatGptDeploymentCapacity int = 240
 param chatGptModelName string = 'gpt-35-turbo'
 param chatGptModelVersion string = '0613'
 param embeddingDeploymentName string // Set in main.parameters.json
-param embeddingDeploymentCapacity int = 500
+param embeddingDeploymentCapacity int = 240
 param embeddingModelName string = 'text-embedding-ada-002'
 
 @description('Id of the user or app to assign application roles')
@@ -85,7 +85,7 @@ module proxyApi './core/host/container-app.bicep' = {
     managedIdentity: true
     containerCpuCoreCount: '1.0'
     containerMemory: '2.0Gi'
-    secrets: [
+    env: [
       {
         name: 'AZURE_OPENAI_CHATGPT_DEPLOYMENT'
         value: chatGptDeploymentName
