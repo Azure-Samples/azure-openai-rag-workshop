@@ -28,6 +28,7 @@ export type ChatComponentState = {
 export type ChatComponentOptions = ChatRequestOptions & {
   oneShot: boolean;
   enablePromptSuggestions: boolean;
+  enableContentLinks: boolean;
   promptSuggestions: string[];
   apiUrl?: string;
   strings: {
@@ -51,6 +52,7 @@ export type ChatComponentOptions = ChatRequestOptions & {
 export const defaultOptions: ChatComponentOptions = {
   approach: 'rrr' as const,
   suggestFollowupQuestions: true,
+  enableContentLinks: false,
   oneShot: false,
   stream: true,
   chunkIntervalMs: 30,
@@ -113,8 +115,12 @@ export class ChatComponent extends LitElement {
   }
 
   onCitationClicked(citation: string) {
-    const path = getCitationUrl(citation);
-    window.open(path, '_blank');
+    if (this.options.enableContentLinks) {
+      const path = getCitationUrl(citation);
+      window.open(path, '_blank');
+    } else {
+      // TODO: open debug details
+    }
   }
 
   onKeyPressed(event: KeyboardEvent) {
