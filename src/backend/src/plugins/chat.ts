@@ -5,14 +5,13 @@ import { OpenAI } from 'openai';
 import { type Chat, type Embeddings } from 'openai/resources/index.js';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
 
-const SYSTEM_MESSAGE_CHAT_CONVERSATION = `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
+const SYSTEM_MESSAGE_PROMPT = `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
 Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
 For tabular information return it as an html table. Do not return markdown format. If the question is not in English, answer in the language used in the question.
 Each source has a name followed by colon and the actual information, always include the source name for each fact you use in the response. Use square brackets to reference the source, for example: [info1.txt]. Don't combine sources, list each source separately, for example: [info1.txt][info2.pdf].
-{follow_up_questions_prompt}
 `;
 
-const FOLLOW_UP_QUESTIONS_PROMPT_CONTENT = `Generate 3 very brief follow-up questions that the user would likely ask next.
+const FOLLOW_UP_QUESTIONS_PROMPT = `Generate 3 very brief follow-up questions that the user would likely ask next.
 Enclose the follow-up questions in double angle brackets. Example:
 <<Am I allowed to invite friends for a party?>>
 <<How can I ask for a refund?>>
@@ -76,10 +75,7 @@ export class ChatService {
     // STEP 2: Generate a contextual and content specific answer using the search results and chat history
     // ---------------------------------------------------------------------------------------------------
 
-    const systemMessage = SYSTEM_MESSAGE_CHAT_CONVERSATION.replace(
-      '{follow_up_questions_prompt}',
-      FOLLOW_UP_QUESTIONS_PROMPT_CONTENT,
-    );
+    const systemMessage = SYSTEM_MESSAGE_PROMPT + FOLLOW_UP_QUESTIONS_PROMPT;
     // Model does not handle lengthy system messages well,
     // so we inject the sources into the latest user message.
     const userMessage = `${messages[messages.length - 1].content}\n\nSources:\n${content}`;
@@ -166,10 +162,7 @@ export class ChatService {
     // STEP 2: Generate a contextual and content specific answer using the search results and chat history
     // ---------------------------------------------------------------------------------------------------
 
-    const systemMessage = SYSTEM_MESSAGE_CHAT_CONVERSATION.replace(
-      '{follow_up_questions_prompt}',
-      FOLLOW_UP_QUESTIONS_PROMPT_CONTENT,
-    );
+    const systemMessage = SYSTEM_MESSAGE_PROMPT + FOLLOW_UP_QUESTIONS_PROMPT;
     // Model does not handle lengthy system messages well,
     // so we inject the sources into the latest user message.
     const userMessage = `${messages[messages.length - 1].content}\n\nSources:\n${content}`;
