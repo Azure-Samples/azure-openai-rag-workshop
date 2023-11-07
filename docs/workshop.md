@@ -273,6 +273,9 @@ An Azure Cognitive Search service was created in the setup process by the AZD co
 
 ## Ingest data in the vector database
 
+azd deploy indexer
+source .env
+./index-data.sh
 
 ### The ingestion process
 
