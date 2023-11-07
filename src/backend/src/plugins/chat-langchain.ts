@@ -259,7 +259,7 @@ export default fp(
       openAIApiKey: openAiToken.token,
       azureOpenAIApiVersion: '2023-05-15',
       azureOpenAIApiKey: openAiToken.token,
-      azureOpenAIApiInstanceName: config.azureOpenAiService,
+      azureOpenAIBasePath: `${openAiUrl}/openai/deployments`,
     };
 
     const chatClient = (options?: Partial<OpenAIChatInput>) =>

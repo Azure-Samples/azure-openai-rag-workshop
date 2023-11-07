@@ -10,10 +10,10 @@ const root: FastifyPluginAsync = async (fastify, _options): Promise<void> => {
     const { messages, stream } = request.body as any;
     try {
       if (stream) {
-        const chunks = await fastify.chat.runWithStreaming(messages);
+        const chunks = await fastify.chat_lc.runWithStreaming(messages);
         await replyNdJsonStream(reply, chunks);
       } else {
-        return await fastify.chat.run(messages);
+        return await fastify.chat_lc.run(messages);
       }
     } catch (_error: unknown) {
       const error = _error as Error;
