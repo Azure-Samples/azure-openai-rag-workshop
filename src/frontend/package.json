@@ -8,7 +8,8 @@
     "dev": "vite --port 8000",
     "build": "vite build",
     "watch": "vite build --watch --minify false",
-    "lint": "lit-analyzer"
+    "lint": "lit-analyzer",
+    "clean": "npx rimraf dist"
   },
   "author": "Microsoft",
   "license": "MIT",

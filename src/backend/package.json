@@ -12,7 +12,8 @@
     "dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch\" \"npm:dev:start\"",
     "dev:start": "fastify start --pretty-logs --ignore-watch=.ts$ -w -l debug dist/app.js",
     "docker:build": "docker build --tag backend --file ./Dockerfile ../..",
-    "docker:run": "docker run --rm --publish 3000:3000 --env-file ../../.env backend"
+    "docker:run": "docker run --rm --publish 3000:3000 --env-file ../../.env backend",
+    "clean": "npx rimraf dist"
   },
   "dependencies": {
     "@azure/identity": "^3.3.0",
