@@ -56,6 +56,14 @@ azd up
 
 This commands will first ask you to log in into Azure. Then it will provison the Azure resources, package the services and deploy them to Azure.
 
+## References
+
+This workshop is based on these enterprise-ready samples. If you want to go further, you can check them out:
+- [ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search (JavaScript version)](https://github.com/Azure-Samples/azure-search-openai-javascript)
+- [ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search (Python version)](https://github.com/Azure-Samples/azure-search-openai-demo/)
+- [ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search (Java version)](https://github.com/Azure-Samples/azure-search-openai-demo-java)
+- [ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search (C# version)](https://github.com/Azure-Samples/azure-search-openai-demo-csharp)
+
 ## Contributing
 
 This project welcomes contributions and suggestions. Most contributions require you to agree to a
