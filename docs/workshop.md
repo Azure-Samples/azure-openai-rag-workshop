@@ -2,13 +2,19 @@
 short_title: Create your own ChatGPT with RAG
 description: Discover how to create and populate a vector database, create a web chat interface and an API to expose your agent to the web interface. 
 type: workshop
-authors: Yohan Lasorsa, Julien Dubois, Christopher Maneu
-contacts: '@sinedied'
-banner_url: assets/todo-banner.jpg
-duration_minutes: 180
+authors:
+- Yohan Lasorsa
+- Julien Dubois
+- Christopher Maneu
+contacts:
+- '@sinedied'
+- '@juliendubois'
+- '@cmaneu'
+# banner_url: assets/todo-banner.jpg
+duration_minutes: 120
 audience: students, devs
 level: intermediate
-tags: node.js, containers, docker, azure, static web apps, javascript, typescript, OpenAI, Langchain
+tags: chatgpt, openai, langchain, retrieval-augmented-generation, azure, containers, docker, static web apps, javascript, typescript, node.js, azure cognitive search, fastify, azure container apps
 published: false
 wt_id: javascript-0000-cxa
 sections_title:
