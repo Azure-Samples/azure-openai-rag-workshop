@@ -101,14 +101,15 @@ The RAG process involves the following steps:
 
 ## Preparation
 
-Before starting the development, we'll need to setup our project and development environment. This includes:
+Before diving into development, let's set up your project environment. This includes:
 
 - Creating a new project on GitHub based on a template
 - Using a prepared dev container environment on either [GitHub Codespaces](https://github.com/features/codespaces) or [VS Code with Dev Containers extension](https://aka.ms/vscode/ext/devcontainer) (or a manual install of the needed tools)
 
-### Creating the project
+### Creating your project
 
-Open [this GitHub repository](https://github.com/Azure-Samples/azure-openai-rag-workshop-template), select the **Fork** button and click on **Create fork** to create a copy of the project in your own GitHub account.
+1. Open [this GitHub repository](https://github.com/Azure-Samples/azure-openai-rag-workshop-template)
+2. Click the **Fork** button and click on **Create fork** to create a copy of the project in your own GitHub account.
 
 ![Screenshot of GitHub showing the Fork button](./assets/fork-project.png)
 
@@ -116,19 +117,20 @@ Once the fork is created, select the **Code** button, then the **Codespaces** ta
 
 ![Screenshot of GitHub showing the Codespaces creation](./assets/create-codespaces.png)
 
-This will start the creation of a dev container environment, which is a pre-configured container with all the needed tools installed. Once it's ready, you have everything you need to start coding. It even ran `npm install` for you!
+This will initialize a development container with all necessary tools pre-installed. Once it's ready, you have everything you need to start coding. It will also automatically run `npm install` for you.
 
 <div class="info" data-title="note">
 
-> Codespaces includes up to 60 hours of free usage per month for all GitHub users, see [the pricing details here](https://github.com/features/codespaces).
+> GitHub Codespaces provides up to 60 hours of free usage monthly for all GitHub users. You can check out [GitHub's pricing details](https://github.com/features/codespaces) for more information.
 
 </div>
 
-#### [optional] Working locally with the dev container
+#### [optional] Local Development with the dev container
 
-If you prefer to work locally, you can also run the dev container on your machine. If you're fine with using Codespaces, you can skip directly to the next section.
+If you prefer working on your local machine, you can also run the dev container on your machine. If you're fine with using Codespaces, you can skip directly to the next section.
 
-To work on the project locally using a dev container, first you'll need to install [Docker](https://www.docker.com/products/docker-desktop) and [VS Code](https://code.visualstudio.com/), then install the [Dev Containers](https://aka.ms/vscode/ext/devcontainer) extension.
+
+1. Ensure you have [Docker](https://www.docker.com/products/docker-desktop), [VS Code](https://code.visualstudio.com/), and the [Dev Containers extension](https://aka.ms/vscode/ext/devcontainer) installed.
 
 <div class="tip" data-title="tip">
 
@@ -136,27 +138,27 @@ To work on the project locally using a dev container, first you'll need to insta
 
 </div>
 
-After that you need to clone the project on your machine:
-
-1. Select the **Code** button, then the **Local** tab and copy your repository url.
+2. In GitHub website, select the **Code** button, then the **Local** tab and copy your repository url.
 
 ![Screenshot of GitHub showing the repository URL](./assets/github-clone.png)
+3. Clone your forked repository and then open the folder in VS Code:
 
-2. Open a terminal and run:
+   ```bash
+   git clone <your_repository_url>
+   ```
 
-```bash
-git clone <your_repo_url>
-```
+3. In VS Code, use `Ctrl+Shift+P` (or `Command+Shift+P` on macOS) to open the **command palette** and type **Reopen in Container**.
 
-3. Open the project in VS Code, open the **command palette** with `Ctrl+Shift+P` (`Command+Shift+P` on macOS) and enter **Reopen in Container**.
+   ![Reopen in container command in VS Code](./assets/vscode-reopen-in-container.png)
 
-![Screenshot of VS Code showing the "reopen in container" command](./assets/vscode-reopen-in-container.png)
+   *Alt text: Screenshot of VS Code showing the "Reopen in Container" command.*
 
 The first time it will take some time to download and setup the container image, meanwhile you can go ahead and read the next sections.
 
 Once the container is ready, you will see "Dev Container: OpenAI Workshop" in the bottom left corner of VSCode:
 
-![Screenshot of VS Code showing the Dev Container status](./assets/vscode-dev-container-status.png)
+![Dev Container status in VS Code](./assets/vscode-dev-container-status.png)
+
 
 #### [optional] Working locally without the dev container
 
