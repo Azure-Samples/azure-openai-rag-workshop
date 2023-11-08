@@ -337,7 +337,7 @@ azd provision
 You will be prompted to select an Azure subscription and a deployment region. It's generally best to choose a region closest to your user base for optimal performance.
 
 > **Info:**
-> Some Azure services, such as Cognitive Vector Search and Azure Open AI, have limited regional availability. If you're unsure which region to select, _West US 2_ and _West Europe_ are typically safe choices as they support a wide range of services.
+> Some Azure services, such as Cognitive Vector Search and Azure Open AI, have [limited regional availability](https://azure.microsoft.com/explore/global-infrastructure/products-by-region/?products=cognitive-services,search&regions=non-regional,europe-north,europe-west,france-central,france-south,us-central,us-east,us-east-2,us-north-central,us-south-central,us-west-central,us-west,us-west-2,us-west-3,asia-pacific-east,asia-pacific-southeast). If you're unsure which region to select, _West US 2_ and _West Europe_ are typically safe choices as they support a wide range of services.
 
 ### Introducing Azure services
 
