@@ -1080,95 +1080,84 @@ After that, commit the changes to the repository to keep track of your progress.
 
 ## Chat website
 
-### Introduction
+Now that we have our Chat API, it's time to complete the website that will use it.
 
-Now that we have our Chat API, it's time to create the website that will use it. We'll use [Vite](https://vitejs.dev/) as a frontend build tool, and [Lit](https://lit.dev/) as a Web components library.
+### Introducing Vite and Lit
 
-This frontend will be a Single Page Application (SPA), which will be similar to the well-known ChatGPT website, with the difference that it will get its data from the Chat API that we described in the previous section.
+We'll use [Vite](https://vitejs.dev/) as a frontend build tool, and [Lit](https://lit.dev/) as a web components library.
 
-The project is available in the `src/frontend` folder. It's a standalone project, so you can open it in your favorite IDE to work on it.
+This frontend will be built as a Single Page Application (SPA), which will be similar to the well-known ChatGPT website. The main difference is that it will get its data from the Chat API that we described in the previous section.
 
-In the project directory, you can run:
+The project is available in the `src/frontend` folder. From the project directory, you can run this command to start the development server:
 
-`npm run dev`
+```bash
+npm run dev
+```
 
 This will start the application in development mode. Open [http://localhost:8000](http://localhost:8000) to view it in the browser.
 
-In development mode, the Web page will automatically reload when you make any change to the code. We recommand you keep this command running in the background, and then have two windows side-by-side: one with your IDE where you will edit the code, and one with your Web browser where you can see the final result.
+<div class="tip" data-title="Tip">
 
-### The Chat Web component
+> In development mode, the Web page will automatically reload when you make any change to the code. We recommend you to keep this command running in the background, and then have two windows side-by-side: one with your IDE where you will edit the code, and one with your Web browser where you can see the final result.
 
-The Chat component is built with [Lit](https://lit.dev/), which is a library to create Web components. Every Lit component is a native web component: Web components work anywhere you use HTML, with any framework or none at all.
+</div>
 
-As a result, you will be able to re-use this component in your own projects.
+### The chat web component
 
-The component is located in the `src/frontend/src/components/chat.ts` file.
+We already built a chat web component for you, so you can focus on connecting the chat API. The nice thing about web components is that they are just HTML elements, so you can use thecm in any framework, or even without a framework, just like we do in this workshop.
 
-You can tune this component, for example by editing the `renderChatInput` method, that is responsible for rendering the chat input. Here's the default implementation:
+As a result, you can re-use this component in your own projects, and customize it if needed.
+
+The component is located in the `src/frontend/src/components/chat.ts` file, if you're curious about how it works.
+
+If you want to customize the component, you can do it by editing the `src/frontend/src/components/chat.ts` file. The various HTML rendering methods are called `renderXxx`, for example here's the `renderLoader` method that is used to display the spinner while the answer is loading:
 
 ```ts
-  protected renderChatInput = () => {
-    return html`
-      <div class="chat-input">
-        <button class="button new-chat-button" @click=${() => this.messages = []} title=${this.options.strings.newChatButton} .disabled=${this.message?.length === 0}>
-        ${unsafeSVG(newChatSvg)}
-      </button>
-        <form class="input-form">
-          <textarea
-            class="text-input"
-            placeholder="${this.options.strings.chatInputPlaceholder}"
-            .value=${this.question}
-            autocomplete="off"
-            @input=${(event) => (this.question = event.target.value)}
-            @keypress=${this.onKeyPressed}
-            .disabled=${this.isLoading}
-          ></textarea>
-          <button
-            class="submit-button"
-            @click=${() => this.onSendClicked()}
-            title="${this.options.strings.chatInputButtonLabel}"
-            .disabled=${this.isLoading || !this.question}
-          >
-            ${unsafeSVG(sendSvg)}
-          </button>
-        </form>
-      </div>
-    `;
-  };
+protected renderLoader = () => {
+  return this.isLoading && !this.isStreaming
+    ? html`
+        <div class="message assistant loader">
+          <div class="message-body">
+            <slot name="loader"><div class="loader-animation"></div></slot>
+            <div class="message-role">${this.options.strings.assistant}</div>
+          </div>
+        </div>
+      `
+    : nothing;
+};
 ```
 
-### Calling the Chat API
+### Calling the chat API
 
-Now that we have our Chat Web component, we need to call the Chat API we created earlier. For this, we will need to edit the `src/frontend/src/api.ts` file and fix the `TODO` comment.
-
-This method is called in the Web component in the `src/frontend/src/components/chat.ts` file, in the `onSendClicked` method:
+Now we need to call the chat API we created earlier. For this, we need to edit the `src/frontend/src/api.ts` file and complete the code where the  `TODO` comment is:
 
 ```ts
-const response = await getCompletion({ ...this.options, messages: this.messages }, this.options.oneShot);
-``` 
-
-Open up the `src/frontend/src/api.ts` file, and look for the following lines:
-
-```ts
-  // TODO: complete call to Chat API here
-  // const response =
+// TODO: complete call to Chat API here
+// const response =
 ```
 
-This line should use the Node.js `fetch` API to call the Chat API. The URL of the API is available in the `apiUrl` property.
+Here you can use the [Fetch web API](https://developer.mozilla.org/docs/Web/API/Fetch_API/Using_Fetch) to call your chat API. The URL of the API is already available in the `apiUrl` property.
 
-In the body of the request, you should pass a JSON String containing the messages and context options.
+In the body of the request, you should pass a JSON string containing the messages located in the `options.messages` property.
 
-Here's an example of the final code:
+Now it's your turn to complete the code! 🙂
+
+<details>
+<summary>Click here to see an example solution</summary>
 
 ```ts
-  const response = await fetch(`${apiUrl}/chat`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      messages: options.messages,
-    }),
-  });
+const response = await fetch(`${apiUrl}/chat`, {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    messages: options.messages,
+  }),
+});
 ```
+
+</details>
+
+This method will be called from the web component, in the `onSendClicked` method.
 
 ---
 
