@@ -14,21 +14,27 @@
 - [x] script for template repo
 - [x] move repo to Azure Samples
 - [x] update sample data (too big!)
-
-- [ ] workshop docs
-
+- [x] workshop docs
+- [x] create azcheckin
+- [x] script for intermediate steps packages
+  * [x] frontend
+  * [x] backend dockerfile
+  * [x] solution
 - [ ] rename indexer to ingestion
 
 - [ ] fix indexer
   * [ ] issue with large PDFs (timeout?)
-  * [ ] wrong page number in text splitter
+  * [x] wrong page number in text splitter
   * [ ] document name must not include the page number
 
 ## For later
 
-- [ ] script for intermediate steps packages
-  * [ ] frontend
-  * [ ] ci/cd
+- [ ] improve workshop
+  * [ ] add streaming in optional improvements
+  * [ ] add CI/CD with GHA
+  * [ ] use Langchain agent: search document source with private/public tool
+
+
 
 - [ ] trainer infra
   * [x] infra
@@ -41,7 +47,6 @@
   * [x] top navbar
   * [x] add clear button
   * [x] disable citation link (redirect to support tab)
+  * [ ] better catch errors when API is not available
   * [ ] fix fonts
 
-- [ ] langchain version: use agent with tools
-  * [ ] search document source avec private/public tool
