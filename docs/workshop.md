@@ -560,6 +560,7 @@ for (let index = 0; index < sections.length; index++) {
   batch.push(sections[index]);
 
   if (batch.length === batchSize || index === sections.length - 1) {
+    // Send the batch of documents to the vector database
     const { results } = await searchClient.uploadDocuments(batch);
     const succeeded = results.filter((r) => r.succeeded).length;
     const indexed = batch.length;
@@ -571,7 +572,7 @@ for (let index = 0; index < sections.length; index++) {
 
 ### Running the ingestion process
 
-Let's now execute this process. First you need to make sure you have deployed the indexer service to Azure. If you forgot to do it during the **Azure Setup** step, just run this command:
+Let's now execute this process. First, you need to make sure you have deployed the indexer service to Azure. If you forgot to do it during the **Azure Setup** step, just run this command:
 
 ```bash
 azd deploy indexer
@@ -593,9 +594,13 @@ Once this process is executed, a new index will be available in your Azure Cogni
 
 In the [Azure Portal](https://portal.azure.com/), you can now find again the service named `gptkb-<your_random_name>`, which will have a new index named `kbindex`.
 
+In the **Search management** section on the left, select the **Indexes** tab. You should see the `kbindex` index in the list.
+
+![Screenshot of the Azure Cognitive Search indexes](./assets/azure-cognitive-search-indexes.png)
+
 You can select that index and browse it. For example, in the **Search explorer** tab, if you ingested the original PDF files that were about the *Contoso Real Estate* company, you can search for `rentals` and see the results:
 
-![Screenshot of the Northwind request in the index](./assets/azure-cognitive-search-northwind.png)
+![Screenshot of the search results in the index](./assets/azure-cognitive-search-results.png)
 
 ---
 
@@ -1170,6 +1175,20 @@ const response = await fetch(`${apiUrl}/chat`, {
 
 This method will be called from the web component, in the `onSendClicked` method.
 
+### Testing the completed website
+
+Once you completed the code, you also need to run the backend to be able to test the application. Keep your frontend server running, and open a new terminal to run the backend:
+
+```bash
+npm run dev --workspace=backend
+```
+
+By specifying the `--workspace=backend` option, we tell NPM to run the `dev` script in the `backend` workspace, and this will work whatever the current directory is.
+
+Now go back to your browser, and send a question to the chatbot. You should see the answer appear in the chat window.
+
+![Screenshot of the chatbot answer](./assets/chatbot-answer.png)
+
 ---
 
 # Deploying to Azure
@@ -1195,7 +1214,9 @@ You can now open this URL in a browser and test the deployed application.
 
 <div class="tip" data-title="Tip">
 
-> You can also build and deploy all the services at once by running `azd deploy`. This command will build and deploy, the backend, frontend and indexer services. Even better! If you're starting from scratch and have a completed code, you can the `azd up` command. This command combines both `azd provision` and `azd deploy` to provision the Azure resources and deploy the application in one command.
+> You can also build and deploy all the services at once by running `azd deploy`. This command will build and deploy the backend, frontend and indexer services.
+>
+> Even better! If you're starting from scratch and have a completed code, you can use the `azd up` command. This command combines both `azd provision` and `azd deploy` to provision the Azure resources and deploy the application in one command.
 
 </div>
 
@@ -1256,9 +1277,9 @@ const systemMessage = SYSTEM_MESSAGE_PROMPT + FOLLOW_UP_QUESTIONS_PROMPT;
 ```
 
 That's it!
-You can now test your changes by running `npm start` at the root of the repository to start the application.
+You can now test your changes by running `npm start` at the root of the repository to start the application. This command will start both the backend and frontend in development mode, so you can test your changes.
 
-In the Chat webapp you should now see the follow-up questions after the answer:
+In the chat webapp you should now see the follow-up questions after the answer:
 
 ![Screenshot of the follow-up questions](./assets/follow-up-questions.png)
 
@@ -1297,7 +1318,8 @@ azd down --purge
 - The base template for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop-template)
 - If something does not work: [Report an issue](https://github.com/Azure-Samples/azure-openai-rag-workshop/issues)
 
-This workshop is based on this enterprise-ready sample: **ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search**
+This workshop is based on the enterprise-ready sample **ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search**:
+
 - [JavaScript version](https://github.com/Azure-Samples/azure-search-openai-javascript)
 - [Python version](https://github.com/Azure-Samples/azure-search-openai-demo/)
 - [Java version](https://github.com/Azure-Samples/azure-search-openai-demo-java)

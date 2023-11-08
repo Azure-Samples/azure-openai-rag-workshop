@@ -57,12 +57,12 @@ This commands will first ask you to log in into Azure. Then it will provison the
 
 ## References
 
-This workshop is based on this enterprise-ready sample: **ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search**
+This workshop is based on the enterprise-ready sample **ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search**:
 
-- [(JavaScript version)](https://github.com/Azure-Samples/azure-search-openai-javascript)
-- [(Python version)](https://github.com/Azure-Samples/azure-search-openai-demo/)
-- [(Java version)](https://github.com/Azure-Samples/azure-search-openai-demo-java)
-- [(C# version)](https://github.com/Azure-Samples/azure-search-openai-demo-csharp)
+- [JavaScript version](https://github.com/Azure-Samples/azure-search-openai-javascript)
+- [Python version](https://github.com/Azure-Samples/azure-search-openai-demo/)
+- [Java version](https://github.com/Azure-Samples/azure-search-openai-demo-java)
+- [C# version](https://github.com/Azure-Samples/azure-search-openai-demo-csharp)
 
 If you want to go further with more advanced use-cases, authentication, history and more, you should check it out!
 
