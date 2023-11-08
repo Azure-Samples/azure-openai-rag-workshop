@@ -473,11 +473,15 @@ If you're curious, you can have a look at the script to see how it works, and re
 
 We'll start by creating a vector database. Vectors are arrays of numbers that represent the features or characteristics of the data. For example, an image can be converted into a vector of pixels, or a word can be converted into a vector of semantic meaning. A vector database can perform fast and accurate searches based on the similarity or distance between the vectors, rather than exact matches. This enables applications such as image recognition, natural language processing, recommendation systems, and more.
 
-In our use-case, text will be extracted out of PDF files, and this text will be "tokenized". Tokenization is the process of splitting our text into different tokens, which will be short portions of text. Those tokens will be converted into a vectors, and the vector database will be able to search for similar vectors based on the distance between them.
+### Ingestion and retrieval
 
-That's how our system will be able to find the most relevant data, coming from the orginial PDF files.
+In our use-case, text will be extracted out of PDF files, and this text will be *tokenized*. Tokenization is the process of splitting our text into different tokens, which will be short portions of text. Those tokens will then be converted into a *vector* and added to the database. The vector database is then able to search for similar vectors based on the distance between them.
+
+That's how our system will be able to find the most relevant data, coming from the original PDF files.
 
 This will be used in the first component (the *Retriever*) of the Retrieval Augmented Generation (RAG) pattern that we will use to build our custom ChatGPT.
+
+### About vector databases
 
 There are many available vector databases, and a good list can be found in the supported Vector stores list from the LangChain project: [https://js.langchain.com/docs/integrations/vectorstores/](https://js.langchain.com/docs/integrations/vectorstores/).
 
@@ -489,19 +493,21 @@ Some of the most popular ones are:
 
 ### Introducing Azure Cognitive Search
 
-![Logo of Azure Cognitive Search](./assets/azure-cognitive-search-logo.png)
+![Azure Cognitive Search Logo](./assets/azure-cognitive-search-logo.png)
 
-Azure Cognitive Search can be used as a vector database that can store, index, and query vector embeddings from a search index. You can use it to power similarity search, multi-modal search, recommendation systems, or applications implementing the RAG architecture. Azure Cognitive Search supports various data types, such as text, images, audio, video, and graphs, and can perform fast and accurate searches based on the similarity or distance between the vectors, rather than exact matches. It also offers **hybrid search**, which combines semantic and vector search in the same query.
+[Azure Cognitive Search](https://azure.microsoft.com/products/ai-services/cognitive-search/) can be used as a vector database that can store, index, and query vector embeddings from a search index. You can use it to power similarity search, multi-modal search, recommendation systems, or applications implementing the RAG architecture.
+
+It supports various data types, such as *text, images, audio, video,* and *graphs*, and can perform fast and accurate searches based on the similarity or distance between the vectors, rather than exact matches. It also offers an *hybrid search*, which combines semantic and vector search in the same query.
 
 For this workshop, we'll use Azure Cognitive Search as our vector database as it's easy to create and manage within Azure. For the RAG use-case, most vector databases will work in a similar way.
 
-You can find more information on Azure Cognitive Search [here](https://azure.microsoft.com/products/ai-services/cognitive-search/).
-
 ### Exploring Azure Cognitive Search
 
-An Azure Cognitive Search service was created in the setup process by the AZD command. In your resource group, you can find the service named `gptkb-<your_random_name>`.
+By now, you should already have an Azure Cognitive Search service created in your subscription, done by the `azd provision` command you ran in the setup process.
 
-This instance is currently empty, and we will create an index and populate it with data in the next section.
+Open the [Azure Portal](https://portal.azure.com/), and search for the **Cognitive Search** service in the top navigation bar.
+
+You should see a service named `gptkb-<your_random_name>` in the list. This instance is currently empty, and we will create an index and populate it with data in the next section.
 
 ![Screenshot of Azure Cognitive Search](./assets/azure-cognitive-search.png)
 
