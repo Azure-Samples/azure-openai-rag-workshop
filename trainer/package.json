@@ -15,7 +15,7 @@
     "docker:run": "docker run --rm --publish 3000:3000 --env-file .env proxy"
   },
   "dependencies": {
-    "@azure/identity": "^3.3.0",
+    "@azure/identity": "4.0.0",
     "@fastify/autoload": "^5.0.0",
     "@fastify/cors": "^8.3.0",
     "@fastify/http-proxy": "^9.3.0",
