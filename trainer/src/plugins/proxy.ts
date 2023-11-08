@@ -27,17 +27,17 @@ export default fp(
       upstream: openAiUrl,
       prefix: '/openai',
       rewritePrefix: '/openai',
-      preHandler: async (req, reply) => {
+      preHandler: async (request, reply) => {
         if (!config.azureOpenAiApiKey) {
           await refreshOpenAiToken();
         }
       },
       replyOptions: {
-        getUpstream: (req, base) => {
+        getUpstream: (request, base) => {
           // TODO: load balance
           return openAiUrl;
         },
-        rewriteRequestHeaders: (req, headers) => {
+        rewriteRequestHeaders: (request, headers) => {
           return {
             ...headers,
             'api-key': config.azureOpenAiApiKey || openAiToken.token,
