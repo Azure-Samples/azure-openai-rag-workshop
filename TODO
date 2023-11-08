@@ -12,32 +12,36 @@
   * [x] allow to use existing OpenAI URL
 - [x] create simple proxy
 - [x] script for template repo
+- [x] move repo to Azure Samples
+- [x] update sample data (too big!)
 
-- [ ] move repo to Azure Samples
+- [ ] workshop docs
+
+- [ ] rename indexer to ingestion
+
+- [ ] fix indexer
+  * [ ] issue with large PDFs (timeout?)
+  * [ ] wrong page number in text splitter
+  * [ ] document name must not include the page number
+
+## For later
+
+- [ ] script for intermediate steps packages
+  * [ ] frontend
+  * [ ] ci/cd
 
 - [ ] trainer infra
   * [x] infra
   * [x] proxy
   * [ ] docs
+  * [ ] add event key to restrict access
 
 - [ ] improve frontend client
-  * [ ] max width
-  * [ ] add clear button
-  * [ ] top navbar
-  * [ ] disable citation link (redirect to support tab)
-
-- [ ] workshop docs
-
-- [ ] update sample data (too big!)
-
-- [ ] script for intermediates steps packages
-
-
-- [ ] fix indexer
-  * [x] issue with large PDFs (rate limit?)
-  * [ ] wrong page number in text splitter
-
-## For later
+  * [x] max width
+  * [x] top navbar
+  * [x] add clear button
+  * [x] disable citation link (redirect to support tab)
+  * [ ] fix fonts
 
 - [ ] langchain version: use agent with tools
   * [ ] search document source avec private/public tool
