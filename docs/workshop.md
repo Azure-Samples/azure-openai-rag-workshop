@@ -990,7 +990,7 @@ After you checked that everything works as expected, don't forget to commit your
 
 <div class="info" data-title="Skip notice">
 
-> If you want to skip the Dockerfile implementation and jump directly to the next section, run this command in the terminal at the root of the project to get the completed code directly: curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/backend-dockerfile.tar.gz | tar -xvz
+> If you want to skip the Dockerfile implementation and jump directly to the next section, run this command in the terminal at the root of the project to get the completed code directly: `curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/backend-dockerfile.tar.gz | tar -xvz`
 
 <div>
 
