@@ -290,8 +290,9 @@ You can learn more about the [chat protocol here](https://github.com/Azure/azure
 > While this chapter is being written, execute the following steps: 
 > ```sh
 > azd auth login
+> azd env new dev
 > azd env set AZURE_OPENAI_URL https://proxy.mangoplant-8af6be97.francecentral.azurecontainerapps.io
-> azd provision
+> azd provision (select your azure subscription and your region. Ensure region as semantic search)
 > azd env get-values > .env
 > azd deploy indexer
 > ```
