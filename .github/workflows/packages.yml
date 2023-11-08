@@ -14,7 +14,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Create packages
-      run: ./scripts/create-packages.sh
+      run: ./scripts/repo/create-packages.sh
     - name: Update release
       uses: ncipollo/release-action@v1.12.0
       with:
