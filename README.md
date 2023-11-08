@@ -10,8 +10,6 @@ In this workshop, we will build a chatbot from based on OpenAI language models a
 - **Node.js v18+**
 - **Docker v20+**
 - **Azure account**. If you're new to Azure, [get an Azure account for free](https://azure.microsoft.com/free/?WT.mc_id=javascript-0000-cxa) to get free Azure credits to get started.
-  - Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner).
-  - Your Azure account also needs `Microsoft.Resources/deployments/write` permissions at a subscription level.
 - **Azure subscription with access enabled for the Azure OpenAI service**. You can request access with [this form](https://aka.ms/oaiapply).
 
 You can use [GitHub Codespaces](https://github.com/features/codespaces) to work on this project directly from your browser: select the **Code** button, then the **Codespaces** tab and click on **Create Codespaces on main**.
