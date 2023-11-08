@@ -1288,7 +1288,7 @@ This is the end of the workshop. We hope you enjoyed it, learned something new a
 
 <div class="warning" data-title="had issues?">
 
-> If you experienced any issues during the workshop, please let us know by [creating an issue](https://github.com/Azure-Samples/nodejs-microservices/issues) on the GitHub repository.
+> If you experienced any issues during the workshop, please let us know by [creating an issue](https://github.com/Azure-Samples/azure-openai-rag-workshop/issues) on the GitHub repository.
 
 </div>
 
@@ -1303,20 +1303,20 @@ This is the end of the workshop. We hope you enjoyed it, learned something new a
 To delete the Azure resources, you can run this command:
 
 ```bash
-.azure/infra.sh delete
-```
-
-Or directly use the Azure CLI:
-
-```bash
-az group delete --name rg-node-microservices-prod
+azd down --purge
 ```
 
 ### References
 
-// TODO: Update links
+- This workshop URL: [aka.ms/ws/openai-rag](https://aka.ms/ws/openai-rag)
+- The source repository for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop)
+- The base template for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop-template)
+- If something does not work: [Report an issue](https://github.com/Azure-Samples/azure-openai-rag-workshop/issues)
 
-- This workshop URL: [aka.ms/ws/node-microservices](https://aka.ms/ws/node-microservices)
-- The source repository for this workshop: [GitHub link](https://github.com/Azure-Samples/nodejs-microservices)
-- The base template for this workshop: [GitHub link](https://github.com/Azure-Samples/nodejs-microservices-template)
-- If something does not work: [Report an issue](https://github.com/Azure-Samples/nodejs-microservices/issues)
+This workshop is based on this enterprise-ready sample: **ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search**
+- [(JavaScript version)](https://github.com/Azure-Samples/azure-search-openai-javascript)
+- [(Python version)](https://github.com/Azure-Samples/azure-search-openai-demo/)
+- [(Java version)](https://github.com/Azure-Samples/azure-search-openai-demo-java)
+- [(C# version)](https://github.com/Azure-Samples/azure-search-openai-demo-csharp)
+
+If you want to go further with more advanced use-cases, authentication, history and more, you should check it out!
