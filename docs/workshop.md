@@ -306,7 +306,7 @@ Before reading further, let's run the script that will create all the Azure reso
 
 Let's look again at our application architecture diagram we saw earlier:
 
-![Application architecture](./assets/architecture.drawio.png)
+![Application architecture](./assets/architecture.png)
 
 To run and monitor our application, we'll use various Azure services:
 
