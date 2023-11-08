@@ -91,38 +91,11 @@ class: center, middle, hide-handle
 
 ---
 
-class: center, cover, hide-handle
-background-image: url(./images/ai-landscape.png)
+class: center
 
-.full-layer.full-top.blur.with-padding[
 # What are we talking about?
-]
 
-.full-layer.full-bottom.blur.small[
-Extract from **The 2023 MAD (ML/AI/Data) Landscape**
-by Matt Turck - https://mad.firstmark.com/
-]
-]
-
-.here[ ]
-
-<style>
-.here {
-  position: absolute;
-  top: 270px;
-  bottom: 300px;
-  left: 420px;
-  right: 460px;
-}
-</style>
-<script>
-rough('.here', { type: 'circle', color: '#f22', strokeWidth: 4, padding: 50, animationDuration: 2000 }, 1000);
-</script>
-
-???
-- Tout le monde fait de l'IA ces temps-ci, mais de quoi on parle exactement?
-- Focus sur les IA génératives dédiées au développement
-- En particulier sur l'assistance au code
+.w-65.responsive[![](./images/chatgpt.png)]
 
 ---
 
@@ -408,11 +381,10 @@ A program that perceives its environment, make decisions and takes actions to ac
 - 🦜️🔗 [LangChain](https://www.langchain.com/)
 - [Semantic Kernel](https://github.com/microsoft/semantic-kernel)
 
-Their goal is to make it easier to build and deploy LLMs by providing an abstraction layer on top of the underlying APIs, and
-by facilitating the assembly (or "chain") of different components.
+They provide an abstraction layer on top of the LLM APIs, and
+by facilitate the assembly (or "chain") of different components.
 
 .small[
-.up[
 ```python
 from langchain.prompts.chat import ChatPromptTemplate
 
@@ -427,18 +399,20 @@ chat_prompt = ChatPromptTemplate.from_messages([
 chat_prompt.format_messages(text="I love programming.")
 ```
 ]
-]
 
 ---
 
 # OpenAI
 
-- OpenAI is a non-profit artificial intelligence research company
-- OpenAI is known for its groundbreaking research on generative models, such as GPT-4, which can produce natural language, images, sounds, and code from a given prompt
-- OpenAI also offers a platform for developers to access and use its latest models and products, such as ChatGPT, DALL·E 3, and GPT-4
+OpenAI is an artificial intelligence research company.
 
+- Known for their groundbreaking research on .primary-text[**generative models**], such as GPT-4, which can produce natural language, images, sounds, and code from a given prompt
+
+- Offers a platform for developers to access and use its latest models and products, such as .primary-text[**ChatGPT, DALL·E 3, and GPT-4**]
+
+<br>
 .center[
-.w-65.responsive[
+.w-40.responsive[
   <object data="images/openai.png"></object>
 ]
 ]
@@ -447,14 +421,11 @@ chat_prompt.format_messages(text="I love programming.")
 
 # The OpenAI API
 
-The OpenAI API provides several models with different capabilities and price points. You can find the list of models and their features on the [Models](https://platform.openai.com/docs/models) page. You can also learn how to use the models by following the [examples](https://platform.openai.com/examples) and the [API reference](https://platform.openai.com/docs/api-reference).
-
-You can interact with the API through HTTP requests from any language, or using language-specific bindings such as the official Python bindings.
-
-To use the OpenAI API, you need to have an account and an API key.
+- Provides several [models](https://platform.openai.com/docs/models) with different capabilities and price ([doc](https://platform.openai.com/docs/api-reference) and [examples](https://platform.openai.com/examples)).
+- Interact with the API through **HTTP requests**, or using language-specific **SDKs** such as the official Python.
+- You need to have an account and an **API key** to use it.
 
 .small[
-.up[
 ```python
 import os
 import openai
@@ -469,25 +440,26 @@ response = openai.ChatCompletion.create(
 )
 ```
 ]
-]
 
 ---
 
-# Azure
-
-
-.full-layer.with-margins.right.space-right.noclick[
-<br>
+.full-layer.right.stick-top.noclick.no-margin.bigup[
 .w-35.responsive[![](images/microsoft-azure.png)]
 ]
 
-Microsoft Azure is a cloud computing platform that offers <br> a wide range of services and solutions for developers, <br>businesses, and organizations.
+# Azure
+
+Microsoft Azure is a cloud computing platform that offers a wide range of services and solutions for developers, businesses, and organizations.
 
 - It is open and flexible, allowing you to use the tools, languages, and frameworks of your choice.
 - It is scalable and reliable, enabling you to handle any workload and demand with high availability and performance.
 - It is secure and compliant, protecting your data and applications with advanced security features and certifications.
 
 *There is a specific agreement between Azure and OpenAI, allowing you to use the OpenAI API on Azure. This service, called Azure OpenAI, is what we will be using in this workshop.*
+
+<style>
+.bigup { margin-top: -2.6em; }
+</style>
 
 ---
 
@@ -533,22 +505,25 @@ class: middle, center, hide-handle, clist, big-text
 
 ---
 
+class: center, middle, big-text
+# The workshop
+
+.bit-larger[👉 https://aka.ms/ws/openai-rag]
+
+---
+
 # References & going further
 
 .full-layer.with-margins.right.space-right.noclick[
 <br>
-.w-35.responsive.circle[![](images/chris-dive.jpg)]
+.w-25.responsive.circle[![](images/chris-dive.jpg)]
 ]
 
-- [GitHub Copilot Video series](https://www.youtube.com/playlist?list=PLj6YeMhvp2S5_hvBl2SE-7YCHYlLQ0bPt)
 - [How GPT models work](https://towardsdatascience.com/how-gpt-models-work-b5f4517d5b5)
 - [Practical Deep Learning](https://course.fast.ai/)
 - [OpenAI tokenizer](https://platform.openai.com/tokenizer)
 - [Prompt Engineering Guide](https://www.promptingguide.ai)
-- [GitHub Blog on Copilot](https://github.blog/?s=copilot)
 - [Awesome LangChain](https://github.com/kyrolabs/awesome-langchain)
 - [Responsible Generative AI training](https://learn.microsoft.com/training/modules/responsible-generative-ai/)
-- [How to write better prompts for GitHub Copilot](https://github.blog/2023-06-20-how-to-write-better-prompts-for-github-copilot/)
 - [Microsoft announces new Copilot Copyright Commitment for customers](https://blogs.microsoft.com/on-the-issues/2023/09/07/copilot-copyright-commitment-ai-legal-concerns/)
 - [ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search](https://github.com/Azure-Samples/azure-search-openai-javascript/)
-- [About Samsung ChatGPT data leak](https://techcrunch.com/2023/05/02/samsung-bans-use-of-generative-ai-tools-like-chatgpt-after-april-internal-data-leak/)
