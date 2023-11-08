@@ -179,6 +179,8 @@ function filenameToId(filename: string) {
 async function extractTextFromPdf(data: Buffer): Promise<ContentPage[]> {
   const pages: ContentPage[] = [];
   const pdf = await pdfjs.getDocument(new Uint8Array(data)).promise;
+  let offset = 0;
+
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const textContent = await page.getTextContent();
@@ -196,7 +198,10 @@ async function extractTextFromPdf(data: Buffer): Promise<ContentPage[]> {
         return string_;
       })
       .join('');
-    pages.push({ content: text + '\n', offset: 0, page: i });
+
+    pages.push({ content: text + '\n', offset, page: i });
+    offset += text.length;
+
   }
   return pages;
 }

@@ -51,7 +51,7 @@ Content-Type: multipart/form-data; boundary=Boundary
 Content-Disposition: form-data; name="file"; filename="test.pdf"
 Content-Type: application/pdf
 
-< ../../data/PerksPlus.pdf
+< ../../data/support.pdf
 --Boundary
 Content-Disposition: form-data; name="options"
 
