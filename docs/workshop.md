@@ -1109,18 +1109,95 @@ In the project directory, you can run:
 
 This will start the application in development mode. Open [http://localhost:8000](http://localhost:8000) to view it in the browser.
 
+In development mode, the Web page will automatically reload when you make any change to the code. We recommand you keep this command running in the background, and then have two windows side-by-side: one with your IDE where you will edit the code, and one with your Web browser where you can see the final result.
+
 ### The Chat Web component
 
-The Chat component is built with [Lit](https://lit.dev/), which is a library to create Web components. It's a lightweight library that allows us to create reusable components with a simple API. Every Lit component is a native web component: Web components work anywhere you use HTML, with any framework or none at all.
+The Chat component is built with [Lit](https://lit.dev/), which is a library to create Web components. Every Lit component is a native web component: Web components work anywhere you use HTML, with any framework or none at all.
 
 As a result, you will be able to re-use this component in your own projects.
 
-The component is located in the `src/frontend/src/components/chat.ts` file. 
+The component is located in the `src/frontend/src/components/chat.ts` file.
+
+You can tune this component, for example by editing the `renderChatInput` method, that is responsible for rendering the chat input. Here's the default implementation:
+
+```ts
+  protected renderChatInput = () => {
+    return html`
+      <div class="chat-input">
+        <button class="button new-chat-button" @click=${() => this.messages = []} title=${this.options.strings.newChatButton} .disabled=${this.message?.length === 0}>
+        ${unsafeSVG(newChatSvg)}
+      </button>
+        <form class="input-form">
+          <textarea
+            class="text-input"
+            placeholder="${this.options.strings.chatInputPlaceholder}"
+            .value=${this.question}
+            autocomplete="off"
+            @input=${(event) => (this.question = event.target.value)}
+            @keypress=${this.onKeyPressed}
+            .disabled=${this.isLoading}
+          ></textarea>
+          <button
+            class="submit-button"
+            @click=${() => this.onSendClicked()}
+            title="${this.options.strings.chatInputButtonLabel}"
+            .disabled=${this.isLoading || !this.question}
+          >
+            ${unsafeSVG(sendSvg)}
+          </button>
+        </form>
+      </div>
+    `;
+  };
+```
 
 ### Calling the Chat API
 
-// TODO: Write
+Now that we have our Chat Web component, we need to call the Chat API we created earlier. For this, we will need to edit the `src/frontend/src/api.ts` file and fix the `TODO` comment.
 
+This method is called in the Web component in the `src/frontend/src/components/chat.ts` file, in the `onSendClicked` method:
+
+```ts
+const response = await getCompletion({ ...this.options, messages: this.messages }, this.options.oneShot);
+``` 
+
+Open up the `src/frontend/src/api.ts` file, and look for the following lines:
+
+```ts
+  // TODO: complete call to Chat API here
+  // const response =
+```
+
+This line should use the Node.js `fetch` API to call the Chat API. The URL of the API is available in the `apiUrl` property.
+
+In the body of the request, you should pass a JSON String containing the messages and context options.
+
+Here's an example of the final code:
+
+```ts
+  const response = await fetch(`${apiUrl}/${oneShot ? 'ask' : 'chat'}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      messages: options.messages,
+      stream: !oneShot && options.stream,
+      context: {
+        approach: options.approach,
+        retrieval_mode: options.retrievalMode,
+        semantic_ranker: options.semanticRanker,
+        semantic_captions: options.semanticCaptions,
+        top: options.top,
+        temperature: options.temperature,
+        prompt_template: options.promptTemplate,
+        prompt_template_prefix: options.promptTemplatePrefix,
+        prompt_template_suffix: options.promptTemplateSuffix,
+        exclude_category: options.excludeCategory,
+        suggest_followup_questions: options.suggestFollowupQuestions,
+      },
+    }),
+  });
+```
 
 ---
 
