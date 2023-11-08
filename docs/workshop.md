@@ -307,7 +307,7 @@ First, you need to make sure you have an Azure account. If you don't have one, y
 
 <div class="important" data-title="important">
 
-> If you're following this workshop in-person at Microsoft France, you can use the following link to get a 50$ Azure Pass credit: [redeem your Azure Pass](https://azcheck.in/sno230125)
+> If you're following this workshop in-person at Microsoft France, you can use the following link to get a 50$ Azure Pass credit: [redeem your Azure Pass](https://azcheck.in/duc231109)
 
 </div>
 
