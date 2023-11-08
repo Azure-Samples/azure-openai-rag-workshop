@@ -71,7 +71,7 @@ export class DocumentProcessor {
         id: `${fileId}-page-${page}-section-${index}`,
         content,
         category: category,
-        sourcepage: `${path.basename(filename)}-${page}`,
+        sourcepage: path.basename(filename),
         sourcefile: filename,
       };
 
