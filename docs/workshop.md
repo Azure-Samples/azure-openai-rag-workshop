@@ -279,40 +279,58 @@ You can learn more about the [chat protocol here](https://github.com/Azure/azure
 
 ## Azure setup
 
+<div class="important" data-title="Writing in progress">
+
+> While this chapter is being written, execute the following steps: 
+> ```sh
+> azd auth login
+> azd env set AZURE_OPENAI_URL https://proxy.mangoplant-8af6be97.francecentral.azurecontainerapps.io
+> azd provision
+> azd env get-values > .env
+> azd deploy indexer
+> ```
+
+</div>
+
+
+
 Azure is Microsoft's cloud platform. It provides a wide range of services to build, deploy, and manage applications. We'll use a few of them in this workshop to run our application.
 
 First, you need to make sure you have an Azure account. If you don't have one, you can create a free account including Azure credits on the [Azure website](https://azure.microsoft.com/free/).
 
 <div class="important" data-title="important">
 
-> If you're following this workshop in-person at SnowCamp, you can use the following link to get a 50$ Azure Pass credit: [redeem your Azure Pass](https://azcheck.in/sno230125)
+> If you're following this workshop in-person at Microsoft France, you can use the following link to get a 50$ Azure Pass credit: [redeem your Azure Pass](https://azcheck.in/sno230125)
 
 </div>
 
-Once you have your Azure account, open a terminal at the root of the project and run:
 
-```bash
-.azure/setup.sh
-```
+https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/
 
-This script uses the [Azure CLI](https://learn.microsoft.com/cli/azure) and [GitHub CLI](https://cli.github.com/) to do the following:
-- Login into your Azure account
-- Select a subscription to use
-- Create a [service principal](https://learn.microsoft.com/azure/active-directory/develop/howto-create-service-principal-portal), a token that will be used to create or update resources in Azure
-- Login into your GitHub account
-- Add the `AZURE_CREDENTIALS` secret to your GitHub repository, with your the service principal token
+### Configure your project and deploy infrastructure
+
 
 Before reading further, let's run the script that will create all the Azure resources we'll need for this workshop, as it will take a few minutes to complete (we'll explain what it does a bit later):
 
-```bash
-.azure/infra.sh update
-```
+- `azd auth login`
+
+The app will give you a device code and ask you to type it 
+
+
+<div class="important" data-title="important">
+
+> If you're following this workshop in-person at Microsoft France, We have deployed an Open AI service for you. Please execute this command to leverage this deployment
+> ```azd env set AZURE_OPENAI_URL https://proxy.mangoplant-8af6be97.francecentral.azurecontainerapps.io```
+
+</div>
+
+
 
 ### Introducing Azure services
 
 Let's look again at our application architecture diagram we saw earlier:
 
-![Application architecture](./assets/architecture.png)
+![Application architecture](./assets/azure-architecture.png)
 
 To run and monitor our application, we'll use various Azure services:
 
@@ -320,7 +338,6 @@ To run and monitor our application, we'll use various Azure services:
 | ------- | ----------- |
 | [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/) | A managed service to run containers in Azure, with built-in load balancing, auto-scaling, and more. |
 | [Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/) | A service to host websites, with built-in authentication, serverless API functions or proxy, Edge CDN and more. |
-| [Azure Cosmos DB](https://learn.microsoft.com/azure/cosmos-db/) | A NoSQL globally distributed database, that supports SQL, MongoDB, Cassandra, Gremlin, and Azure Table storage APIs. |
 | [Azure Container Registry](https://learn.microsoft.com/azure/container-registry/) | A container registry to store and manage container images. |
 | [Azure Log Analytics](https://learn.microsoft.com/azure/log-analytics/) | A service to collect and analyze logs from your Azure resources. |
 | [Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/) | A service to monitor your Azure resources, with built-in dashboards, alerts, and more. |
