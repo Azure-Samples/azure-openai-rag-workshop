@@ -283,84 +283,95 @@ You can learn more about the [chat protocol here](https://github.com/Azure/azure
 
 ## Azure setup
 
-<div class="important" data-title="Writing in progress">
+[Azure](https://azure.microsoft.com) is Microsoft's comprehensive cloud platform, offering a vast array of services to build, deploy, and manage applications across a global network of Microsoft-managed data centers. In this workshop, we'll leverage several Azure services to run our chat application.
 
-> While this chapter is being written, execute the following steps: 
-> ```sh
-> azd auth login
-> azd env new dev
-> azd env set AZURE_OPENAI_URL https://proxy.mangoplant-8af6be97.francecentral.azurecontainerapps.io
-> azd provision (select your azure subscription and your region. Ensure region as semantic search)
-> azd env get-values > .env
-> azd deploy indexer
-> ```
+### Getting Started with Azure
 
-</div>
-
-
-
-Azure is Microsoft's cloud platform. It provides a wide range of services to build, deploy, and manage applications. We'll use a few of them in this workshop to run our application.
-
-First, you need to make sure you have an Azure account. If you don't have one, you can create a free account including Azure credits on the [Azure website](https://azure.microsoft.com/free/).
+To participate in this workshop, you'll need an Azure account. If you don't already have one, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://azure.microsoft.com/free/).
 
 <div class="important" data-title="important">
 
-> If you're following this workshop in-person at Microsoft France, you can use the following link to get a 50$ Azure Pass credit: [redeem your Azure Pass](https://azcheck.in/duc231109)
+> For participants attending this workshop in-person at Microsoft France, you can obtain a $50 Azure Pass credit by using this link: [redeem your Azure Pass](https://azcheck.in/duc231109).
 
 </div>
-
-
-https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/
 
 ### Configure your project and deploy infrastructure
 
+Before we dive into the details, let's set up the Azure resources needed for this workshop. This initial setup may take a few minutes, so it's best to start now. We'll be using the [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/), a tool designed to streamline the creation and management of Azure resources.
 
-Before reading further, let's run the script that will create all the Azure resources we'll need for this workshop, as it will take a few minutes to complete (we'll explain what it does a bit later):
 
-- `azd auth login`
+#### Log in to Azure
 
-The app will give you a device code and ask you to type it 
+Begin by logging into your Azure subscription with the following command:
 
+```sh
+azd auth login
+```
+
+If you're using Codespaces or your local machine, this command will either log you in directly or provide a _Device code_ to enter in a browser window. Follow the prompts until you're notified of a successful login.
+
+#### Create a New Environment
+
+Next, set up a new environment. The Azure Developer CLI uses environments to manage settings and resources:
+
+```sh
+azd env new dev
+```
+
+
+#### Deploy Azure Infrastructure
 
 <div class="important" data-title="important">
 
-> If you're following this workshop in-person at Microsoft France, We have deployed an Open AI service for you. Please execute this command to leverage this deployment
+> If you're following this workshop in-person at Microsoft France, We have deployed an Open AI service for you. Please execute this command to leverage this deployment before executing the next command.
 > ```azd env set AZURE_OPENAI_URL https://proxy.mangoplant-8af6be97.francecentral.azurecontainerapps.io```
 
 </div>
 
+Now it's time to deploy the Azure infrastructure for the workshop. Execute the following command:
 
+```sh
+azd provision
+```
+
+You will be prompted to select an Azure subscription and a deployment region. It's generally best to choose a region closest to your user base for optimal performance.
+
+> **Info:**
+> Some Azure services, such as Cognitive Vector Search and Azure Open AI, have limited regional availability. If you're unsure which region to select, _West US 2_ and _West Europe_ are typically safe choices as they support a wide range of services.
 
 ### Introducing Azure services
 
-Let's look again at our application architecture diagram we saw earlier:
+In our journey to deploy the chat application, we'll be utilizing a suite of Azure services, each playing a crucial role in the application's architecture and performance.
 
 ![Application architecture](./assets/azure-architecture.png)
 
-To run and monitor our application, we'll use various Azure services:
+Here's a brief overview of the Azure services we'll employ:
 
-| Service | Description |
-| ------- | ----------- |
-| [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/) | A managed service to run containers in Azure, with built-in load balancing, auto-scaling, and more. |
-| [Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/) | A service to host websites, with built-in authentication, serverless API functions or proxy, Edge CDN and more. |
-| [Azure Container Registry](https://learn.microsoft.com/azure/container-registry/) | A container registry to store and manage container images. |
-| [Azure Log Analytics](https://learn.microsoft.com/azure/log-analytics/) | A service to collect and analyze logs from your Azure resources. |
-| [Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/) | A service to monitor your Azure resources, with built-in dashboards, alerts, and more. |
 
-Azure Log Analytics doesn't appear in our diagram, but we'll use it to collect logs from our containers and use them to debug our application when needed. Azure Monitor isn't explicitly part of our infrastructure, but it's enabled across all Azure resources, and we'll use it to monitor our application and build a dashboard.
+| Service | Purpose |
+| ------- | ------- |
+| [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/) | Hosts our containerized applications with features like auto-scaling and load balancing. |
+| [Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/) | Serves our static web chat with integrated APIs, authentication, and global distribution. |
+| [Azure Container Registry](https://learn.microsoft.com/azure/container-registry/) | Stores our Docker container images in a managed, private registry. |
+| [Azure Log Analytics](https://learn.microsoft.com/azure/log-analytics/) | Collects and analyzes telemetry and logs for insights into application performance and diagnostics. |
+| [Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/) | Provides comprehensive monitoring of our applications, infrastructure, and network. |
+
+While Azure Log Analytics and Azure Monitor aren't depicted in the initial diagram, they're integral to our application's observability, allowing us to troubleshoot and ensure our application is running optimally.
 
 #### About Azure Container Apps
 
-The primary service we'll use is [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/overview), a fully managed serverless container service on Azure. It allows you to run containerized applications without worrying about orchestration or managing complex infrastructure such as Kubernetes.
+[Azure Container Apps](https://learn.microsoft.com/azure/container-apps/overview) is our primary service for running the chat application. It's a serverless container service that abstracts away the underlying infrastructure, enabling us to focus on writing and deploying code.
 
-You write code using your preferred programming language or framework (in this workshop it's JavaScript and Node.js, but it can be anything), and build microservices with full support for [Distributed Application Runtime (Dapr)](https://dapr.io/). Then, your containers will scale dynamically based on HTTP traffic or events powered by [Kubernetes Event-Driven Autoscaling (KEDA)](https://keda.sh).
+Key features of Azure Container Apps include:
 
-There are already a few compute resources on Azure: from IAAS to FAAS.
-Azure Container Apps sits between PAAS and FAAS.
-On one hand, it feels more PaaS, because you are not forced into a specific programming model and you can control the rules on which to scale out / scale in.
-On the other hand, it has quite some serverless characteristics like scaling to zero, event-driven scaling, per second pricing and the ability to leverage Dapr's event-based bindings.
+- **Serverless Nature**: Automatically scales up or down, even to zero, to match demand.
+- **Simplified Management**: No need to manage Kubernetes clusters or nodes.
+- **Integrated Environment**: Built-in support for Dapr and KEDA, facilitating microservices development and event-driven scaling.
+- **Traffic Splitting**: Facilitates A/B testing and phased rollouts with traffic routing between different app revisions.
 
-![Diagram showing the different compute resources on Azure](./assets/azure-compute-services.png)
+![Azure compute options spectrum](./assets/azure-compute-services.png)
+
+Azure Container Apps sits in the sweet spot between PaaS and FaaS, offering the flexibility of a PaaS with the scaling characteristics of a FaaS.
 
 Container Apps is built on top of [Azure Kubernetes Service](https://learn.microsoft.com/azure/aks/), including a deep integration with KEDA (event-driven auto scaling for Kubernetes), Dapr (distributed application runtime) and Envoy (a service proxy designed for cloud-native applications).
 The underlying complexity is completely abstracted for you.
@@ -368,15 +379,6 @@ So, no need to configure your Kubernetes service, ingress, deployment, volume ma
 This simplification means also less control, hence the difference with AKS.
 
 ![Diagram showing the architecture of Azure Container Apps](./assets/azure-container-apps.png)
-
-Azure Container Apps has the following features:
-- *Revisions*: automatic versioning that helps to manage the application lifecycle of your container apps
-- *Traffic control*: split incoming HTTP traffic across multiple revisions for Blue/Green deployments and A/B testing
-- *Ingress*: simple HTTPS ingress configuration, without the need to worry about DNS and certificates
-- *Autoscaling*: leverage all KEDA-supported scale triggers to scale your app based on external metrics
-- *Secrets*: deploy secrets that are securely shared between containers, scale rules and Dapr sidecars
-- *Monitoring*: the standard output and error streams are automatically written to Log Analytics
-- *Dapr*: through a simple flag, you can enable native Dapr integration for your Container Apps
 
 Azure Container Apps introduces the following concepts:
 - *Environment*: this is a secure boundary around a group of Container Apps.
@@ -387,35 +389,30 @@ They are deployed in the same virtual network, these apps can easily intercommun
 - *Revision*: this is an immutable snapshot of a Container App.
 New revisions are automatically created and are valuable for HTTP traffic redirection strategies, such as A/B testing.
 
-![Diagram showing the environment concept in Azure Container Apps](./assets/aca-environment.png)
-
 ### Creating the infrastructure
 
 Now that we know what we'll be using, let's create the infrastructure we'll need for this workshop.
 
-You can use different ways to create Azure resources: the Azure CLI, the [Azure Portal](https://portal.azure.com), ARM templates, or even VS Code extensions or third party tools like Terraform.
+To set up our application, we can choose from various tools like the Azure CLI, Azure Portal, ARM templates, or even third-party tools like Terraform. All these tools interact with Azure's backbone, the [Azure Resource Manager (ARM) API](https://docs.microsoft.com/azure/azure-resource-manager/management/overview).
 
-All these tools have one thing in common: they all use the [Azure Resource Manager (ARM) API](https://docs.microsoft.com/azure/azure-resource-manager/management/overview) to create and manage Azure resources. The Azure CLI is just a wrapper around the ARM API, and the Azure Portal is a web interface to the same API.
-
-![Diagram of how Azure Resource Manager interacts with different tools](./assets/azure-resource-manager.png)
+![Azure Resource Manager interaction diagram](./assets/azure-resource-manager.png)
 
 Any resource you create in Azure is part of a **resource group**. A resource group is a logical container that holds related resources for an Azure solution, just like a folder.
 
-When you ran the command `.azure/infra.sh update` earlier, it created a resource group name `rg-node-microservices-prod` with all the infrastructure for you, using Azure CLI and Infrastructure as Code (IaC) templates. We'll look at the details of the scripts later in this section.
+When we ran `azd provision`, it created a resource group named `rg-dev` and deployed all necessary infrastructure components using Azure CLI and Infrastructure as Code (IaC) templates.
 
 ### Introducing Infrastructure as Code
 
-Infrastructure as Code (IaC) is a way to manage your infrastructure using the same tools and practices you use for your application code. In other words: you write code to describe the resources you need, and this code is committed to your project repository so you can use it to create, update, and delete your infrastructure as part of your CI/CD pipeline or locally.
+Infrastructure as Code (IaC) is a practice that enables the management of infrastructure using configuration files. It ensures that our infrastructure deployment is repeatable and consistent, much like our application code. This code is committed to your project repository so you can use it to create, update, and delete your infrastructure as part of your CI/CD pipeline or locally.
 
-It's a great way to ensure consistency and repeatability of your infrastructure, and allows to manage the infrastructure of your project just like you manage the code of your project.
 
 There are many existing tools to manage your infrastructure as code, such as Terraform, Pulumi, or [Azure Resource Manager (ARM) templates](https://learn.microsoft.com/azure/azure-resource-manager/templates/overview). ARM templates are JSON files that allows you to define and configure Azure resources.
 
-In this workshop, we'll use [Bicep](https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview?tabs=bicep), a new language that abtracts ARM templates creation while being more concise, readable and easier to use.
+For this workshop, we're using [Bicep](https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview?tabs=bicep), a language that simplifies the authoring of ARM templates.
 
 #### What's Bicep?
 
-Bicep is a Domain Specific Language (DSL) for deploying Azure resources declaratively. It aims to drastically simplify the authoring experience with a cleaner syntax, improved type safety, and better support for modularity and code re-use. It's a transparent abstraction over ARM templates, which means anything that can be done in an ARM Template can be done in Bicep.
+Bicep is a Domain Specific Language (DSL) for deploying Azure resources declaratively. It's designed for clarity and simplicity, with a focus on ease of use and code reusability. It's a transparent abstraction over ARM templates, which means anything that can be done in an ARM Template can be done in Bicep.
 
 Here's an example of a Bicep file that creates a Log Analytics workspace:
 
@@ -442,30 +439,11 @@ A resource is made of differents parts. First, you have the `resource` keyword, 
 
 Inside the resource, you then specify the name of the resource, its location, and its properties. You can also add tags to your resources, which are key/value pairs that you can use to categorize and filter your resources.
 
-Bicep templates can be split into multiple files, and you can use modules to reuse common parts of your infrastructure. You can also use parameters to make your templates more flexible and reusable.
+Bicep templates can be modular, allowing for the reuse of code across different parts of your infrastructure. They can also accept parameters, making your infrastructure dynamically adaptable to different environments or conditions.
 
-Have a look at the files inside the folder `./azure/infra` to see how we created the infrastructure for this workshop. The entry point is the `main.bicep` file, which is the main template that use the differents modules located in the `./azure/infra/modules` folder.
+Explore the `./infra` directory to see how the Bicep files are structured for this workshop. The `main.bicep` file is the entry point, orchestrating various modules found in the `./infra/core` folder.
 
-Writing templates from scratch can be a bit tedious, but fortunately most of the time you don't have to:
-- You can reuse templates for the [Azure Quickstart collection](https://github.com/Azure/azure-quickstart-templates/tree/master/quickstarts)
-- The [Bicep VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep) help you write your templates, providing snippets, syntax highlighting, auto-completion, and validation.
-- The [Bicep playground](https://aka.ms/bicepdemo) allows you to convert an ARM template to Bicep, and vice versa.
-
-### Details about the `infra.sh` script
-
-Because entering a bunch of commands one after the other in a terminal is not very fun, we made a Bash script to automate all the heavy lifting. This is the `.azure/infra.sh` script we ran earlier.
-
-This script is a wrapper around Azure CLI commands. The `update` command does the following:
-
-1. Run the command `az group create` to create a resource group if it doesn't exist yet.
-
-2. Run the command `az deployment group create` to create or update the resources in the resource group. This command takes a Bicep template as input, and creates or updates the resources defined in the template.
-
-3. Reformat the JSON deployment output from the previous command into the file `.<environment>.env`. You should see the file `.azure/.prod.env` that was created earlier.
-
-4. Run `az` commands specific to the resources created, to retrieve secrets like the connection string for database or the registry credentials, and store them in the `.env` file.
-
-If you're curious, you can have a look at the script to see how it works, and reuse it for your own projects.
+Bicep streamlines the template creation process, and you can get started with existing templates from the [Azure Quickstart Templates](https://github.com/Azure/azure-quickstart-templates/tree/master/quickstarts), use the [Bicep VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep) for assistance, or try out the [Bicep playground](https://aka.ms/bicepdemo) for converting between ARM and Bicep formats.
 
 ---
 
