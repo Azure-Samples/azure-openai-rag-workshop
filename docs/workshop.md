@@ -299,7 +299,6 @@ To participate in this workshop, you'll need an Azure account. If you don't alre
 
 Before we dive into the details, let's set up the Azure resources needed for this workshop. This initial setup may take a few minutes, so it's best to start now. We'll be using the [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/), a tool designed to streamline the creation and management of Azure resources.
 
-
 #### Log in to Azure
 
 Begin by logging into your Azure subscription with the following command:
@@ -308,22 +307,21 @@ Begin by logging into your Azure subscription with the following command:
 azd auth login
 ```
 
-If you're using Codespaces or your local machine, this command will either log you in directly or provide a _Device code_ to enter in a browser window. Follow the prompts until you're notified of a successful login.
+If you're using Codespaces or your local machine, this command will either log you in directly or provide a *device code* to enter in a browser window. Follow the prompts until you're notified of a successful login.
 
 #### Create a New Environment
 
 Next, set up a new environment. The Azure Developer CLI uses environments to manage settings and resources:
 
 ```sh
-azd env new dev
+azd env new openai-rag-workshop
 ```
-
 
 #### Deploy Azure Infrastructure
 
 <div class="important" data-title="important">
 
-> If you're following this workshop in-person at Microsoft France, We have deployed an Open AI service for you. Please execute this command to leverage this deployment before executing the next command.
+> If you're following this workshop in-person at Microsoft France, We have deployed an Open AI service for you. Run this command to leverage this deployment before executing the next command.
 > ```azd env set AZURE_OPENAI_URL https://proxy.mangoplant-8af6be97.francecentral.azurecontainerapps.io```
 
 </div>
@@ -336,8 +334,29 @@ azd provision
 
 You will be prompted to select an Azure subscription and a deployment region. It's generally best to choose a region closest to your user base for optimal performance.
 
-> **Info:**
+<div class="info" data-title="Note">
+
 > Some Azure services, such as Cognitive Vector Search and Azure Open AI, have [limited regional availability](https://azure.microsoft.com/explore/global-infrastructure/products-by-region/?products=cognitive-services,search&regions=non-regional,europe-north,europe-west,france-central,france-south,us-central,us-east,us-east-2,us-north-central,us-south-central,us-west-central,us-west,us-west-2,us-west-3,asia-pacific-east,asia-pacific-southeast). If you're unsure which region to select, _West US 2_ and _West Europe_ are typically safe choices as they support a wide range of services.
+
+</div>
+
+After your infrastructure is deployed, run this command:
+
+```bash
+azd env get-values > .env
+```
+
+This will create a `.env` file at the root of your repository, containing the environment variables needed to connect to your Azure services.
+
+As this file may sometimes contains application secrets, it's a best practice to keep it safe and not commit it to your repository. We already added it to the `.gitignore` file, so you don't have to worry about it.
+
+### Deploying the indexer service
+
+Once your infrastructure is deployed, you can immediately deploy the indexer service so we can some gain time later. We'll explore the indexer service in more detail later in the workshop.
+
+```sh
+azd deploy indexer
+```
 
 ### Introducing Azure services
 
@@ -345,8 +364,7 @@ In our journey to deploy the chat application, we'll be utilizing a suite of Azu
 
 ![Application architecture](./assets/azure-architecture.png)
 
-Here's a brief overview of the Azure services we'll employ:
-
+Here's a brief overview of the Azure services we'll use:
 
 | Service | Purpose |
 | ------- | ------- |
@@ -399,7 +417,7 @@ To set up our application, we can choose from various tools like the Azure CLI, 
 
 Any resource you create in Azure is part of a **resource group**. A resource group is a logical container that holds related resources for an Azure solution, just like a folder.
 
-When we ran `azd provision`, it created a resource group named `rg-dev` and deployed all necessary infrastructure components using Azure CLI and Infrastructure as Code (IaC) templates.
+When we ran `azd provision`, it created a resource group named `rg-openai-rag-workshop` and deployed all necessary infrastructure components using Azure CLI and Infrastructure as Code (IaC) templates.
 
 ### Introducing Infrastructure as Code
 
@@ -497,13 +515,6 @@ We are going to ingest the content of PDF documents in the vector database. We'l
 tool located in the `src/indexer` folder of the project. This tool will extract the text from the PDF files, and send it to the vector database.
 
 The code of this is already written for you, but let's have a look at how it works.
-
-TODO
-```
-azd deploy indexer
-source .env
-./index-data.sh
-```
 
 ### The ingestion process
 
@@ -1287,9 +1298,9 @@ azd down --purge
 - If something does not work: [Report an issue](https://github.com/Azure-Samples/azure-openai-rag-workshop/issues)
 
 This workshop is based on this enterprise-ready sample: **ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search**
-- [(JavaScript version)](https://github.com/Azure-Samples/azure-search-openai-javascript)
-- [(Python version)](https://github.com/Azure-Samples/azure-search-openai-demo/)
-- [(Java version)](https://github.com/Azure-Samples/azure-search-openai-demo-java)
-- [(C# version)](https://github.com/Azure-Samples/azure-search-openai-demo-csharp)
+- [JavaScript version](https://github.com/Azure-Samples/azure-search-openai-javascript)
+- [Python version](https://github.com/Azure-Samples/azure-search-openai-demo/)
+- [Java version](https://github.com/Azure-Samples/azure-search-openai-demo-java)
+- [C# version](https://github.com/Azure-Samples/azure-search-openai-demo-csharp)
 
 If you want to go further with more advanced use-cases, authentication, history and more, you should check it out!
