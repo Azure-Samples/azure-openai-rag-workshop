@@ -79,6 +79,8 @@ export default root;
 " > src/backend/src/routes/root.ts
 
 echo -e "import fp from 'fastify-plugin';
+import { ChatOpenAI, type OpenAIChatInput } from 'langchain/chat_models/openai';
+import { OpenAIEmbeddings, type OpenAIEmbeddingsParams } from 'langchain/embeddings/openai';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
 
 export class ChatService {
@@ -86,8 +88,8 @@ export class ChatService {
 
   constructor(
     private search: SearchClient<any>,
-    private chatClient: Chat,
-    private embeddingsClient: Embeddings,
+    private chatClient: (options?: Partial<OpenAIChatInput>) => ChatOpenAI,
+    private embeddingsClient: (options?: Partial<OpenAIEmbeddingsParams>) => OpenAIEmbeddings,
     private chatGptModel: string,
     private embeddingModel: string,
     private sourcePageField: string,
