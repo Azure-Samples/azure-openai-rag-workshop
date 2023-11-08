@@ -20,27 +20,21 @@
   * [x] frontend
   * [x] backend dockerfile
   * [x] solution
-
-- [ ] rename indexer to ingestion
+- [x] fix ps1 script
 
 - [ ] fix indexer
-  * [ ] issue with large PDFs (timeout?)
   * [x] wrong page number in text splitter
-  * [ ] document name must not include the page number
-
-## For later
-
-- [ ] improve workshop
-  * [ ] add streaming in optional improvements
-  * [ ] add CI/CD with GHA
-  * [ ] use Langchain agent: search document source with private/public tool
-  * [ ] allow to use regular OpenAI API/token
+  * [x] document name must not include the page number
+  * [ ] issue on windows
+  * [ ] issue with large PDFs (timeout?)
 
 - [ ] trainer infra
   * [x] infra
   * [x] proxy
   * [ ] docs
   * [ ] add event key to restrict access
+
+## For later
 
 - [ ] improve frontend client
   * [x] max width
@@ -49,4 +43,12 @@
   * [x] disable citation link (redirect to support tab)
   * [ ] better catch errors when API is not available
   * [ ] fix fonts
+  * [ ] for fun: add voice recognition using Web Speech Recognition API
 
+- [ ] rename indexer to ingestion
+
+- [ ] improve workshop
+  * [ ] add streaming in optional improvements
+  * [ ] use Langchain agent: search document source with private/public tool
+  * [ ] allow to use regular OpenAI API/token
+  * [ ] add CI/CD with GHA? (maybe not, problematic with azd and codespaces)
