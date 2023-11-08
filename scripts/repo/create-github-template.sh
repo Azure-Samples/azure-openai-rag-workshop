@@ -87,7 +87,7 @@ export class ChatService {
   tokenLimit: number = 4000;
 
   constructor(
-    private search: SearchClient<any>,
+    private searchClient: SearchClient<any>,
     private chatClient: (options?: Partial<OpenAIChatInput>) => ChatOpenAI,
     private embeddingsClient: (options?: Partial<OpenAIEmbeddingsParams>) => OpenAIEmbeddings,
     private chatGptModel: string,

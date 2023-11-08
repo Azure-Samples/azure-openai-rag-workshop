@@ -30,7 +30,7 @@ export class ChatService {
   tokenLimit: number = 4000;
 
   constructor(
-    private search: SearchClient<any>,
+    private searchClient: SearchClient<any>,
     private chatClient: (options?: Partial<OpenAIChatInput>) => ChatOpenAI,
     private embeddingsClient: (options?: Partial<OpenAIEmbeddingsParams>) => OpenAIEmbeddings,
     private chatGptModel: string,
@@ -51,7 +51,7 @@ export class ChatService {
 
     // Performs a hybrid search (vectors + text)
     // For a vector search, replace the query by an empty string
-    const searchResults = await this.search.search(query, {
+    const searchResults = await this.searchClient.search(query, {
       top: 3,
       vectors: [
         {
@@ -65,7 +65,9 @@ export class ChatService {
     const results: string[] = [];
     for await (const result of searchResults.results) {
       const document = result.document;
-      results.push(`${document[this.sourcePageField]}: ${removeNewlines(document[this.contentField])}`);
+      const sourcePage = document[this.sourcePageField];
+      const content = document[this.contentField].replaceAll(/[\n\r]+/g, ' ')
+      results.push(`${sourcePage}: ${content}`);
     }
 
     const content = results.join('\n');
@@ -134,7 +136,7 @@ export class ChatService {
 
     // Performs a hybrid search (vectors + text)
     // For a vector search, replace the query by an empty string
-    const searchResults = await this.search.search(query, {
+    const searchResults = await this.searchClient.search(query, {
       top: 3,
       vectors: [
         {
@@ -148,7 +150,9 @@ export class ChatService {
     const results: string[] = [];
     for await (const result of searchResults.results) {
       const document = result.document;
-      results.push(`${document[this.sourcePageField]}: ${removeNewlines(document[this.contentField])}`);
+      const sourcePage = document[this.sourcePageField];
+      const content = document[this.contentField].replaceAll(/[\n\r]+/g, ' ')
+      results.push(`${sourcePage}: ${content}`);
     }
 
     const content = results.join('\n');
@@ -210,10 +214,6 @@ export class ChatService {
       id++;
     }
   }
-}
-
-function removeNewlines(s: string = ''): string {
-  return s.replaceAll(/[\n\r]+/g, ' ');
 }
 
 function messagesToLangchainMessages(messages: Message[]) {
