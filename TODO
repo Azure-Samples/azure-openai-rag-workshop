@@ -20,6 +20,7 @@
   * [x] frontend
   * [x] backend dockerfile
   * [x] solution
+
 - [ ] rename indexer to ingestion
 
 - [ ] fix indexer
@@ -33,8 +34,7 @@
   * [ ] add streaming in optional improvements
   * [ ] add CI/CD with GHA
   * [ ] use Langchain agent: search document source with private/public tool
-
-
+  * [ ] allow to use regular OpenAI API/token
 
 - [ ] trainer infra
   * [x] infra
