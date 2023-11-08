@@ -701,14 +701,7 @@ We need to provide the URL of our Azure Cognitive Search service, the name of th
 
 #### LangChain clients
 
-Finally, it's time to create the LangChain clients. Add these imports at the top of the file:
-
-```ts
-import { ChatOpenAI, type OpenAIChatInput } from 'langchain/chat_models/openai';
-import { OpenAIEmbeddings, type OpenAIEmbeddingsParams } from 'langchain/embeddings/openai';
-```
-
-Then add this code below the Azure Cognitive Search client initialization:
+Finally, it's time to create the LangChain clients. Add this code below the Azure Cognitive Search client initialization:
 
 ```ts
 // Show the OpenAI URL used in the logs
@@ -760,109 +753,337 @@ const chatService = new ChatService(
 );
 ```
 
+We feed the `ChatService` instance with the different clients we created, and the a few configuration options that we need:
+- The name of the GPT model to use (`gpt-35-turbo`)
+- The name of the embedding model to use (`text-embedding-ada-002`)
+- The name of the field in the Azure Cognitive Search index that contains the page number of the document (`sourcepage`)
+- The name of the field in the Azure Cognitive Search index that contains the content of the document (`content`)
+
 #### Retrieving the documents
 
-#### Creating the prompt
+It's time to start implementing the RAG pattern! The first step is to retrieve the documents from the vector database. In the `ChatService` class, there's a method named `run` that is currently empty with a `// TODO: implement Retrieval Augmented Generation (RAG) here`. This is where we'll implement the RAG pattern.
+
+Before retrieving the documents, we need to convert the question into a vector:
+
+```ts
+// Get the content of the last message (the question)
+const query = messages[messages.length - 1].content;
+
+// Compute an embedding for the query
+const embeddingsClient = this.embeddingsClient({ modelName: this.embeddingModel });
+const queryVector = await embeddingsClient.embedQuery(query);
+```
+
+To compute the embedding, we first use the embeddings client we created earlier, and call the `embedQuery` method. This method will convert the query into a vector, using the embedding model we specified.
+
+Now that we have the query vector, we can call the Azure Cognitive Search client to retrieve the documents:
+
+```ts
+// Performs a hybrid search (vectors + text)
+// For a vector search, replace the query by an empty string
+const searchResults = await this.searchClient.search(query, {
+  top: 3,
+  vectors: [
+    {
+      value: queryVector,
+      kNearestNeighborsCount: 50,
+      fields: ['embedding'],
+    },
+  ],
+});
+```
+
+We pass a few options to the `search` method:
+- The query, which is the question we want to ask. If we pass both a query and a vector, Azure Cognitive Search will perform a hybrid search, which combines semantic and vector search in the same query. To only perform a vector search, we can pass an empty string as the query.
+- `top` is the number of documents we want to retrieve
+- `vectors` is an array of vectors to use for the search. In our case we only have one vector, the query vector we computed earlier. We also specify the number of nearest neighbors to retrieve, and the name of the field that contains the vector in the Azure Cognitive Search index.
+
+Let's process the search results to extract the documents' content:
+
+```ts
+const results: string[] = [];
+
+for await (const result of searchResults.results) {
+  const document = result.document;
+  const sourcePage = document[this.sourcePageField];
+  const content = document[this.contentField].replaceAll(/[\n\r]+/g, ' ')
+  results.push(`${sourcePage}: ${content}`);
+}
+
+const content = results.join('\n');
+```
+
+The object `searchResults.results` containing the search results is an [AsyncIterator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator), so we need to use a `for await` loop to iterate over the results. For each result, we extract the page number and the content of the document, and add it to an array.
+For the content, we use a regular expression to replace all the new lines with spaces, so it's easier to feed it to the GPT model later.
+
+Finally we join all the results into a single string, and separate each document with a new line. We'll use this content to generate the augmented prompt.
+
+#### Creating the system prompt
+
+Now that we have the content of the documents, we'll craft the base prompt that will be sent to the GPT model. Add this code at the top of the file below the imports:
+
+```ts
+const SYSTEM_MESSAGE_PROMPT = `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
+Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
+For tabular information return it as an html table. Do not return markdown format. If the question is not in English, answer in the language used in the question.
+Each source has a name followed by colon and the actual information, always include the source name for each fact you use in the response. Use square brackets to reference the source, for example: [info1.txt]. Don't combine sources, list each source separately, for example: [info1.txt][info2.pdf].
+`;
+```
+
+We make it a constant so it's easier to tweak the prompt later without having to dive into the code.
+
+Let's decompose the prompt to better understand what's going on. When creating a prompt, there are a few things to keep in mind to get the best results:
+
+- Be explicit about the domain of the prompt. In our case, we're setting the context with this phrase: `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests.`. This relates to the set of documents provided by default, so feel free to change it if you're using your own documents.
+
+- Tell the model how long the answer should be. In our case, we want to keep the answers short, so we add this phrase: `Be brief in your answers.`.
+
+- In the context of RAG, tell it to only use the content of the documents we provide: `Answer ONLY with the facts listed in the list of sources below.`. This is called *grounding* the model.
+
+- To avoid having the model inventing facts, we tell to answer that it doesn't know if the information is not in the documents: `If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below.`. This is called adding an *escape hatch*.
+
+- Allow the model to ask for clarifications if needed: `If asking a clarifying question to the user would help, ask the question.`.
+
+- Tell the model the format and language you expect in the answer: `Do not return markdown format. If the question is not in English, answer in the language used in the question.`
+
+- Finally, tell the model how it should understand the source format and quote it in the answer: `Each source has a name followed by colon and the actual information, always include the source name for each fact you use in the response. Use square brackets to reference the source, for example: [info1.txt]. Don't combine sources, list each source separately, for example: [info1.txt][info2.pdf].`
+
+- Use examples when possible, like we do to explain the source format.
+
+#### Creating the augmented prompt
+
+Note that in the previous prompt, we did not add the source content. This is because the model does not handle lengthy system messages well, so instead we'll inject the sources into the latest user message.
+
+What the model expect as an input is an array of messages, with the latest message being the user message. Each message have a role, which can be `system` (which sets the context), `user` (the user questions), or `assistant` (which is the AI-generated answers).
+
+To build this array of messages, we'll use a helper class named `MessageBuilder` that we created in the `src/backend/src/lib/message-builder.ts` file. Let's continue our implementation of the RAG pattern with this code:
+
+```ts
+// Set the context with the system message
+const systemMessage = SYSTEM_MESSAGE_PROMPT;
+
+// Get the latest user message (the question), and inject the sources into it
+const userMessage = `${messages[messages.length - 1].content}\n\nSources:\n${content}`;
+
+// Create the messages prompt
+const messageBuilder = new MessageBuilder(systemMessage, this.chatGptModel);
+messageBuilder.appendMessage('user', userMessage);
+```
+
+Because the previous messages in the conversation may also help the model, we'll add them to the prompt as well. But here we need to be careful, as GPT models have a limit in the number of tokens they can process. So we'll only add messages until we reach the token limit we set.
+
+```ts
+// Add the previous messages to the prompt, as long as we don't exceed the token limit
+for (const historyMessage of messages.slice(0, -1).reverse()) {
+  if (messageBuilder.tokens > this.tokenLimit) break;
+  messageBuilder.appendMessage(historyMessage.role, historyMessage.content);
+}
+```
+
+As a final touch, it can be useful to create some debug information to help us understand what the model is doing.
+
+```ts
+// Processing details, for debugging purposes
+const conversation = messageBuilder.messages.map((m) => `${m.role}: ${m.content}`).join('\n\n');
+const thoughts = `Search query:\n${query}\n\nConversation:\n${conversation}`.replaceAll('\n', '<br>');
+```
+
+Here we create a `thoughts` string that we'll return along the answer, that contains the search query and the messages that were sent to the model.
 
 #### Generating the response
 
+We're now ready to generate the response from the model. Add this code below the previous one:
+
+```ts
+const chatClient = this.chatClient({
+  temperature: 0.7,
+  maxTokens: 1024,
+  n: 1,
+});
+const completion = await chatClient.predictMessages(messageBuilder.getMessages());
+```
+
+First we create the LangChain chat client and pass a few options to control the behavior of the model:
+- `temperature` controls the randomness of the model. A value of 0 will make the model deterministic, and a value of 1 will make it generate the most random answers.
+- `maxTokens` is the maximum number of tokens the model will generate. If you set it too low, the model will not be able to generate long answers. If you set it too high, the model may generate answers that are too long.
+- `n` is the number of answers the model will generate. In our case we only want one answer, so we set it to 1.
+
+Then we call the `predictMessages` method to generate the response. We pass the messages we created earlier as input.
+
+The final step is to return the result in the Chat protocol format:
+
+```ts
+// Return the response in the Chat protocol format
+return {
+  choices: [
+    {
+      index: 0,
+      message: {
+        content: completion.content,
+        role: 'assistant',
+        context: {
+          data_points: results,
+          thoughts: thoughts,
+        },
+      },
+    },
+  ],
+  object: 'chat.completion',
+};
+```
+
+The result of the completion is in the `completion.content` property. We also add the `data_points` containing the search document results and `thoughts` properties to the `context` object, so they can be used by the website to display the debug information.
+
+Feeeeew, that was a lot of code! But we're done with the implementation of the RAG pattern.
+
 ### Creating the API route
 
-### Testing our API
+Now that we have our `ChatService` instance, we need to create the API route that will call it. Open the file `src/backend/src/routes/root.ts`. There's a comment that gives us a hint on what to do next: `// TODO: create /chat endpoint`
 
+So let's create the `/chat` endpoint:
 
+```ts
+fastify.post('/chat', async function (request, reply) {
+  const { messages } = request.body as any;
+  try {
+    return await fastify.chat.run(messages);
+  } catch (_error: unknown) {
+    const error = _error as Error;
+    fastify.log.error(error);
+    return reply.internalServerError(error.message);
+  }
+});
+```
 
+Using `fastify.post('/chat', ...)` we create a POST endpoint at the `/chat` route.
+We retrieve the `messages` property from the request body, and call the `run` method of the `ChatService` instance we created earlier.
+We also catch any errors that may happen, log them, and return an internal server error (HTTP status 500) to the client.
 
+<div class="info" data-title="note">
 
-
-### Using OpenAI SDK
-
-// TODO: Write
-
-<div class="tip" data-title="tip">
-
-> If you're doing the workshop with Yohan, we have deployed an OpenAPI proxy so you don't have to wait or pay to access Open AI API.
+> Here we bypassed the validation of the request body to keep things simple, hence the need to cast it to `any` (boo!). In a real-world application, you should always validate the request body to ensure it matches the expected format. Fastify allows you to do that by providing a [JSON schema to validate the body](https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/#validation). By doing that, you'll be able to remove the `as any` cast, and get better error messages when the request body is invalid.
 
 </div>
 
-### Call the Vector database
-
-### Inject Vector search results in prompt
-
-// TODO: Write
-
-### Call OpenAI API
+Our API is now ready to be tested!
 
 ### Testing our API
 
-It's time to test our API! 
+Open a terminal and run the following commands to start the API:
 
 ```bash
-# Run in first terminal
-npm start --workspace=settings-api | pino-pretty
-
-# Run in second terminal
-npm start --workspace=dice-api | pino-pretty
-
-# Run in third terminal
-npm start --workspace=gateway-api | pino-pretty
+cd src/backend
+npm run dev
 ```
 
-Open the file `api.http` file. Go to the "Gateway API" section and hit **Send Request** on the different routes to check that they work as expected.
+This will start the API in development mode, which means it will automatically restart if you make changes to the code.
 
-You can play a bit and increase the `count` parameter of the "Roll dices" API and observe the growth of the response time, as the number of calls to the Dice API increases.
+Open the file `src/backend/test.http` file. Go to the "Chat with the bot" comment and hit the **Send Request** button below to test the API.
 
-When you're done with the testing, stop all the servers by pressing `Ctrl+C` in each of the terminals.
+You can play a bit and change the question to see how the model behaves.
 
-### Creating the Dockerfile
+When you're done with the testing, stop the server by pressing `Ctrl+C` in each of the terminals.
 
-We're almost done, it's time to containerize our last API! Since our gateway API is using plain JavaScript, we do not have a build step, so the Dockerfile will almost be the same as the one we used for the Settings API.
+After you checked that everything works as expected, don't forget to commit your changes to the repository, to keep track of your progress.
 
-Let's create a file `Dockerfile` under the `packages/gateway-api`:
+---
+
+<div class="info" data-title="Skip notice">
+
+> If you want to skip the Dockerfile implementation and jump directly to the next section, run this command in the terminal at the root of the project to get the completed code directly: curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/backend-dockerfile.tar.gz | tar -xvz
+
+<div>
+
+## Create the Dockerfile
+
+We're almost done, it's time to containerize our API! Containers are a great way to package and deploy applications, as they allow us to isolate the application from the host environment, and to run it in any environment, from a developer's laptop to a cloud provider.
+
+Since our Chat API have a **build** step to compile the TypeScript code to JavaScript, we'll use the [multi-stage](https://docs.docker.com/build/building/multi-stage/) feature of Docker to build our API and create a smaller container image, while keeping our Dockerfile readable and maintainable.
+
+### Defining the build stage
+
+Let's create a file `Dockerfile` under the `src/backend` folder to build a Docker image for our API:
 
 ```dockerfile
 # syntax=docker/dockerfile:1
+
+# Build Node.js app
+# ------------------------------------
+FROM node:18-alpine as build
+WORKDIR /app
+COPY ./package*.json ./
+COPY ./src/backend ./src/backend
+RUN npm ci --cache /tmp/empty-cache
+RUN npm run build --workspace=backend
+```
+
+The first statement `FROM node:18-alpine` means that we use the [node image](https://hub.docker.com/_/node) as a base, with Node.js 18 installed. The `alpine` variant is a lightweight version of the image, that results in a smaller container size, which is great for production environments. With the `as build` statement, we're naming this stage `build`, so we can reference it later.
+
+The second statement `ENV NODE_ENV=production` sets the `NODE_ENV` environment variable to `production`. This is a convention in the Node.js ecosystem to indicate that the app is running in production mode. It enables production optimizations in most frameworks.
+
+After that, we are specifying our work directory with `WORKDIR /app`. We then need to copy our project files to the container. Because we are using NPM workspaces, it's not enough to copy the `./src/backend` folder, we also need to copy the root `package.json` file and more importantly the `package-lock.json` file, to make sure that the dependencies are installed in the same version as in our local environment.
+
+Then we run the `npm ci` command. The `--cache /tmp/empty-cache` tells NPM to use an empty cache folder, to avoid saving the download cache in the container. This is not strictly necessary, but it's a good practice to avoid making our container bigger than necessary.
+
+Finally we run the `npm run build` command to build the api. Since we're in an NPM workspace, we need to specify the workspace we want to build with the `--workspace=backend` option.
+
+### Defining the final stage
+
+Now we can create the second stage of our Dockerfile, that will be used to create the final Docker image. Add the following code after the first stage:
+
+```dockerfile
+# Run Node.js app
+# ------------------------------------
 FROM node:18-alpine
 ENV NODE_ENV=production
 
 WORKDIR /app
 COPY ./package*.json ./
-COPY ./packages/gateway-api ./packages/gateway-api
-RUN npm ci --omit=dev --workspace=gateway-api --cache /tmp/empty-cache
-EXPOSE 4003
-CMD [ "npm", "start", "--workspace=gateway-api" ]
+COPY ./src/backend/package.json ./src/backend/
+RUN npm ci --omit=dev --workspace=backend --cache /tmp/empty-cache
+COPY --from=build app/src/backend/dist src/backend/dist
+EXPOSE 3000
+CMD [ "npm", "start", "--workspace=backend" ]
 ```
 
-This Dockerfile is very similar to the one we used for the Settings API, the only differences are that we use the `gateway-api` workspace, and expose a different port.
+This stage is very similar to the first one, with few differences:
 
-Again, you also need to create a `.dockerignore` file to tell Docker which files to ignore when copying files to the image:
+- We're not copying the whole `src/backend` folder this time, but only the `package.json file`. We need this file to install the dependencies, but we don't need to copy the source code.
+- We're using the `--omit=dev` option of the `npm ci` command to only install the production dependencies, as we don't need the development dependencies in our final Docker image.
+- We're copying the compiled code from the first stage using the `--from=build` option of the `COPY` instruction. This will copy the compiled code from the `build` stage to our final Docker image.
 
-```text
-node_modules
-*.log
-```
+Finally we tell Docker to expose port `3000`, and run the `npm start --workspace=backend` command when the container starts.
+
+With this setup, Docker will first create a container to build our app, and then create a second container where we copy the compiled app code from the first container to create the final Docker image.
 
 ### Testing our Docker image
 
-Just like you did for the other APIs, add the commands to build and run the Docker image to the `packages/gateway-api/package.json` file:
+You can now build the Docker image and run it locally to test it. First, let's have a look at the commands to build and run the Docker image in our `src/backend/package.json` file:
 
 ```json
 {
   "scripts": {
-    "start": "node ./bin/www",
-    "docker:build": "docker build --tag gateway-api --file ./Dockerfile ../..",
-    "docker:run": "docker run --rm --publish 4003:4003 gateway-api"
+    "docker:build": "docker build --tag backend --file ./Dockerfile ../..",
+    "docker:run": "docker run --rm --publish 3000:3000 --env-file ../../.env backend",
   },
 }
 ```
 
-Check that your image build correctly by running this command from the `gateway-api` folder:
+Now we can build the image by running this command from the `backend` folder:
 
 ```bash
 npm run docker:build
 ```
 
-For testing though, running all 3 services separately is a bit tedious (as you saw before), so we'll use a different approach that we'll detail in the next section.
+After the build is complete, you can run the image with the following command:
+
+```bash
+npm run docker:run
+```
+
+You can now test the API again using the api.http file just like before, to check that everything works. When you're done with the testing, stop the server by pressing `Ctrl+C`.
+
+After that, commit the changes to the repository to keep track of your progress.
 
 ---
 

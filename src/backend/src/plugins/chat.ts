@@ -8,7 +8,7 @@ import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk
 
 const SYSTEM_MESSAGE_PROMPT = `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
 Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
-For tabular information return it as an html table. Do not return markdown format. If the question is not in English, answer in the language used in the question.
+Do not return markdown format. If the question is not in English, answer in the language used in the question.
 Each source has a name followed by colon and the actual information, always include the source name for each fact you use in the response. Use square brackets to reference the source, for example: [info1.txt]. Don't combine sources, list each source separately, for example: [info1.txt][info2.pdf].
 `;
 
@@ -40,8 +40,8 @@ export class ChatService {
   ) {}
 
   async run(messages: Message[]): Promise<ChatResponse> {
-    // STEP 1: Retrieve relevant documents from the search index with the GPT optimized query
-    // --------------------------------------------------------------------------------------
+    // STEP 1: Retrieve relevant documents from the search index
+    // ---------------------------------------------------------
 
     const query = messages[messages.length - 1].content;
 
@@ -100,18 +100,19 @@ export class ChatService {
     const chatClient = this.chatClient({
       // Controls randomness. 0 = deterministic, 1 = maximum randomness
       temperature: 0.7,
+      // Maximum number of tokens to generate
       maxTokens: 1024,
+      // Number of completions to generate
       n: 1,
     });
-    const completion = await chatClient.predictMessages(messagesToLangchainMessages(messageBuilder.messages));
-    const answer = completion.content ?? '';
+    const completion = await chatClient.predictMessages(messageBuilder.getMessages());
 
     return {
       choices: [
         {
           index: 0,
           message: {
-            content: answer,
+            content: completion.content,
             role: 'assistant',
             context: {
               data_points: results,
@@ -125,8 +126,8 @@ export class ChatService {
   }
 
   async *runWithStreaming(messages: Message[]): AsyncGenerator<ChatResponseChunk, void> {
-    // STEP 1: Retrieve relevant documents from the search index with the GPT optimized query
-    // --------------------------------------------------------------------------------------
+    // STEP 1: Retrieve relevant documents from the search index
+    // ---------------------------------------------------------
 
     const query = messages[messages.length - 1].content;
 
@@ -185,10 +186,12 @@ export class ChatService {
     const chatClient = this.chatClient({
       // Controls randomness. 0 = deterministic, 1 = maximum randomness
       temperature: 0.7,
+      // Maximum number of tokens to generate
       maxTokens: 1024,
+      // Number of completions to generate
       n: 1,
     });
-    const completion = await chatClient.stream(messagesToLangchainMessages(messageBuilder.messages));
+    const completion = await chatClient.stream(messageBuilder.getMessages());
     let id = 0;
 
     // Process the completion in chunks
@@ -214,18 +217,6 @@ export class ChatService {
       id++;
     }
   }
-}
-
-function messagesToLangchainMessages(messages: Message[]) {
-  return messages.map((message) => {
-    if (message.role === 'system') {
-      return new SystemMessage(message.content);
-    } else if (message.role === 'assistant') {
-      return new AIMessage(message.content);
-    } else {
-      return new HumanMessage(message.content);
-    }
-  });
 }
 
 export default fp(

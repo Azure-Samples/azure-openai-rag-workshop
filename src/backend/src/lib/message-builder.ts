@@ -1,4 +1,5 @@
 import { encoding_for_model, type TiktokenModel } from '@dqbd/tiktoken';
+import { AIMessage, BaseMessage, HumanMessage, SystemMessage } from 'langchain/schema';
 import { type Message, type MessageRole } from './models.js';
 
 export class MessageBuilder {
@@ -26,6 +27,22 @@ export class MessageBuilder {
   appendMessage(role: MessageRole, content: string, index = 1) {
     this.messages.splice(index, 0, { role, content });
     this.tokens += this.getTokenCountFromMessages(this.messages[index], this.model);
+  }
+
+  /**
+   * Get the messages in the conversation in LangChain format.
+   * @returns {BaseMessage[]} The messages.
+   */
+  getMessages(): BaseMessage[] {
+    return this.messages.map((message) => {
+      if (message.role === 'system') {
+        return new SystemMessage(message.content);
+      } else if (message.role === 'assistant') {
+        return new AIMessage(message.content);
+      } else {
+        return new HumanMessage(message.content);
+      }
+    });
   }
 
   /**

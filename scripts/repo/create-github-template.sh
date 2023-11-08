@@ -40,8 +40,7 @@ rm -rf .env
 rm -rf src/backend/src/plugins/chat-langchain.ts
 rm -rf src/backend/src/Dockerfile
 
-echo -e "import { Readable } from 'node:stream';
-import { type FastifyReply, type FastifyPluginAsync } from 'fastify';
+echo -e "import { type FastifyReply, type FastifyPluginAsync } from 'fastify';
 
 const root: FastifyPluginAsync = async (fastify, options): Promise<void> => {
   fastify.get('/', async function (request, reply) {
@@ -50,30 +49,6 @@ const root: FastifyPluginAsync = async (fastify, options): Promise<void> => {
 
   // TODO: create /chat endpoint
 };
-
-/**
- * Reply to a request with a stream of NDJSON chunks.
- * @param {FastifyReply} reply The Fastify reply object.
- * @param {AsyncGenerator<object>} chunks The chunks to send.
- * @returns {Promise<void>} A promise that resolves when the reply is sent.
- */
-async function replyNdJsonStream(reply: FastifyReply, chunks: AsyncGenerator<object>) {
-  // Create a new stream buffer
-  const buffer = new Readable();
-  // We must implement the _read method, but we don't need to do anything
-  buffer._read = () => {};
-
-  // Start streaming the buffer to the client
-  reply.type('application/x-ndjson').send(buffer);
-
-  for await (const chunk of chunks) {
-    // Send JSON chunks, separated by newlines
-    buffer.push(JSON.stringify(chunk) + '\\\\n');
-  }
-
-  // Signal end of stream
-  buffer.push(null);
-}
 
 export default root;
 " > src/backend/src/routes/root.ts
