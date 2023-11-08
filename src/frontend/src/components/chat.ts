@@ -336,9 +336,14 @@ export class ChatComponent extends LitElement {
   protected renderChatInput = () => {
     return html`
       <div class="chat-input">
-        <button class="button new-chat-button" @click=${() => this.messages = []} title=${this.options.strings.newChatButton} .disabled=${this.message?.length === 0}>
-        ${unsafeSVG(newChatSvg)}
-      </button>
+        <button
+          class="button new-chat-button"
+          @click=${() => (this.messages = [])}
+          title=${this.options.strings.newChatButton}
+          .disabled=${this.messages?.length === 0 || this.isLoading || this.isStreaming}
+        >
+          ${unsafeSVG(newChatSvg)}
+        </button>
         <form class="input-form">
           <textarea
             class="text-input"

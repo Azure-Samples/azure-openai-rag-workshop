@@ -66,7 +66,7 @@ export class ChatService {
     for await (const result of searchResults.results) {
       const document = result.document;
       const sourcePage = document[this.sourcePageField];
-      const content = document[this.contentField].replaceAll(/[\n\r]+/g, ' ')
+      const content = document[this.contentField].replaceAll(/[\n\r]+/g, ' ');
       results.push(`${sourcePage}: ${content}`);
     }
 
@@ -152,7 +152,7 @@ export class ChatService {
     for await (const result of searchResults.results) {
       const document = result.document;
       const sourcePage = document[this.sourcePageField];
-      const content = document[this.contentField].replaceAll(/[\n\r]+/g, ' ')
+      const content = document[this.contentField].replaceAll(/[\n\r]+/g, ' ');
       results.push(`${sourcePage}: ${content}`);
     }
 

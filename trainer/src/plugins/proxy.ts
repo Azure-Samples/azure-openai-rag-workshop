@@ -42,7 +42,7 @@ export default fp(
             ...headers,
             'api-key': config.azureOpenAiApiKey || openAiToken.token,
           };
-        }
+        },
       },
     });
   },

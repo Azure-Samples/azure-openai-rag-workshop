@@ -201,7 +201,6 @@ async function extractTextFromPdf(data: Buffer): Promise<ContentPage[]> {
 
     pages.push({ content: text + '\n', offset, page: i });
     offset += text.length;
-
   }
   return pages;
 }

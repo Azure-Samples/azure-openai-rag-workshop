@@ -11,15 +11,15 @@ jobs:
     permissions:
       contents: write
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Create packages
-      run: ./scripts/repo/create-packages.sh
-    - name: Update release
-      uses: ncipollo/release-action@v1.12.0
-      with:
-        name: Workshop packages
-        tag: latest
-        artifacts: "dist/*.tar.gz"
-        allowUpdates: true
-        removeArtifacts: true
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Create packages
+        run: ./scripts/repo/create-packages.sh
+      - name: Update release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          name: Workshop packages
+          tag: latest
+          artifacts: 'dist/*.tar.gz'
+          allowUpdates: true
+          removeArtifacts: true
