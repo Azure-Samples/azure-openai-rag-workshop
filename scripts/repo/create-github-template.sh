@@ -17,8 +17,8 @@ echo "Preparing GitHub project template..."
 echo "(temp folder: $TEMPLATE_HOME)"
 rm -rf "$TEMPLATE_HOME"
 mkdir -p "$TEMPLATE_HOME"
-find . -type d -not -path '*node_modules*' -not -path '*.git/*' -not -path '*dist*' -exec mkdir -p '{}' "$TEMPLATE_HOME/{}" ';'
-find . -type f -not -path '*node_modules*' -not -path '*.git/*' -not -path '*dist*' -exec cp -r '{}' "$TEMPLATE_HOME/{}" ';'
+find . -type d -not -path '*node_modules*' -not -path '*.git/*' -not -path '*/dist' -not -path '*dist/*' -exec mkdir -p '{}' "$TEMPLATE_HOME/{}" ';'
+find . -type f -not -path '*node_modules*' -not -path '*.git/*' -not -path '*dist/*' -exec cp -r '{}' "$TEMPLATE_HOME/{}" ';'
 cd "$TEMPLATE_HOME"
 rm -rf .git
 git init -b main
