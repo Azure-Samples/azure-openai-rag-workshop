@@ -191,38 +191,38 @@ bash --version
 
 ## Overview of the project
 
-The project template you forked is a monorepo, a single repository containing multiple projects. It's organized as follows (for the most important files):
+The project template you've forked is a monorepo, which means it's a single repository that houses multiple projects. Here's how it's organized, focusing on the key files and directories:
 
 ```sh
-.devcontainer/  # Dev container configuration
-data/           # Sample PDFs to use as sample custom data
-infra/          # Azure infrastructure templates and scripts
-scripts/        # Scripts to help with document ingestion
-src/            # The different services of our app
+.devcontainer/  # Configuration for the development container
+data/           # Sample PDFs to serve as custom data
+infra/          # Templates and scripts for Azure infrastructure
+scripts/        # Utility scripts for document ingestion
+src/            # Source code for the application's services
 |- backend/     # The Chat API
 |- frontend/    # The Chat website
-|- indexer/     # The document ingestion service
-package.json    # NPM workspace configuration
+|- indexer/     # Service for document ingestion
+package.json    # Configuration for NPM workspace
 ```
 
-// TODO Yohan: est ce que l'on a un NPM workspace pour back+front ici ?
+We're using Node.js for our APIs and website, and have set up an [NPM workspace](https://docs.npmjs.com/cli/using-npm/workspaces) to manage dependencies across all projects from a single place. Running `npm install` at the root installs dependencies for all projects, simplifying monorepo management.
 
-As we'll be using Node.js to build our APIs and website, we had setup a [NPM workspace](https://docs.npmjs.com/cli/using-npm/workspaces) to manage the dependencies of all the projects in a single place. This means that when you run `npm install` in the root of the project, it will install all the dependencies of all the projects and make it easier to work in a monorepo.
-
-For example, you can run `npm run <script_name> --workspaces` in the root of the project to run a script in all the projects, or `npm run <script_name> --workspace=backend` to run a script for a specific project. 
+For instance, `npm run <script_name> --workspaces` executes a script across all projects, while `npm run <script_name> --workspace=backend` targets just the backend.
 
 Otherwise, you can use your regular `npm` commands in any project folder and it will work as usual.
 
 ### About the services
 
-We have pre-written several parts of the services to let you dive right in the most relevant parts. 
+We've pre-written several service components so you can jump straight into the most interesting parts.
 
-### The chat protocol
+### The Chat Protocol
 
-Developing a chat-like experience requires two components on top of OpenAI APIs: A chat interface and a chat service exposed via an API. The Chat Backend Protocol is designed to standardize interactions between chat UIs and APIs. By using this protocol, we could develop Mobile apps and Chat APIs in other languages that will work together.
+Creating a chat-like experience requires on two main components: a user interface and a service API. The Chat Backend Protocol standardizes their interactions. This standardization allows for the development of different client applications (like mobile apps) that can interact seamlessly with chat services written in various programming languages.
 
 
 #### The Chat request
+
+A chat request is sent in a JSON format, containing the user's message, a flag indicating if the response should be streamed, and any context-specific overrides that can tailor the chat service's behavior.
 
 ```json
 {
@@ -246,6 +246,8 @@ Developing a chat-like experience requires two components on top of OpenAI APIs:
 
 #### The chat response
 
+The chat service responds with a series of JSON objects, each representing a chunk of the generated response. This format allows for a dynamic and real-time messaging experience, as each chunk can be sent and rendered as soon as it's ready. Scroll the following code to see the `content` property.
+
 ```json
 {"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"role": "assistant"}         , "content_filter_results": {...}}]}
 {"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": "Based"}          , "content_filter_results": {...}}]}
@@ -262,10 +264,7 @@ Developing a chat-like experience requires two components on top of OpenAI APIs:
 ```
 
 
-https://github.com/ndjson/ndjson-spec
-
-
-
+The response format follows the [Newline Delimited JSON (NDJSON)](https://github.com/ndjson/ndjson-spec) specification, which is a convenient way of sending structured data that may be processed one record at a time.
 
 You can learn more about the [chat protocol here](https://github.com/Azure/azureml_run_specification/blob/chat-protocol/specs/chat-protocol/chat-app-protocol.md).
 
