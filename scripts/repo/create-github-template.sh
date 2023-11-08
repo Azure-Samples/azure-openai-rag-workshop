@@ -79,8 +79,6 @@ export default root;
 " > src/backend/src/routes/root.ts
 
 echo -e "import fp from 'fastify-plugin';
-import { SearchClient } from '@azure/search-documents';
-import { type Chat, type Embeddings } from 'openai/resources/index.js';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
 
 export class ChatService {
