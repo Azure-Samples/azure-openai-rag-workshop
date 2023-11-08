@@ -1095,11 +1095,27 @@ After that, commit the changes to the repository to keep track of your progress.
 
 ## Chat website
 
-### Intro
+### Introduction
 
-### The Chat web component
+Now that we have our Chat API, it's time to create the website that will use it. We'll use [Vite](https://vitejs.dev/) as a frontend build tool, and [Lit](https://lit.dev/) as a Web components library.
 
+This frontend will be a Single Page Application (SPA), which will be similar to the well-known ChatGPT website, with the difference that it will get its data from the Chat API that we described in the previous section.
 
+The project is available in the `src/frontend` folder. It's a standalone project, so you can open it in your favorite IDE to work on it.
+
+In the project directory, you can run:
+
+`npm run dev`
+
+This will start the application in development mode. Open [http://localhost:8000](http://localhost:8000) to view it in the browser.
+
+### The Chat Web component
+
+The Chat component is built with [Lit](https://lit.dev/), which is a library to create Web components. It's a lightweight library that allows us to create reusable components with a simple API. Every Lit component is a native web component: Web components work anywhere you use HTML, with any framework or none at all.
+
+As a result, you will be able to re-use this component in your own projects.
+
+The component is located in the `src/frontend/src/components/chat.ts` file. 
 
 ### Calling the Chat API
 
