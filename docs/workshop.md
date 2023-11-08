@@ -607,6 +607,8 @@ You can select that index and browse it. For example, in the "Search explorer" t
 
 ## Chat API
 
+We'll start the code by creating the Chat API. This API will implement the [AzureML Chat Backend Protocol](https://github.com/Azure/azureml_run_specification/blob/chat-protocol/specs/chat-protocol/chat-app-protocol.md) and will be used by the website to get message answers.
+
 ### Introducing Fastify
 
 We'll be using [Fastify](https://www.fastify.io/) to create our Chat API. Fastify is a web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture.
@@ -615,15 +617,150 @@ It's very similar to [Express](https://expressjs.com), but it's much faster and 
 
 ### Setting up the chat plugin
 
+We'll start by creating a plugin for Fastify that will implement our chat service. A plugin is a way to encapsulate a piece of functionality in Fastify, and it's a good way to organize your code.
+
+Open the file `src/backend/src/plugins/chat.ts`. At the bottom you should see the following code:
+
+```ts
+export default fp(
+  async (fastify, options) => {
+    const config = fastify.config;
+
+    // TODO: initialize clients here
+
+    const chatService = new ChatService(
+      /*
+      searchClient,
+      chatClient,
+      embeddingsClient,
+      config.azureOpenAiChatGptModel,
+      config.azureOpenAiEmbeddingModel,
+      config.kbFieldsSourcePage,
+      config.kbFieldsContent,
+      */
+    );
+
+    fastify.decorate('chat', chatService);
+  },
+  {
+    name: 'chat',
+    dependencies: ['config'],
+  },
+);
+```
+
+We have the starting point to implement our chat service. Let's have a look at the pieces we have here:
+
+1. First we retrieve the configuration needed by our service with `const config = fastify.config;` It's initialized from environment variables in the `src/backend/src/plugins/config.ts` file.
+2. Then we will create the different clients we need to call the Aure services. We'll see how to do that in the next section.
+3. After that we create the `ChatService` instance that will be used by our API to generate answers. We'll pass the different clients we created as parameters to the constructor.
+4. Finally we decorate the Fastify instance with our `ChatService` instance, so we can access it from our routes using `fastify.chat`.
+
 ### Initializing the SDK clients
+
+We'll now replace the `// TODO: initialize clients here` with the actual code to set up our clients.
 
 #### Managing Azure credentials
 
+Before we can create the clients, we need to retrieve the credentials to access our Azure services. We'll use the [Azure Identity SDK](https://learn.microsoft.com/javascript/api/overview/azure/identity-readme?view=azure-node-latest) to do that.
+
+Add this import at the top of the file:
+
+```ts
+import { DefaultAzureCredential } from '@azure/identity';
+```
+
+Then add this code to retrieve the credentials below the `const config = fastify.config;` line:
+
+```ts
+// Use the current user identity to authenticate with Azure OpenAI and Cognitive Search.
+// (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
+const credential = new DefaultAzureCredential();
+```
+
+This will use the current user identity to authenticate with Azure OpenAI and Cognitive Search. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
+
 #### Azure Cognitive Search client
 
-#### OpenAI clients
+Next we'll create the Azure Cognitive Search client. Add this import at the top of the file:
+
+```ts
+import { SearchClient } from '@azure/search-documents';
+```
+
+Then add this code below the credentials retrieval:
+
+```ts
+// Set up Azure Cognitive Search client
+const searchClient = new SearchClient<any>(
+  `https://${config.azureSearchService}.search.windows.net`,
+  config.azureSearchIndex,
+  credential,
+);
+```
+
+We need to provide the URL of our Azure Cognitive Search service, the name of the index we want to use, and the credentials we retrieved earlier.
+
+#### LangChain clients
+
+Finally, it's time to create the LangChain clients. Add these imports at the top of the file:
+
+```ts
+import { ChatOpenAI, type OpenAIChatInput } from 'langchain/chat_models/openai';
+import { OpenAIEmbeddings, type OpenAIEmbeddingsParams } from 'langchain/embeddings/openai';
+```
+
+Then add this code below the Azure Cognitive Search client initialization:
+
+```ts
+// Show the OpenAI URL used in the logs
+fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);
+
+// Get the OpenAI token from the credentials
+const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
+
+// Set common options for the clients
+const commonOptions = {
+  openAIApiKey: openAiToken.token,
+  azureOpenAIApiVersion: '2023-05-15',
+  azureOpenAIApiKey: openAiToken.token,
+  azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,
+};
+
+// Create a getter for the OpenAI chat client
+const chatClient = (options?: Partial<OpenAIChatInput>) =>
+  new ChatOpenAI({
+    ...options,
+    ...commonOptions,
+    azureOpenAIApiDeploymentName: config.azureOpenAiChatGptDeployment,
+  });
+
+// Create a getter for the OpenAI embeddings client
+const embeddingsClient = (options?: Partial<OpenAIEmbeddingsParams>) =>
+  new OpenAIEmbeddings({
+    ...options,
+    ...commonOptions,
+    azureOpenAIApiDeploymentName: config.azureOpenAiEmbeddingDeployment,
+  });
+```
+
+We first have to set up a few common options for the clients. Then instead of directly creating the clients, we create getter functions that will return the clients. We do it this way so we can pass additional options to change the behavior of the clients when needed.
 
 ### Creating the ChatService
+
+Now that we have created all the clients, it's time to properly initialize the `ChatService` instance. Uncomment the parameters in the `ChatService` constructor call like this:
+
+```ts
+const chatService = new ChatService(
+  searchClient,
+  chatClient,
+  embeddingsClient,
+  config.azureOpenAiChatGptModel,
+  config.azureOpenAiEmbeddingModel,
+  config.kbFieldsSourcePage,
+  config.kbFieldsContent,
+);
+```
 
 #### Retrieving the documents
 
