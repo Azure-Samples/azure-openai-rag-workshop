@@ -65,7 +65,7 @@ Organizations of all sizes have amassed a plethora of documents over time. While
 <div class="info" data-title="note">
 
 > **Accuracy in Generative AI** 
-> Large Language Models (LLMs), like the ones powering ChatGPT, aren't designed for high-precision answers. They may produce "hallucinations", offering responses that seem authoritative but are actually incorrect. It's crucial to **inform users that the responses are AI-generated**. In this workshop, we'll explore how to generate answers that link to their information sources — this is what we call _grounding_— enabling users to verify the accuracy of the AI's responses.
+> Large Language Models (LLMs), like the ones powering ChatGPT, aren't designed for high-precision answers. They may produce "hallucinations", offering responses that seem authoritative but are actually incorrect. It's crucial to **inform users that the responses are AI-generated**. In this workshop, we'll explore how to generate answers that link to their information sources — this is what we call *grounding* — enabling users to verify the accuracy of the AI's responses.
 
 </div>
 
@@ -225,32 +225,26 @@ Otherwise, you can use your regular `npm` commands in any project folder and it 
 
 ### About the services
 
-We've pre-written several service components so you can jump straight into the most interesting parts.
+We generated the base code of our differents services with the respective CLI or generator of the frameworks we'll be using, and we've pre-written several service components so you can jump straight into the most interesting parts.
 
-### The Chat Protocol
+### The Chat Backend Protocol
 
-Creating a chat-like experience requires on two main components: a user interface and a service API. The Chat Backend Protocol standardizes their interactions. This standardization allows for the development of different client applications (like mobile apps) that can interact seamlessly with chat services written in various programming languages.
-
+Creating a chat-like experience requires two main components: a user interface and a service API. The [Chat Backend Protocol](https://github.com/Azure/azureml_run_specification/blob/chat-protocol/specs/chat-protocol/chat-app-protocol.md) standardizes their interactions. This standardization allows for the development of different client applications (like mobile apps) that can interact seamlessly with chat services written in various programming languages.
 
 #### The Chat request
 
-A chat request is sent in a JSON format, containing the user's message, a flag indicating if the response should be streamed, and any context-specific overrides that can tailor the chat service's behavior.
+A chat request is sent in JSON format, and must container at least the user's message. Other optional parameters include a flag indicating if the response should be streamed, context-specific options that can tailor the chat service's behavior and a session state object that can be used to maintain state between requests.
 
 ```json
 {
-  "messages": [{ "content": "Can I do some Scuba diving?", "role": "user" }],
-  "stream": true,
-  "context": {
-    "overrides": {
-      "top": 3,
-      "retrieval_mode": "hybrid",
-      "semantic_ranker": true,
-      "semantic_captions": false,
-      "suggest_followup_questions": false,
-      "use_oid_security_filter": false,
-      "use_groups_security_filter": false
+  "messages": [
+    {
+      "content": "Can I do some Scuba diving?",
+      "role": "user"
     }
-  },
+  ],
+  "stream": false,
+  "context": { ... },
   "session_state": null
 }
 ```
@@ -258,27 +252,31 @@ A chat request is sent in a JSON format, containing the user's message, a flag i
 
 #### The chat response
 
-The chat service responds with a series of JSON objects, each representing a chunk of the generated response. This format allows for a dynamic and real-time messaging experience, as each chunk can be sent and rendered as soon as it's ready. Scroll the following code to see the `content` property.
+The chat service responds with a JSON object representing the generated response. The answer is located under the message's `content` property.
 
 ```json
-{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"role": "assistant"}         , "content_filter_results": {...}}]}
-{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": "Based"}          , "content_filter_results": {...}}]}
-{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " on"}            , "content_filter_results": {...}}]}
-{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " the"}           , "content_filter_results": {...}}]}
-{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " information"}   , "content_filter_results": {...}}]}
-{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " provided"}      , "content_filter_results": {...}}]}
-{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": ","}              , "content_filter_results": {...}}]}
-{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " it"}            , "content_filter_results": {...}}]}
-{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " is"}            , "content_filter_results": {...}}]}
-{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " not"}           , "content_filter_results": {...}}]}
-{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " clear"}         , "content_filter_results": {...}}]}
-
+{
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "content": "There is no information available about Scuba diving in the provided sources.",
+        "role": "assistant",
+        "context": { ... }
+      }
+    }
+  ],
+  "object": "chat.completion"
+}
 ```
 
-
-The response format follows the [Newline Delimited JSON (NDJSON)](https://github.com/ndjson/ndjson-spec) specification, which is a convenient way of sending structured data that may be processed one record at a time.
-
 You can learn more about the [chat protocol here](https://github.com/Azure/azureml_run_specification/blob/chat-protocol/specs/chat-protocol/chat-app-protocol.md).
+
+<div class="info" data-title="note">
+
+> If streaming is enabled, the response will be a stream of JSON objects, each representing a chunk of the response. This format allows for a dynamic and real-time messaging experience, as each chunk can be sent and rendered as soon as it's ready. In that case, the response format follows the [Newline Delimited JSON (NDJSON)](https://github.com/ndjson/ndjson-spec) specification, which is a convenient way of sending structured data that may be processed one record at a time.
+
+</div>
 
 ---
 
