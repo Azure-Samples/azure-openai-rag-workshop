@@ -613,7 +613,7 @@ azd provision indexer
 Once the indexer is deployed, you can run the ingestion process using the `scripts/index-data.sh` script on Linux or macOS, or `scripts/index-data.ps1` on Windows:
 
 ```bash
-cd script
+cd scripts
 ./index-data.sh
 ```
 
