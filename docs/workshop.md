@@ -196,6 +196,7 @@ The project template you forked is a monorepo, a single repository containing mu
 
 ```sh
 .devcontainer/  # Dev container configuration
+data/           # Sample PDFs to use as sample custom data
 infra/          # Azure infrastructure templates and scripts
 scripts/        # Scripts to help with document ingestion
 src/            # The different services of our app
@@ -205,6 +206,8 @@ src/            # The different services of our app
 package.json    # NPM workspace configuration
 ```
 
+// TODO Yohan: est ce que l'on a un NPM workspace pour back+front ici ?
+
 As we'll be using Node.js to build our APIs and website, we had setup a [NPM workspace](https://docs.npmjs.com/cli/using-npm/workspaces) to manage the dependencies of all the projects in a single place. This means that when you run `npm install` in the root of the project, it will install all the dependencies of all the projects and make it easier to work in a monorepo.
 
 For example, you can run `npm run <script_name> --workspaces` in the root of the project to run a script in all the projects, or `npm run <script_name> --workspace=backend` to run a script for a specific project. 
@@ -213,17 +216,59 @@ Otherwise, you can use your regular `npm` commands in any project folder and it 
 
 ### About the services
 
-We generated the base code of our differents services with the respective CLI or generator of the frameworks we'll be using, with very few modifications made so we can start working quickly on the most important parts of the workshop.
-
-<!-- <div class="info" data-title="skip notice">
-
-> If you want to skip the Settings API implementation and jump directly to the next section, run this command in the terminal at the root of the project to get the completed code directly: `curl -fsSL https://github.com/Azure-Samples/nodejs-microservices/releases/download/latest/settings-api.tar.gz | tar -xvz`
-
-</div> -->
+We have pre-written several parts of the services to let you dive right in the most relevant parts. 
 
 ### The chat protocol
 
-TK
+Developing a chat-like experience requires two components on top of OpenAI APIs: A chat interface and a chat service exposed via an API. The Chat Backend Protocol is designed to standardize interactions between chat UIs and APIs. By using this protocol, we could develop Mobile apps and Chat APIs in other languages that will work together.
+
+
+#### The Chat request
+
+```json
+{
+  "messages": [{ "content": "Can I do some Scuba diving?", "role": "user" }],
+  "stream": true,
+  "context": {
+    "overrides": {
+      "top": 3,
+      "retrieval_mode": "hybrid",
+      "semantic_ranker": true,
+      "semantic_captions": false,
+      "suggest_followup_questions": false,
+      "use_oid_security_filter": false,
+      "use_groups_security_filter": false
+    }
+  },
+  "session_state": null
+}
+```
+
+
+#### The chat response
+
+```json
+{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"role": "assistant"}         , "content_filter_results": {...}}]}
+{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": "Based"}          , "content_filter_results": {...}}]}
+{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " on"}            , "content_filter_results": {...}}]}
+{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " the"}           , "content_filter_results": {...}}]}
+{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " information"}   , "content_filter_results": {...}}]}
+{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " provided"}      , "content_filter_results": {...}}]}
+{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": ","}              , "content_filter_results": {...}}]}
+{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " it"}            , "content_filter_results": {...}}]}
+{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " is"}            , "content_filter_results": {...}}]}
+{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " not"}           , "content_filter_results": {...}}]}
+{"id": "chat-id", "object": "chat.completion.chunk", "created": 1699370335, "model": "gpt-35-turbo", "choices": [{"index": 0, "finish_reason": null, "delta": {"content": " clear"}         , "content_filter_results": {...}}]}
+
+```
+
+
+https://github.com/ndjson/ndjson-spec
+
+
+
+
+You can learn more about the [chat protocol here](https://github.com/Azure/azureml_run_specification/blob/chat-protocol/specs/chat-protocol/chat-app-protocol.md).
 
 ---
 
@@ -546,11 +591,11 @@ Azure is Microsoft's cloud platform. It provides a wide range of services to bui
 
 First, you need to make sure you have an Azure account. If you don't have one, you can create a free account including Azure credits on the [Azure website](https://azure.microsoft.com/free/).
 
-<!-- <div class="important" data-title="important">
+<div class="important" data-title="important">
 
 > If you're following this workshop in-person at SnowCamp, you can use the following link to get a 50$ Azure Pass credit: [redeem your Azure Pass](https://azcheck.in/sno230125)
 
-</div> -->
+</div>
 
 Once you have your Azure account, open a terminal at the root of the project and run:
 
