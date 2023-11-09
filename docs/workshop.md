@@ -25,7 +25,6 @@ sections_title:
 
 In this workshop, we'll explore the fundamentals of custom ChatGPT experiences based on a corpus of documents. We will create a vector database and fill-in with data from PDF documents, and then build a chat website and API to be able to ask questions about information contained in these documents. 
 
-
 ## You'll learn how to...
 
 - Create a knowledge base using a vector database.
@@ -289,9 +288,9 @@ You can learn more about the [chat protocol here](https://github.com/Azure/azure
 
 To participate in this workshop, you'll need an Azure account. If you don't already have one, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://azure.microsoft.com/free/).
 
-<div class="important" data-title="important" data-visible="$$pass$$">
+<div class="important" data-title="important">
 
-> For participants attending this workshop in-person, you can obtain a $50 Azure Pass credit by using this link: [redeem your Azure Pass]($$pass$$).
+> For participants attending this workshop in-person, you can obtain a $50 Azure Pass credit by using this link: [redeem your Azure Pass](https://azcheck.in/duc231109).
 
 </div>
 
@@ -319,11 +318,11 @@ azd env new openai-rag-workshop
 
 #### Deploy Azure Infrastructure
 
-<div class="important" data-title="important" data-visible="$$proxy$$">
+<div class="important" data-title="important">
 
 > If you're following this workshop in-person at Microsoft France, We have deployed an Open AI service for you. Run this command to leverage this deployment before executing the next command.
 > ```
-> azd env set AZURE_OPENAI_URL $$proxy$$
+> azd env set AZURE_OPENAI_URL https://openai-proxy.icymeadow-771e8803.westeurope.azurecontainerapps.io
 > ```
 
 </div>
