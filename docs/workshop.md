@@ -1,6 +1,6 @@
 ---
 short_title: Create your own ChatGPT with RAG
-description: Discover how to create and populate a vector database, create a web chat interface and an API to expose your agent to the web interface. 
+description: Discover how to create and populate a vector database, create a Web chat interface and an API to expose your agent to the Web interface. 
 type: workshop
 authors:
 - Yohan Lasorsa
@@ -30,10 +30,10 @@ In this workshop, we'll explore the fundamentals of custom ChatGPT experiences b
 
 - Create a knowledge base using a vector database.
 - Ingest documents in a vector database.
-- Create a web API with [Fastify](https://www.fastify.io).
+- Create a Web API with [Fastify](https://www.fastify.io).
 - Use [OpenAI](https://openai.com) models and [LangChain](https://js.langchain.com/docs/) to generate answers based on a prompt.
 - Query a vector database and augment a prompt to generate responses.
-- Connect your web API to a ChatGPT-like website.
+- Connect your Web API to a ChatGPT-like website.
 - Deploy your application on Azure.
 
 ## Prerequisites
@@ -43,7 +43,7 @@ In this workshop, we'll explore the fundamentals of custom ChatGPT experiences b
 | GitHub account       | [Get a free GitHub account](https://github.com/join) |
 | Azure account        | [Get a free Azure account](https://azure.microsoft.com/free) |
 | Access to Azure OpenAI API | [Request access to Azure OpenAI](https://aka.ms/oaiapply) |
-| A web browser        | [Get Microsoft Edge](https://www.microsoft.com/edge) |
+| A Web browser        | [Get Microsoft Edge](https://www.microsoft.com/edge) |
 | JavaScript knowledge | [JavaScript tutorial on MDN documentation](https://developer.mozilla.org/docs/Web/JavaScript)<br>[JavaScript for Beginners on YouTube](https://www.youtube.com/playlist?list=PLlrxD0HtieHhW0NCG7M536uHGOtJ95Ut2) |
 
 We'll use [GitHub Codespaces](https://github.com/features/codespaces) to have an instant dev environment already prepared for this workshop.
@@ -369,7 +369,7 @@ Here's a brief overview of the Azure services we'll use:
 | Service | Purpose |
 | ------- | ------- |
 | [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/) | Hosts our containerized applications with features like auto-scaling and load balancing. |
-| [Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/) | Serves our static web chat with integrated APIs, authentication, and global distribution. |
+| [Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/) | Serves our static Web chat with integrated APIs, authentication, and global distribution. |
 | [Azure Container Registry](https://learn.microsoft.com/azure/container-registry/) | Stores our Docker container images in a managed, private registry. |
 | [Azure Log Analytics](https://learn.microsoft.com/azure/log-analytics/) | Collects and analyzes telemetry and logs for insights into application performance and diagnostics. |
 | [Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/) | Provides comprehensive monitoring of our applications, infrastructure, and network. |
@@ -610,7 +610,7 @@ We'll start the code by creating the Chat API. This API will implement the [Azur
 
 ### Introducing Fastify
 
-We'll be using [Fastify](https://www.fastify.io/) to create our Chat API. Fastify is a web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture.
+We'll be using [Fastify](https://www.fastify.io/) to create our Chat API. Fastify is a Web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture.
 
 It's very similar to [Express](https://expressjs.com), but it's much faster and more lightweight making it a good choice for microservices. It also comes with first-class TypeScript support, and that's what we'll use in our base template.
 
@@ -1100,7 +1100,7 @@ Now that we have our Chat API, it's time to complete the website that will use i
 
 ### Introducing Vite and Lit
 
-We'll use [Vite](https://vitejs.dev/) as a frontend build tool, and [Lit](https://lit.dev/) as a web components library.
+We'll use [Vite](https://vitejs.dev/) as a frontend build tool, and [Lit](https://lit.dev/) as a Web components library.
 
 This frontend will be built as a Single Page Application (SPA), which will be similar to the well-known ChatGPT website. The main difference is that it will get its data from the Chat API that we described in the previous section.
 
@@ -1118,9 +1118,9 @@ This will start the application in development mode. Open [http://localhost:8000
 
 </div>
 
-### The chat web component
+### The chat Web component
 
-We already built a chat web component for you, so you can focus on connecting the chat API. The nice thing about web components is that they are just HTML elements, so you can use thecm in any framework, or even without a framework, just like we do in this workshop.
+We already built a chat Web component for you, so you can focus on connecting the chat API. The nice thing about Web components is that they are just HTML elements, so you can use thecm in any framework, or even without a framework, just like we do in this workshop.
 
 As a result, you can re-use this component in your own projects, and customize it if needed.
 
@@ -1152,7 +1152,7 @@ Now we need to call the chat API we created earlier. For this, we need to edit t
 // const response =
 ```
 
-Here you can use the [Fetch web API](https://developer.mozilla.org/docs/Web/API/Fetch_API/Using_Fetch) to call your chat API. The URL of the API is already available in the `apiUrl` property.
+Here you can use the [Fetch Web API](https://developer.mozilla.org/docs/Web/API/Fetch_API/Using_Fetch) to call your chat API. The URL of the API is already available in the `apiUrl` property.
 
 In the body of the request, you should pass a JSON string containing the messages located in the `options.messages` property.
 
@@ -1173,7 +1173,7 @@ const response = await fetch(`${apiUrl}/chat`, {
 
 </details>
 
-This method will be called from the web component, in the `onSendClicked` method.
+This method will be called from the Web component, in the `onSendClicked` method.
 
 ### Testing the completed website
 
