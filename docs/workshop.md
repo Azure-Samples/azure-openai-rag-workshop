@@ -303,7 +303,7 @@ Before we dive into the details, let's set up the Azure resources needed for thi
 Begin by logging into your Azure subscription with the following command:
 
 ```sh
-azd auth login
+azd auth login --use-device-code
 ```
 
 If you're using Codespaces or your local machine, this command will either log you in directly or provide a *device code* to enter in a browser window. Follow the prompts until you're notified of a successful login.
