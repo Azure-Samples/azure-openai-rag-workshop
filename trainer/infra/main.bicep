@@ -21,15 +21,15 @@ param proxyApiImageName string = ''
   }
 })
 param openAiLocation string // Set in main.parameters.json
-param openAiUrl string = ''
 param openAiSkuName string = 'S0'
+param openAiCapacity int // Set in main.parameters.json
 
 param chatGptDeploymentName string // Set in main.parameters.json
-param chatGptDeploymentCapacity int = 240
+param chatGptDeploymentCapacity int = openAiCapacity
 param chatGptModelName string = 'gpt-35-turbo'
 param chatGptModelVersion string = '0613'
 param embeddingDeploymentName string // Set in main.parameters.json
-param embeddingDeploymentCapacity int = 240
+param embeddingDeploymentCapacity int = openAiCapacity
 param embeddingModelName string = 'text-embedding-ada-002'
 
 @description('Id of the user or app to assign application roles')
@@ -38,7 +38,6 @@ param principalId string = ''
 var abbrs = loadJsonContent('abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
-
 
 // Organize resources in a resource group
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -112,7 +111,7 @@ module proxyApi './core/host/container-app.bicep' = {
   }
 }
 
-module openAi 'core/ai/cognitiveservices.bicep' = if (empty(openAiUrl)) {
+module openAi 'core/ai/cognitiveservices.bicep' = {
   name: 'openai'
   scope: resourceGroup
   params: {
