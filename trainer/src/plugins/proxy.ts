@@ -32,6 +32,8 @@ export default fp(
           await refreshOpenAiToken();
         }
       },
+      // TODO: add and check API key
+      // preValidation: 
       replyOptions: {
         getUpstream: (request, base) => {
           // TODO: load balance

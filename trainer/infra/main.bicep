@@ -10,7 +10,7 @@ param environmentName string
 param location string
 
 param resourceGroupName string = ''
-param proxyApiName string = 'proxy'
+param proxyApiName string = 'openai-proxy'
 param proxyApiImageName string = ''
 
 @description('Location for the OpenAI resource group')

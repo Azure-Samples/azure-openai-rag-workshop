@@ -2,7 +2,7 @@
 
 name: azure-openai-proxy
 services:
-  proxy:
+  openai-proxy:
     project: .
     language: ts
     host: containerapp
