@@ -55,7 +55,7 @@ export const defaultOptions: ChatComponentOptions = {
   suggestFollowupQuestions: true,
   enableContentLinks: false,
   oneShot: false,
-  stream: true,
+  stream: false,
   chunkIntervalMs: 30,
   apiUrl: '',
   enablePromptSuggestions: true,
