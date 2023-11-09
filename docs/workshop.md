@@ -289,11 +289,11 @@ You can learn more about the [chat protocol here](https://github.com/Azure/azure
 
 To participate in this workshop, you'll need an Azure account. If you don't already have one, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://azure.microsoft.com/free/).
 
-<!-- <div class="important" data-title="important">
+<div class="important" data-title="important" data-visible="$$pass$$">
 
-> For participants attending this workshop in-person at Microsoft France, you can obtain a $50 Azure Pass credit by using this link: [redeem your Azure Pass](https://azcheck.in/duc231109).
+> For participants attending this workshop in-person, you can obtain a $50 Azure Pass credit by using this link: [redeem your Azure Pass]($$pass$$).
 
-</div> -->
+</div>
 
 ### Configure your project and deploy infrastructure
 
@@ -319,10 +319,12 @@ azd env new openai-rag-workshop
 
 #### Deploy Azure Infrastructure
 
-<div class="important" data-title="important">
+<div class="important" data-title="important" data-visible="$$proxy$$">
 
 > If you're following this workshop in-person at Microsoft France, We have deployed an Open AI service for you. Run this command to leverage this deployment before executing the next command.
-> ```azd env set AZURE_OPENAI_URL https://proxy.mangoplant-8af6be97.francecentral.azurecontainerapps.io```
+> ```
+> azd env set AZURE_OPENAI_URL $$proxy$$
+> ```
 
 </div>
 
