@@ -38,7 +38,7 @@ rm -rf .env
 
 # Prepare files
 rm -rf src/backend/src/plugins/chat-langchain.ts
-rm -rf src/backend/src/Dockerfile
+rm -rf src/backend/Dockerfile
 
 echo -e "import { type FastifyReply, type FastifyPluginAsync } from 'fastify';
 
