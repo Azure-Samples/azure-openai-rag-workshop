@@ -345,6 +345,9 @@ After your infrastructure is deployed, run this command:
 
 ```bash
 azd env get-values > .env
+
+# Remove all double quotes, as they are not supported by Docker
+perl -pi -e 's/\"//g' .env
 ```
 
 This will create a `.env` file at the root of your repository, containing the environment variables needed to connect to your Azure services.
