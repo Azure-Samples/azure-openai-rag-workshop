@@ -981,7 +981,44 @@ npm run dev
 
 This will start the API in development mode, which means it will automatically restart if you make changes to the code.
 
+To test this API, you can either use the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) extension for VS Code, or a cURL request.
+
+#### Option 1: Using the REST Client extension
+
 Open the file `src/backend/test.http` file. Go to the "Chat with the bot" comment and hit the **Send Request** button below to test the API.
+
+You can play a bit and change the question to see how the model behaves.
+
+When you're done with the testing, stop the server by pressing `Ctrl+C` in each of the terminals.
+
+After you checked that everything works as expected, don't forget to commit your changes to the repository, to keep track of your progress.
+
+#### Option 2: using cURL requests
+
+Open up a new terminal in VS Code, and run the following commands:
+  
+  ```bash
+curl -X POST "http://localhost:3000/chat" \
+     -H "Content-Type: application/json" \
+     -d '{
+        "messages": [{
+          "content": "How to search and book rentals?",
+          "role": "user"
+        }]
+      }'
+  ```
+
+  ```bash
+curl -X POST "http://localhost:3000/chat" \
+     -H "Content-Type: application/json" \
+     -d '{
+        "messages": [{
+          "content": "How to search and book rentals?",
+          "role": "user"
+        }],
+        "stream": true
+      }'
+  ```
 
 You can play a bit and change the question to see how the model behaves.
 
