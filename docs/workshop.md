@@ -1161,7 +1161,7 @@ This will start the application in development mode. Open [http://localhost:8000
 
 ### The chat Web component
 
-We already built a chat Web component for you, so you can focus on connecting the chat API. The nice thing about Web components is that they are just HTML elements, so you can use thecm in any framework, or even without a framework, just like we do in this workshop.
+We already built a chat Web component for you, so you can focus on connecting the chat API. The nice thing about Web components is that they are just HTML elements, so you can use them in any framework, or even without a framework, just like we do in this workshop.
 
 As a result, you can re-use this component in your own projects, and customize it if needed.
 
