@@ -1355,12 +1355,7 @@ To delete the Azure resources, you can run this command:
 azd down --purge
 ```
 
-### References
-
-- This workshop URL: [aka.ms/ws/openai-rag](https://aka.ms/ws/openai-rag)
-- The source repository for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop)
-- The base template for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop-template)
-- If something does not work: [Report an issue](https://github.com/Azure-Samples/azure-openai-rag-workshop/issues)
+### Going further
 
 This workshop is based on the enterprise-ready sample **ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search**:
 
@@ -1370,3 +1365,11 @@ This workshop is based on the enterprise-ready sample **ChatGPT + Enterprise dat
 - [C# version](https://github.com/Azure-Samples/azure-search-openai-demo-csharp)
 
 If you want to go further with more advanced use-cases, authentication, history and more, you should check it out!
+
+### References
+
+- This workshop URL: [aka.ms/ws/openai-rag](https://aka.ms/ws/openai-rag)
+- The source repository for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop)
+- The base template for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop-template)
+- If something does not work: [Report an issue](https://github.com/Azure-Samples/azure-openai-rag-workshop/issues)
+- Introduction presentation for this workshop: [Slides](https://azure-samples.github.io/azure-openai-rag-workshop/)
