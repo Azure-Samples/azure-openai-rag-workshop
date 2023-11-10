@@ -10,7 +10,7 @@ contacts:
 - '@sinedied'
 - '@juliendubois'
 - '@cmaneu'
-# banner_url: assets/todo-banner.jpg
+banner_url: assets/banner.jpg
 duration_minutes: 120
 audience: students, devs
 level: intermediate
