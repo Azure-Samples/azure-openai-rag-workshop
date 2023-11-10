@@ -234,7 +234,7 @@ Creating a chat-like experience requires two main components: a user interface a
 
 #### The Chat request
 
-A chat request is sent in JSON format, and must container at least the user's message. Other optional parameters include a flag indicating if the response should be streamed, context-specific options that can tailor the chat service's behavior and a session state object that can be used to maintain state between requests.
+A chat request is sent in JSON format, and must contain at least the user's message. Other optional parameters include a flag indicating if the response should be streamed, context-specific options that can tailor the chat service's behavior and a session state object that can be used to maintain state between requests.
 
 ```json
 {
