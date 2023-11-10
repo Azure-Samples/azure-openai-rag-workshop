@@ -279,7 +279,6 @@ You can learn more about the [chat protocol here](https://github.com/Azure/azure
 
 ---
 
-
 ## Azure setup
 
 [Azure](https://azure.microsoft.com) is Microsoft's comprehensive cloud platform, offering a vast array of services to build, deploy, and manage applications across a global network of Microsoft-managed data centers. In this workshop, we'll leverage several Azure services to run our chat application.
@@ -288,11 +287,11 @@ You can learn more about the [chat protocol here](https://github.com/Azure/azure
 
 To participate in this workshop, you'll need an Azure account. If you don't already have one, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://azure.microsoft.com/free/).
 
-<div class="important" data-title="important">
+<!-- <div class="important" data-title="important">
 
 > For participants attending this workshop in-person, you can obtain a $50 Azure Pass credit by using this link: [redeem your Azure Pass](https://azcheck.in/duc231109).
 
-</div>
+</div> -->
 
 ### Configure your project and deploy infrastructure
 
@@ -318,14 +317,14 @@ azd env new openai-rag-workshop
 
 #### Deploy Azure Infrastructure
 
-<div class="important" data-title="important">
+<!-- <div class="important" data-title="important">
 
 > If you're following this workshop in-person at Microsoft France, We have deployed an Open AI service for you. Run this command to leverage this deployment before executing the next command.
 > ```
 > azd env set AZURE_OPENAI_URL https://openai-proxy.icymeadow-771e8803.westeurope.azurecontainerapps.io
 > ```
 
-</div>
+</div> -->
 
 Now it's time to deploy the Azure infrastructure for the workshop. Execute the following command:
 
