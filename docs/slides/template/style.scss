@@ -640,17 +640,6 @@ table {
   top: 53%;
 }
 
-.sketch {
-  font-family: 'Virgil', cursive;
-}
-
-.all-sketch {
-  &, 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Virgil', cursive;
-  }
-}
-
 .graffiti {
   font-family: 'Tag', cursive;
 }
@@ -719,25 +708,6 @@ table {
 
 .bg-green {
   background-color: #009530;
-}
-
-.true-badge, .false-badge, .maybe-badge {
-  position: absolute;
-  top: 0.3em;
-  right: 1em;
-  height: 4em;
-  width: 100%;
-  z-index: 10;
-  background: url(images/true.png) no-repeat right;
-  background-size: contain;
-}
-
-.false-badge {
-  background-image: url(images/false.png);
-}
-
-.maybe-badge {
-  background-image: url(images/maybe.png);
 }
 
 .dark-box {

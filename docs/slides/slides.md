@@ -1,14 +1,3 @@
-exclude: true
-
-<!-- 
-TO SHOW THE SLIDES:
-==================
-npm i -g backslide
-cd <current_folder>
-bs serve
--->
-
----
 title: Understanding AI - Build your own enterprise ChatGPT with LangChain
 class: animation-fade
 layout: true
@@ -33,32 +22,6 @@ background-image: url(images/ai.jpg)
   Yohan | Christopher | Julien
 ]
 
-<!-- .full-layer.space-left.left.full-bottom.no-margin.conf-logo[
-.w-15.responsive.logo-filter[![](images/devoxxma.png)]
-] -->
-
-<style>
-.conf-logo { padding-bottom: .25em; }
-</style>
-
----
-
-exclude: true
-class: middle, center, hide-handle
-# .large.sketch[About me]
-
-.table.row.middle[
-.col-4.center[
-  .w-70.responsive.avatar.tada.animated[![](images/me.jpg)]
-]
-.col-8.bit-larger.left.middle[
-
-.responsive[
-<object data="images/me.svg"></object>
-]
-]
-]
-
 ---
 
 class: center, middle, hide-handle
@@ -67,7 +30,7 @@ class: center, middle, hide-handle
 .table.row.middle.center[
 .col-2[]
 .col-3.center[
-  .w-70.responsive.avatar.bounceInLeft.animated[![](images/me.jpg)]
+  .w-70.responsive.avatar.bounceInLeft.animated[![](images/yohan.jpg)]
 
   **Yohan Lasorsa**<br>
   .fab.fa-linkedin[] .e[/yohanlasorsa]<br>
@@ -100,9 +63,9 @@ class: center
 ---
 
 .col-6.float-left[
-  .w-80.responsive[![](./images/dummies.jpg)]
+  .w-90.responsive[![](./images/llm-magazine.jpg)]
 ]
-.col-6.float-left[
+.col-6.float-left.space-left[
   <br><br>
 
   # LLM crash course
@@ -116,10 +79,9 @@ class: center
 ]
 
 ???
-- Est-ce que vous êtes chauds pour faire un de maths?
-  * ca tombe bien, moi non plus :D
-- Pour bien savoir utiliser un outil, c'est mieux de comprendre comment il fonctionne
-- On va prendre ici un point de vue de dev, car je n'ai pas de PhD en ML
+- Who wants to do some maths? Great, me neither!
+- To know who to use a tool, it's better to understand how it works
+- We'll take the view of a dev, not a PhD in ML
 
 ---
 
@@ -127,13 +89,11 @@ class: center
 
 # Training
 
-.w-80.responsive[
-  <object data="images/llm-training.svg"></object>
-]
+.w-80.responsive[![](images/llm-training.png)]
 
 ???
-- pre-training: expensive $$$ (modèles fondamentaux)
-- fine-tuning: cheap $ (modèles spécialisés)
+- pre-training: expensive $$$ (fundamental models)
+- fine-tuning: cheap $ (specialized models)
 - RLHF: long and complicated
 
 ---
@@ -212,29 +172,23 @@ rough('.circled', { type: 'circle', color: '#f22', strokeWidth: 4, padding: 50, 
 - LLMs may reflect the biases of the training data
 ???
 - Humans do both logical and stereotypical reasoning, LLMs do not have logic
-???
-- Who can give some code-related biases?
+- Who can give some biases examples?
 --
 
-- Examples:
-  * Optimized code?
-  * Accessible code?
-  * Best language to learn?
+- Examples?
 
 ---
 
 class: center
 # Embeddings
 
-.w-80.responsive[
-  <object data="images/embedding.svg"></object>
-]
+.w-80.responsive[![](images/embedding.png)]
 
 ???
 - Embedding: vector representation of a piece of data, that captures the underlying structure and relationships between pieces of data
 - Embeddings are used to build vector DBs
 - This is how we "memorize" things (ie your data) in LLMs
-- Ex: textes de loi
+- Example: law texts, medical texts, etc.
 
 ---
 
@@ -356,9 +310,7 @@ Therefore, your sister is currently 36 years old.
 Use a vector DB to retrieve relevant information and add it to augment the context
 
 .center[
-.w-75.responsive[
-<object data="images/rag.svg"></object>
-]
+.w-75.responsive[![](images/rag.png)]
 ]
 
 ---
@@ -368,9 +320,7 @@ Use a vector DB to retrieve relevant information and add it to augment the conte
 A program that perceives its environment, make decisions and takes actions to achieve goals autonomously.
 
 .center[
-.w-65.responsive[
-  <object data="images/agent.svg"></object>
-]
+.w-65.responsive[![](images/agent.png)]
 ]
 
 ???
@@ -382,7 +332,7 @@ A program that perceives its environment, make decisions and takes actions to ac
 - [Semantic Kernel](https://github.com/microsoft/semantic-kernel)
 
 They provide an abstraction layer on top of the LLM APIs, and
-by facilitate the assembly (or "chain") of different components.
+facilitate the assembly<br> (or "chain") of different components.
 
 .small[
 ```python
@@ -422,8 +372,8 @@ OpenAI is an artificial intelligence research company.
 # The OpenAI API
 
 - Provides several [models](https://platform.openai.com/docs/models) with different capabilities and price ([doc](https://platform.openai.com/docs/api-reference) and [examples](https://platform.openai.com/examples)).
-- Interact with the API through **HTTP requests**, or using language-specific **SDKs** such as the official Python.
-- You need to have an account and an **API key** to use it.
+- Interact with the API through .primary-text[**HTTP requests**], or using language-specific .primary-text[**SDKs**] such as the official Python.
+- You need to have an account and an .primary-text[**API key**] to use it.
 
 .small[
 ```python
@@ -451,56 +401,16 @@ response = openai.ChatCompletion.create(
 
 Microsoft Azure is a cloud computing platform that offers a wide range of services and solutions for developers, businesses, and organizations.
 
-- It is open and flexible, allowing you to use the tools, languages, and frameworks of your choice.
-- It is scalable and reliable, enabling you to handle any workload and demand with high availability and performance.
-- It is secure and compliant, protecting your data and applications with advanced security features and certifications.
+#### Azure is...
+
+- .primary-text[**Open**] and .primary-text[**flexible**], allowing you to use the tools, languages, and frameworks of your choice.
+- .primary-text[**Scalable**] and .primary-text[**reliable**], enabling you to handle any workload and demand with high availability and performance.
+- .primary-text[**Secure**] and .primary-text[**compliant**], protecting your data and applications with advanced security features and certifications.
 
 *There is a specific agreement between Azure and OpenAI, allowing you to use the OpenAI API on Azure. This service, called Azure OpenAI, is what we will be using in this workshop.*
 
 <style>
 .bigup { margin-top: -2.6em; }
-</style>
-
----
-
-exclude: true
-class: middle, center, hide-handle, clist
-
-.w-90.responsive[
-<object data="images/thanks.svg"></object>
-]
-
-???
-Feedback please!
-
----
-
-exclude: true
-class: middle, center, hide-handle, clist, big-text
-
-# Thank you!
-
-.arrow[
-  .w-45.responsive[![](images/arrow.svg)]
-]
-
-.row.table.middle[
-.col-6.right.space-right[
-<object data="images/qrcode.svg"></object>
-]
-.col-6.left[
-.large[[bit.ly/ai-for-dev](https://bit.ly/ai-for-dev)]
-]
-]
-
-@sinedied
-
-<style>
-.arrow {
-  position: absolute;
-  top: 24%;
-  left: 40%;  
-}
 </style>
 
 ---
@@ -526,4 +436,8 @@ class: center, middle, big-text
 - [Awesome LangChain](https://github.com/kyrolabs/awesome-langchain)
 - [Responsible Generative AI training](https://learn.microsoft.com/training/modules/responsible-generative-ai/)
 - [Microsoft announces new Copilot Copyright Commitment for customers](https://blogs.microsoft.com/on-the-issues/2023/09/07/copilot-copyright-commitment-ai-legal-concerns/)
-- [ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search](https://github.com/Azure-Samples/azure-search-openai-javascript/)
+- **ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search sample**:
+  * [JavaScript](https://github.com/Azure-Samples/azure-search-openai-javascript/)
+  * [Python version](https://github.com/Azure-Samples/azure-search-openai-demo/)
+  * [Java version](https://github.com/Azure-Samples/azure-search-openai-demo-java)
+  * [C# version](https://github.com/Azure-Samples/azure-search-openai-demo-csharp)
