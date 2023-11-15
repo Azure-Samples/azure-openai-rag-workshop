@@ -40,9 +40,11 @@ export default fp(
           return openAiUrl;
         },
         rewriteRequestHeaders: (request, headers) => {
+          const apiKey = config.azureOpenAiApiKey || openAiToken.token;
           return {
             ...headers,
-            'api-key': config.azureOpenAiApiKey || openAiToken.token,
+            authorization: `Bearer ${apiKey}`,
+            'api-key': apiKey,
           };
         },
       },
