@@ -11,7 +11,7 @@ cd ../..
 BASE_DIR=$(pwd)
 TEMPLATE_HOME=/tmp/azure-openai-rag-workshop
 GH_USER=$(git config user.name)
-TEMPLATE_REPO=https://$GH_USER:$GH_TOKEN@github.com/Azure-Samples/azure-openai-rag-workshop-template.git
+TEMPLATE_REPO=https://$GH_USER:$GH_TOKEN@github.com/Azure-Samples/azure-openai-rag-workshop.git
 
 echo "Preparing GitHub project template..."
 echo "(temp folder: $TEMPLATE_HOME)"
