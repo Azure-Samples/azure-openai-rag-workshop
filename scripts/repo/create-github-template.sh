@@ -16,12 +16,17 @@ TEMPLATE_REPO=https://$GH_USER:$GH_TOKEN@github.com/Azure-Samples/azure-openai-r
 echo "Preparing GitHub project template..."
 echo "(temp folder: $TEMPLATE_HOME)"
 rm -rf "$TEMPLATE_HOME"
-mkdir -p "$TEMPLATE_HOME"
+
+# Clone the template repo and start from the base branch to keep
+# the contributors history in the main branch we'll overwrite
+git clone "$TEMPLATE_REPO" "$TEMPLATE_HOME"
+pushd "$TEMPLATE_HOME"
+git reset --hard origin/base
+popd
+
 find . -type d -not -path '*node_modules*' -not -path '*.git/*' -not -path '*/dist' -not -path '*dist/*' -exec mkdir -p '{}' "$TEMPLATE_HOME/{}" ';'
 find . -type f -not -path '*node_modules*' -not -path '*.git/*' -not -path '*dist/*' -exec cp -r '{}' "$TEMPLATE_HOME/{}" ';'
 cd "$TEMPLATE_HOME"
-rm -rf .git
-git init -b main
 
 # Remove unnecessary files
 rm -rf node_modules
@@ -180,16 +185,15 @@ export async function* getChunksFromResponse<T>(response: Response, intervalMs: 
 }
 " > src/frontend/src/api.ts
 
-
+# Prepare the commit
+git add .
+git commit -m "chore: prepare project template"
 
 if [[ ${1-} == "--local" ]]; then
   echo "Local mode: skipping GitHub push."
   open "$TEMPLATE_HOME"
 else
   # Update git repo
-  git remote add origin $TEMPLATE_REPO
-  git add .
-  git commit -m "chore: initial commit"
   git push -u origin main --force
 
   rm -rf "$TEMPLATE_HOME"
