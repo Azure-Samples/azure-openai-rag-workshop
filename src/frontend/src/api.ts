@@ -2,20 +2,11 @@ import { type ChatResponse, type ChatRequestOptions, type ChatResponseChunk } fr
 
 export const apiBaseUrl = import.meta.env.VITE_BACKEND_API_URI || '';
 
-export async function getCompletion(options: ChatRequestOptions) {
+export async function getCompletion(options: ChatRequestOptions, oneShot = false) {
   const apiUrl = options.apiUrl || apiBaseUrl;
-  const response = await fetch(`${apiUrl}/chat`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      messages: options.messages,
-      stream: options.stream,
-      context: {
-        top: options.top,
-        temperature: options.temperature,
-      },
-    }),
-  });
+
+  // TODO: complete call to Chat API here
+  // const response =
 
   if (options.stream) {
     return getChunksFromResponse<ChatResponseChunk>(response as Response, options.chunkIntervalMs);
@@ -73,3 +64,4 @@ export async function* getChunksFromResponse<T>(response: Response, intervalMs: 
     });
   }
 }
+
