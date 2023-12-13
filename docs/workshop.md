@@ -121,7 +121,7 @@ Before diving into development, let's set up your project environment. This incl
 
 ### Creating your project
 
-1. Open [this GitHub repository](https://github.com/Azure-Samples/azure-openai-rag-workshop-template)
+1. Open [this GitHub repository](https://github.com/Azure-Samples/azure-openai-rag-workshop)
 2. Click the **Fork** button and click on **Create fork** to create a copy of the project in your own GitHub account.
 
 ![Screenshot of GitHub showing the Fork button](./assets/fork-project.png)
@@ -1368,7 +1368,7 @@ If you want to go further with more advanced use-cases, authentication, history 
 ### References
 
 - This workshop URL: [aka.ms/ws/openai-rag](https://aka.ms/ws/openai-rag)
-- The source repository for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop)
-- The base template for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop-template)
+- The source repository for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop/tree/base)
+- The base template for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop)
 - If something does not work: [Report an issue](https://github.com/Azure-Samples/azure-openai-rag-workshop/issues)
 - Introduction presentation for this workshop: [Slides](https://azure-samples.github.io/azure-openai-rag-workshop/)
