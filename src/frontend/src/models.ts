@@ -33,27 +33,14 @@ export type ChatResponseChunk = {
   error?: string;
 };
 
-export type Approaches = 'rtr' | 'rrr';
-
-export type RetrievalMode = 'hybrid' | 'vectors' | 'text';
-
 export type ChatRequestOptions = {
   messages: Message[];
   stream: boolean;
-  approach: Approaches;
-  suggestFollowupQuestions: boolean;
   chunkIntervalMs: number;
   apiUrl: string;
 } & ChatRequestOverrides;
 
 export type ChatRequestOverrides = {
-  retrievalMode?: RetrievalMode;
-  semanticRanker?: boolean;
-  semanticCaptions?: boolean;
-  excludeCategory?: string;
   top?: number;
   temperature?: number;
-  promptTemplate?: string;
-  promptTemplatePrefix?: string;
-  promptTemplateSuffix?: string;
 };

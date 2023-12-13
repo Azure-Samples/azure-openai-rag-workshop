@@ -2,26 +2,17 @@ import { type ChatResponse, type ChatRequestOptions, type ChatResponseChunk } fr
 
 export const apiBaseUrl = import.meta.env.VITE_BACKEND_API_URI || '';
 
-export async function getCompletion(options: ChatRequestOptions, oneShot = false) {
+export async function getCompletion(options: ChatRequestOptions) {
   const apiUrl = options.apiUrl || apiBaseUrl;
-  const response = await fetch(`${apiUrl}/${oneShot ? 'ask' : 'chat'}`, {
+  const response = await fetch(`${apiUrl}/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       messages: options.messages,
-      stream: !oneShot && options.stream,
+      stream: options.stream,
       context: {
-        approach: options.approach,
-        retrieval_mode: options.retrievalMode,
-        semantic_ranker: options.semanticRanker,
-        semantic_captions: options.semanticCaptions,
         top: options.top,
         temperature: options.temperature,
-        prompt_template: options.promptTemplate,
-        prompt_template_prefix: options.promptTemplatePrefix,
-        prompt_template_suffix: options.promptTemplateSuffix,
-        exclude_category: options.excludeCategory,
-        suggest_followup_questions: options.suggestFollowupQuestions,
       },
     }),
   });

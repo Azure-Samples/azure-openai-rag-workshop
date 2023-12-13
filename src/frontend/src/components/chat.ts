@@ -27,7 +27,6 @@ export type ChatComponentState = {
 };
 
 export type ChatComponentOptions = ChatRequestOptions & {
-  oneShot: boolean;
   enablePromptSuggestions: boolean;
   enableContentLinks: boolean;
   promptSuggestions: string[];
@@ -51,10 +50,7 @@ export type ChatComponentOptions = ChatRequestOptions & {
 };
 
 export const defaultOptions: ChatComponentOptions = {
-  approach: 'rrr' as const,
-  suggestFollowupQuestions: true,
   enableContentLinks: false,
-  oneShot: false,
   stream: false,
   chunkIntervalMs: 30,
   apiUrl: '',
@@ -155,8 +151,8 @@ export class ChatComponent extends LitElement {
     this.isLoading = true;
     this.scrollToLastMessage();
     try {
-      const response = await getCompletion({ ...this.options, messages: this.messages }, this.options.oneShot);
-      if (this.options.stream && !this.options.oneShot) {
+      const response = await getCompletion({ ...this.options, messages: this.messages });
+      if (this.options.stream) {
         this.isStreaming = true;
         const chunks = response as AsyncGenerator<ChatResponseChunk>;
         const messages = this.messages;
