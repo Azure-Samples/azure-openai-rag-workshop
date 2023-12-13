@@ -6,6 +6,8 @@ In this workshop, we will build a chatbot based on OpenAI language models and im
 
 👉 [See the workshop](https://aka.ms/ws/openai-rag)
 
+👉 [See the completed solution and workshop source](https://github.com/Azure-Samples/azure-openai-rag-workshop/tree/base)
+
 ## Prerequisites
 
 - **Node.js v18+**
