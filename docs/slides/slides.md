@@ -225,7 +225,7 @@ Use in-context examples to condition the output
 ```
 Bonjour Devoxx: french
 Brian is in the kitchen: english
-Danke schön: german
+Dankeschön: german
 Den här koden är hemsk:
 ```
 ]
