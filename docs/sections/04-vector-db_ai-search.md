@@ -23,7 +23,7 @@ Some of the most popular ones are:
 
 ### Introducing Azure AI Search
 
-![Azure AI Search Logo](./assets/azure-cognitive-search-logo.png)
+![Azure AI Search Logo](./assets/azure-ai-search-logo.png)
 
 [Azure AI Search](https://azure.microsoft.com/products/ai-services/cognitive-search/) can be used as a vector database that can store, index, and query vector embeddings from a search index. You can use it to power similarity search, multi-modal search, recommendation systems, or applications implementing the RAG architecture.
 
@@ -39,4 +39,4 @@ Open the [Azure Portal](https://portal.azure.com/), and search for the **AI Sear
 
 You should see a service named `gptkb-<your_random_name>` in the list. This instance is currently empty, and we will create an index and populate it with data in the next section.
 
-![Screenshot of Azure AI Search](./assets/azure-cognitive-search.png)
+![Screenshot of Azure AI Search](./assets/azure-ai-search.png)

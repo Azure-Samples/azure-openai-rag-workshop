@@ -85,8 +85,8 @@ In the [Azure Portal](https://portal.azure.com/), you can now find again the ser
 
 In the **Search management** section on the left, select the **Indexes** tab. You should see the `kbindex` index in the list.
 
-![Screenshot of the Azure Cognitive Search indexes](./assets/azure-cognitive-search-indexes.png)
+![Screenshot of the Azure Cognitive Search indexes](./assets/azure-ai-search-indexes.png)
 
 You can select that index and browse it. For example, in the **Search explorer** tab, if you ingested the original PDF files that were about the *Contoso Real Estate* company, you can search for `rentals` and see the results:
 
-![Screenshot of the search results in the index](./assets/azure-cognitive-search-results.png)
+![Screenshot of the search results in the index](./assets/azure-ai-search-results.png)
