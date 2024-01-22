@@ -22,7 +22,7 @@ Do no repeat questions that have already been asked.
 Make sure the last question ends with ">>".`;
 
 /**
- * Simple retrieve-then-read implementation, using the Cognitive Search and OpenAI APIs directly.
+ * Simple retrieve-then-read implementation, using the AI Search and OpenAI APIs directly.
  * It first retrieves top documents from search, then constructs a prompt with them, and then uses
  * OpenAI to generate an completion (answer) with that prompt.
  */
@@ -223,11 +223,11 @@ export default fp(
   async (fastify, options) => {
     const config = fastify.config;
 
-    // Use the current user identity to authenticate with Azure OpenAI and Cognitive Search.
+    // Use the current user identity to authenticate with Azure OpenAI and AI Search.
     // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
     const credential = new DefaultAzureCredential();
 
-    // Set up Azure Cognitive Search client
+    // Set up Azure AI Search client
     const searchClient = new SearchClient<any>(
       `https://${config.azureSearchService}.search.windows.net`,
       config.azureSearchIndex,

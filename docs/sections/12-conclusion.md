@@ -26,7 +26,7 @@ azd down --purge
 
 ### Going further
 
-This workshop is based on the enterprise-ready sample **ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search**:
+This workshop is based on the enterprise-ready sample **ChatGPT + Enterprise data with Azure OpenAI and AI Search**:
 
 - [JavaScript version](https://github.com/Azure-Samples/azure-search-openai-javascript)
 - [Python version](https://github.com/Azure-Samples/azure-search-openai-demo/)

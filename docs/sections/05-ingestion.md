@@ -37,7 +37,7 @@ async createEmbedding(text: string): Promise<number[]> {
 
 #### Adding the documents to the vector database
 
-The embeddings along with the original texts are then added to the vector database using the [Azure Cognitive Search JavaScript client library](https://www.npmjs.com/package/@azure/search-documents). This process is done in batches, to improve performance and limit the number of requests:
+The embeddings along with the original texts are then added to the vector database using the [Azure AI Search JavaScript client library](https://www.npmjs.com/package/@azure/search-documents). This process is done in batches, to improve performance and limit the number of requests:
 
 ```ts
 const searchClient = this.azure.searchIndex.getSearchClient(indexName);
@@ -77,7 +77,7 @@ Once the indexer is deployed, you can run the ingestion process by running the `
 
 ![Screenshot of the indexer CLI](./assets/indexer-cli.png)
 
-Once this process is executed, a new index will be available in your Azure Cognitive Search service, where you can see the documents that were ingested.
+Once this process is executed, a new index will be available in your Azure AI Search service, where you can see the documents that were ingested.
 
 ### Test the vector database
 
@@ -85,7 +85,7 @@ In the [Azure Portal](https://portal.azure.com/), you can now find again the ser
 
 In the **Search management** section on the left, select the **Indexes** tab. You should see the `kbindex` index in the list.
 
-![Screenshot of the Azure Cognitive Search indexes](./assets/azure-ai-search-indexes.png)
+![Screenshot of the Azure AI Search indexes](./assets/azure-ai-search-indexes.png)
 
 You can select that index and browse it. For example, in the **Search explorer** tab, if you ingested the original PDF files that were about the *Contoso Real Estate* company, you can search for `rentals` and see the results:
 

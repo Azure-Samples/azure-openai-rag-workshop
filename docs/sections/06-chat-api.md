@@ -66,16 +66,16 @@ import { DefaultAzureCredential } from '@azure/identity';
 Then add this code to retrieve the credentials below the `const config = fastify.config;` line:
 
 ```ts
-// Use the current user identity to authenticate with Azure OpenAI and Cognitive Search.
+// Use the current user identity to authenticate with Azure OpenAI and AI Search.
 // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
 const credential = new DefaultAzureCredential();
 ```
 
-This will use the current user identity to authenticate with Azure OpenAI and Cognitive Search. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
+This will use the current user identity to authenticate with Azure OpenAI and AI Search. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
 
-#### Azure Cognitive Search client
+#### Azure AI Search client
 
-Next we'll create the Azure Cognitive Search client. Add this import at the top of the file:
+Next we'll create the Azure AI Search client. Add this import at the top of the file:
 
 ```ts
 import { SearchClient } from '@azure/search-documents';
@@ -84,7 +84,7 @@ import { SearchClient } from '@azure/search-documents';
 Then add this code below the credentials retrieval:
 
 ```ts
-// Set up Azure Cognitive Search client
+// Set up Azure AI Search client
 const searchClient = new SearchClient<any>(
   `https://${config.azureSearchService}.search.windows.net`,
   config.azureSearchIndex,
@@ -92,11 +92,11 @@ const searchClient = new SearchClient<any>(
 );
 ```
 
-We need to provide the URL of our Azure Cognitive Search service, the name of the index we want to use, and the credentials we retrieved earlier.
+We need to provide the URL of our Azure AI Search service, the name of the index we want to use, and the credentials we retrieved earlier.
 
 #### LangChain clients
 
-Finally, it's time to create the LangChain clients. Add this code below the Azure Cognitive Search client initialization:
+Finally, it's time to create the LangChain clients. Add this code below the Azure AI Search client initialization:
 
 ```ts
 // Show the OpenAI URL used in the logs
@@ -151,8 +151,8 @@ const chatService = new ChatService(
 We feed the `ChatService` instance with the different clients we created, and the a few configuration options that we need:
 - The name of the GPT model to use (`gpt-35-turbo`)
 - The name of the embedding model to use (`text-embedding-ada-002`)
-- The name of the field in the Azure Cognitive Search index that contains the page number of the document (`sourcepage`)
-- The name of the field in the Azure Cognitive Search index that contains the content of the document (`content`)
+- The name of the field in the Azure AI Search index that contains the page number of the document (`sourcepage`)
+- The name of the field in the Azure AI Search index that contains the content of the document (`content`)
 
 #### Retrieving the documents
 
@@ -171,7 +171,7 @@ const queryVector = await embeddingsClient.embedQuery(query);
 
 To compute the embedding, we first use the embeddings client we created earlier, and call the `embedQuery` method. This method will convert the query into a vector, using the embedding model we specified.
 
-Now that we have the query vector, we can call the Azure Cognitive Search client to retrieve the documents:
+Now that we have the query vector, we can call the Azure AI Search client to retrieve the documents:
 
 ```ts
 // Performs a hybrid search (vectors + text)
@@ -189,9 +189,9 @@ const searchResults = await this.searchClient.search(query, {
 ```
 
 We pass a few options to the `search` method:
-- The query, which is the question we want to ask. If we pass both a query and a vector, Azure Cognitive Search will perform a hybrid search, which combines semantic and vector search in the same query. To only perform a vector search, we can pass an empty string as the query.
+- The query, which is the question we want to ask. If we pass both a query and a vector, Azure AI Search will perform a hybrid search, which combines semantic and vector search in the same query. To only perform a vector search, we can pass an empty string as the query.
 - `top` is the number of documents we want to retrieve
-- `vectors` is an array of vectors to use for the search. In our case we only have one vector, the query vector we computed earlier. We also specify the number of nearest neighbors to retrieve, and the name of the field that contains the vector in the Azure Cognitive Search index.
+- `vectors` is an array of vectors to use for the search. In our case we only have one vector, the query vector we computed earlier. We also specify the number of nearest neighbors to retrieve, and the name of the field that contains the vector in the Azure AI Search index.
 
 Let's process the search results to extract the documents' content:
 

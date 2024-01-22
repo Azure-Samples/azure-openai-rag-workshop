@@ -437,7 +437,7 @@ class: center, middle, big-text
 - [Responsible Generative AI training](https://learn.microsoft.com/training/modules/responsible-generative-ai/)
 - [Generative AI for Beginners Free Course](https://github.com/microsoft/generative-ai-for-beginners)
 - [Microsoft announces new Copilot Copyright Commitment for customers](https://blogs.microsoft.com/on-the-issues/2023/09/07/copilot-copyright-commitment-ai-legal-concerns/)
-- **ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search sample**:
+- **ChatGPT + Enterprise data with Azure OpenAI and AI Search sample**:
   * [JavaScript](https://github.com/Azure-Samples/azure-search-openai-javascript/)
   * [Python version](https://github.com/Azure-Samples/azure-search-openai-demo/)
   * [Java version](https://github.com/Azure-Samples/azure-search-openai-demo-java)
