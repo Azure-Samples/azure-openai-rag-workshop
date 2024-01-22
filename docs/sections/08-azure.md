@@ -24,7 +24,7 @@ Begin by logging into your Azure subscription with the following command:
 azd auth login --use-device-code
 ```
 
-If you're using Codespaces or your local machine, this command will either log you in directly or provide a *device code* to enter in a browser window. Follow the prompts until you're notified of a successful login.
+This command will provide you a *device code* to enter in a browser window. Follow the prompts until you're notified of a successful login.
 
 #### Create a New Environment
 
@@ -34,16 +34,17 @@ Next, set up a new environment. The Azure Developer CLI uses environments to man
 azd env new openai-rag-workshop
 ```
 
-#### Deploy Azure Infrastructure
+<div data-visible="$$proxy$$">
 
-<div class="important" data-title="important" data-visible="$$proxy$$">
+As we have deployed an Open AI service for you, run this command to set the OpenAI URL we want to use:
 
-> If you're following this workshop in-person at a conference, we have deployed an Open AI service for you. Run this command to leverage this deployment before executing the next command.
-> ```
-> azd env set AZURE_OPENAI_URL $$proxy$$
-> ```
+```
+azd env set AZURE_OPENAI_URL $$proxy$$
+```
 
 </div>
+
+#### Deploy Azure Infrastructure
 
 Now it's time to deploy the Azure infrastructure for the workshop. Execute the following command:
 

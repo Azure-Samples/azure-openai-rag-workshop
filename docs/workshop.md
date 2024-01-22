@@ -104,7 +104,7 @@ The RAG process involves the following steps:
 
 1. **Embedding Computation**: Converts a user's prompt into an embedding for similarity comparisons.
 
-2. **Document Retrieval**: Finds the most relevant documents using the prompt's embedding. This is where systems like Azure Cognitive Search come into play, allowing for efficient vector similarity searches.
+2. **Document Retrieval**: Finds the most relevant documents using the prompt's embedding. This is where systems like Azure AI Search come into play, allowing for efficient vector similarity searches.
 
 3. **Contextual Augmentation**: Enhances the user prompt with information from retrieved documents. This step is crucial as it provides additional context and information to the generator.
 
@@ -338,7 +338,7 @@ You will be prompted to select an Azure subscription and a deployment region. It
 
 <div class="info" data-title="Note">
 
-> Some Azure services, such as Cognitive Vector Search and Azure Open AI, have [limited regional availability](https://azure.microsoft.com/explore/global-infrastructure/products-by-region/?products=cognitive-services,search&regions=non-regional,europe-north,europe-west,france-central,france-south,us-central,us-east,us-east-2,us-north-central,us-south-central,us-west-central,us-west,us-west-2,us-west-3,asia-pacific-east,asia-pacific-southeast). If you're unsure which region to select, _West US 2_ and _West Europe_ are typically safe choices as they support a wide range of services.
+> Some Azure services, such as AI Vector Search and Azure Open AI, have [limited regional availability](https://azure.microsoft.com/explore/global-infrastructure/products-by-region/?products=cognitive-services,search&regions=non-regional,europe-north,europe-west,france-central,france-south,us-central,us-east,us-east-2,us-north-central,us-south-central,us-west-central,us-west,us-west-2,us-west-3,asia-pacific-east,asia-pacific-southeast). If you're unsure which region to select, _East US 2_ and _West Europe_ are typically safe choices as they support a wide range of services.
 
 </div>
 
@@ -492,25 +492,25 @@ Some of the most popular ones are:
 - [Qdrant](https://qdrant.tech/)
 - [Redis](https://redis.io)
 
-### Introducing Azure Cognitive Search
+### Introducing Azure AI Search
 
-![Azure Cognitive Search Logo](./assets/azure-cognitive-search-logo.png)
+![Azure AI Search Logo](./assets/azure-cognitive-search-logo.png)
 
-[Azure Cognitive Search](https://azure.microsoft.com/products/ai-services/cognitive-search/) can be used as a vector database that can store, index, and query vector embeddings from a search index. You can use it to power similarity search, multi-modal search, recommendation systems, or applications implementing the RAG architecture.
+[Azure AI Search](https://azure.microsoft.com/products/ai-services/cognitive-search/) can be used as a vector database that can store, index, and query vector embeddings from a search index. You can use it to power similarity search, multi-modal search, recommendation systems, or applications implementing the RAG architecture.
 
 It supports various data types, such as *text, images, audio, video,* and *graphs*, and can perform fast and accurate searches based on the similarity or distance between the vectors, rather than exact matches. It also offers an *hybrid search*, which combines semantic and vector search in the same query.
 
-For this workshop, we'll use Azure Cognitive Search as our vector database as it's easy to create and manage within Azure. For the RAG use-case, most vector databases will work in a similar way.
+For this workshop, we'll use Azure AI Search as our vector database as it's easy to create and manage within Azure. For the RAG use-case, most vector databases will work in a similar way.
 
-### Exploring Azure Cognitive Search
+### Exploring Azure AI Search
 
-By now, you should already have an Azure Cognitive Search service created in your subscription, done by the `azd provision` command you ran in the setup process.
+By now, you should already have an Azure AI Search service created in your subscription, done by the `azd provision` command you ran in the setup process.
 
-Open the [Azure Portal](https://portal.azure.com/), and search for the **Cognitive Search** service in the top navigation bar.
+Open the [Azure Portal](https://portal.azure.com/), and search for the **AI Search** service in the top navigation bar.
 
 You should see a service named `gptkb-<your_random_name>` in the list. This instance is currently empty, and we will create an index and populate it with data in the next section.
 
-![Screenshot of Azure Cognitive Search](./assets/azure-cognitive-search.png)
+![Screenshot of Azure AI Search](./assets/azure-cognitive-search.png)
 
 ---
 
@@ -553,7 +553,7 @@ async createEmbedding(text: string): Promise<number[]> {
 
 #### Adding the documents to the vector database
 
-The embeddings along with the original texts are then added to the vector database using the [Azure Cognitive Search JavaScript client library](https://www.npmjs.com/package/@azure/search-documents). This process is done in batches, to improve performance and limit the number of requests:
+The embeddings along with the original texts are then added to the vector database using the [Azure AI Search JavaScript client library](https://www.npmjs.com/package/@azure/search-documents). This process is done in batches, to improve performance and limit the number of requests:
 
 ```ts
 const searchClient = this.azure.searchIndex.getSearchClient(indexName);
@@ -593,7 +593,7 @@ Once the indexer is deployed, you can run the ingestion process by running the `
 
 ![Screenshot of the indexer CLI](./assets/indexer-cli.png)
 
-Once this process is executed, a new index will be available in your Azure Cognitive Search service, where you can see the documents that were ingested.
+Once this process is executed, a new index will be available in your Azure AI Search service, where you can see the documents that were ingested.
 
 ### Test the vector database
 
@@ -601,7 +601,7 @@ In the [Azure Portal](https://portal.azure.com/), you can now find again the ser
 
 In the **Search management** section on the left, select the **Indexes** tab. You should see the `kbindex` index in the list.
 
-![Screenshot of the Azure Cognitive Search indexes](./assets/azure-cognitive-search-indexes.png)
+![Screenshot of the Azure AI Search indexes](./assets/azure-cognitive-search-indexes.png)
 
 You can select that index and browse it. For example, in the **Search explorer** tab, if you ingested the original PDF files that were about the *Contoso Real Estate* company, you can search for `rentals` and see the results:
 
@@ -677,16 +677,16 @@ import { DefaultAzureCredential } from '@azure/identity';
 Then add this code to retrieve the credentials below the `const config = fastify.config;` line:
 
 ```ts
-// Use the current user identity to authenticate with Azure OpenAI and Cognitive Search.
+// Use the current user identity to authenticate with Azure OpenAI and AI Search.
 // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
 const credential = new DefaultAzureCredential();
 ```
 
-This will use the current user identity to authenticate with Azure OpenAI and Cognitive Search. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
+This will use the current user identity to authenticate with Azure OpenAI and AI Search. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
 
-#### Azure Cognitive Search client
+#### Azure AI Search client
 
-Next we'll create the Azure Cognitive Search client. Add this import at the top of the file:
+Next we'll create the Azure AI Search client. Add this import at the top of the file:
 
 ```ts
 import { SearchClient } from '@azure/search-documents';
@@ -695,7 +695,7 @@ import { SearchClient } from '@azure/search-documents';
 Then add this code below the credentials retrieval:
 
 ```ts
-// Set up Azure Cognitive Search client
+// Set up Azure AI Search client
 const searchClient = new SearchClient<any>(
   `https://${config.azureSearchService}.search.windows.net`,
   config.azureSearchIndex,
@@ -703,11 +703,11 @@ const searchClient = new SearchClient<any>(
 );
 ```
 
-We need to provide the URL of our Azure Cognitive Search service, the name of the index we want to use, and the credentials we retrieved earlier.
+We need to provide the URL of our Azure AI Search service, the name of the index we want to use, and the credentials we retrieved earlier.
 
 #### LangChain clients
 
-Finally, it's time to create the LangChain clients. Add this code below the Azure Cognitive Search client initialization:
+Finally, it's time to create the LangChain clients. Add this code below the Azure AI Search client initialization:
 
 ```ts
 // Show the OpenAI URL used in the logs
@@ -762,8 +762,8 @@ const chatService = new ChatService(
 We feed the `ChatService` instance with the different clients we created, and the a few configuration options that we need:
 - The name of the GPT model to use (`gpt-35-turbo`)
 - The name of the embedding model to use (`text-embedding-ada-002`)
-- The name of the field in the Azure Cognitive Search index that contains the page number of the document (`sourcepage`)
-- The name of the field in the Azure Cognitive Search index that contains the content of the document (`content`)
+- The name of the field in the Azure AI Search index that contains the page number of the document (`sourcepage`)
+- The name of the field in the Azure AI Search index that contains the content of the document (`content`)
 
 #### Retrieving the documents
 
@@ -782,7 +782,7 @@ const queryVector = await embeddingsClient.embedQuery(query);
 
 To compute the embedding, we first use the embeddings client we created earlier, and call the `embedQuery` method. This method will convert the query into a vector, using the embedding model we specified.
 
-Now that we have the query vector, we can call the Azure Cognitive Search client to retrieve the documents:
+Now that we have the query vector, we can call the Azure AI Search client to retrieve the documents:
 
 ```ts
 // Performs a hybrid search (vectors + text)
@@ -800,9 +800,9 @@ const searchResults = await this.searchClient.search(query, {
 ```
 
 We pass a few options to the `search` method:
-- The query, which is the question we want to ask. If we pass both a query and a vector, Azure Cognitive Search will perform a hybrid search, which combines semantic and vector search in the same query. To only perform a vector search, we can pass an empty string as the query.
+- The query, which is the question we want to ask. If we pass both a query and a vector, Azure AI Search will perform a hybrid search, which combines semantic and vector search in the same query. To only perform a vector search, we can pass an empty string as the query.
 - `top` is the number of documents we want to retrieve
-- `vectors` is an array of vectors to use for the search. In our case we only have one vector, the query vector we computed earlier. We also specify the number of nearest neighbors to retrieve, and the name of the field that contains the vector in the Azure Cognitive Search index.
+- `vectors` is an array of vectors to use for the search. In our case we only have one vector, the query vector we computed earlier. We also specify the number of nearest neighbors to retrieve, and the name of the field that contains the vector in the Azure AI Search index.
 
 Let's process the search results to extract the documents' content:
 
@@ -1356,7 +1356,7 @@ azd down --purge
 
 ### Going further
 
-This workshop is based on the enterprise-ready sample **ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search**:
+This workshop is based on the enterprise-ready sample **ChatGPT + Enterprise data with Azure OpenAI and AI Search**:
 
 - [JavaScript version](https://github.com/Azure-Samples/azure-search-openai-javascript)
 - [Python version](https://github.com/Azure-Samples/azure-search-openai-demo/)
