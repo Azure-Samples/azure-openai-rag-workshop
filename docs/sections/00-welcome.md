@@ -14,7 +14,7 @@ banner_url: assets/banner.jpg
 duration_minutes: 120
 audience: students, devs
 level: intermediate
-tags: chatgpt, openai, langchain, retrieval-augmented-generation, azure, containers, docker, static web apps, javascript, typescript, node.js, azure cognitive search, fastify, azure container apps
+tags: chatgpt, openai, langchain, retrieval-augmented-generation, azure, containers, docker, static web apps, javascript, typescript, node.js, azure ai search, fastify, azure container apps
 published: false
 wt_id: javascript-0000-cxa
 sections_title:

@@ -34,7 +34,7 @@ This command will start the frontend and backend services.
 For these services to work, you need to have a `.env` file at the root of the project with at least the following content:
 
 ```bash
-AZURE_SEARCH_SERVICE=<your_azure_cognitive_search_instance_name>
+AZURE_SEARCH_SERVICE=<your_azure_ai_search_instance_name>
 AZURE_OPENAI_URL=<you_openai_instance_url>
 ```
 
