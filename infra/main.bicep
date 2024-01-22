@@ -15,6 +15,8 @@ param backendApiName string = 'backend'
 param backendApiImageName string = ''
 param indexerApiName string = 'indexer'
 param indexerApiImageName string = ''
+param qdrantName string = 'qdrant'
+param qdrantImageName string = 'qdrant/qdrant:1.7.3'
 
 // The free tier does not support managed identity (required) or semantic search (optional)
 @allowed(['basic', 'standard', 'standard2', 'standard3', 'storage_optimized_l1', 'storage_optimized_l2'])
@@ -57,10 +59,14 @@ param principalId string = ''
 @description('Use Application Insights for monitoring and performance tracing')
 param useApplicationInsights bool = false
 
+@description('Use Qdrant as the vector DB')
+param useQdrant bool = false
+
 var abbrs = loadJsonContent('abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
 var finalOpenAiUrl = empty(openAiUrl) ? 'https://${openAi.outputs.name}.openai.azure.com' : openAiUrl
+var useAzureAISearch = !useQdrant
 
 // Organize resources in a resource group
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -256,7 +262,7 @@ module openAi 'core/ai/cognitiveservices.bicep' = if (empty(openAiUrl)) {
   }
 }
 
-module searchService 'core/search/search-services.bicep' = {
+module searchService 'core/search/search-services.bicep' = if (useAzureAISearch) {
   name: 'search-service'
   scope: resourceGroup
   params: {
@@ -276,6 +282,34 @@ module searchService 'core/search/search-services.bicep' = {
 }
 
 
+module qdrant './core/host/container-app.bicep' = if (useQdrant) {
+  name: 'qdrant'
+  scope: resourceGroup
+  params: {
+    name: !empty(qdrantName) ? qdrantName : '${abbrs.appContainerApps}qdrant-${resourceToken}'
+    location: location
+    tags: union(tags, { 'azd-service-name': qdrantName })
+    containerAppsEnvironmentName: containerApps.outputs.environmentName
+    containerRegistryName: containerApps.outputs.registryName
+    managedIdentity: true
+    containerCpuCoreCount: '1.0'
+    containerMemory: '2.0Gi'
+    secrets: useApplicationInsights ? [
+      {
+        name: 'appinsights-cs'
+        value: monitoring.outputs.applicationInsightsConnectionString
+      }
+    ] : []
+    env: concat([], useApplicationInsights ? [{
+      name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+      secretRef: 'appinsights-cs'
+    }] : [])
+    imageName: !empty(qdrantImageName) ? qdrantImageName : 'nginx:latest'
+    targetPort: 6333
+  }
+}
+
+
 // USER ROLES
 module openAiRoleUser 'core/security/role.bicep' = if (empty(openAiUrl)) {
   scope: resourceGroup
@@ -288,7 +322,7 @@ module openAiRoleUser 'core/security/role.bicep' = if (empty(openAiUrl)) {
   }
 }
 
-module searchContribRoleUser 'core/security/role.bicep' = {
+module searchContribRoleUser 'core/security/role.bicep' = if (useAzureAISearch) {
   scope: resourceGroup
   name: 'search-contrib-role-user'
   params: {
@@ -299,7 +333,7 @@ module searchContribRoleUser 'core/security/role.bicep' = {
   }
 }
 
-module searchSvcContribRoleUser 'core/security/role.bicep' = {
+module searchSvcContribRoleUser 'core/security/role.bicep' = if (useAzureAISearch) {
   scope: resourceGroup
   name: 'search-svccontrib-role-user'
   params: {
@@ -322,7 +356,7 @@ module openAiRoleBackendApi 'core/security/role.bicep' = if (empty(openAiUrl)) {
   }
 }
 
-module searchRoleBackendApi 'core/security/role.bicep' = {
+module searchRoleBackendApi 'core/security/role.bicep' = if (useAzureAISearch) {
   scope: resourceGroup
   name: 'search-role-backendapi'
   params: {
@@ -344,7 +378,7 @@ module openAiRoleIndexerApi 'core/security/role.bicep' = if (empty(openAiUrl)) {
   }
 }
 
-module searchContribRoleIndexerApi 'core/security/role.bicep' = {
+module searchContribRoleIndexerApi 'core/security/role.bicep' = if (useAzureAISearch) {
   scope: resourceGroup
   name: 'search-contrib-role-indexer'
   params: {
@@ -355,7 +389,7 @@ module searchContribRoleIndexerApi 'core/security/role.bicep' = {
   }
 }
 
-module searchSvcContribRoleIndexerApi 'core/security/role.bicep' = {
+module searchSvcContribRoleIndexerApi 'core/security/role.bicep' = if (useAzureAISearch) {
   scope: resourceGroup
   name: 'search-svccontrib-role-indexer'
   params: {
@@ -379,8 +413,10 @@ output AZURE_OPENAI_CHATGPT_MODEL string = chatGptModelName
 output AZURE_OPENAI_EMBEDDING_DEPLOYMENT string = embeddingDeploymentName
 output AZURE_OPENAI_EMBEDDING_MODEL string = embeddingModelName
 
-output AZURE_SEARCH_INDEX string = searchIndexName
-output AZURE_SEARCH_SERVICE string = searchService.outputs.name
+output AZURE_SEARCH_INDEX string =  useAzureAISearch ? searchIndexName : ''
+output AZURE_SEARCH_SERVICE string = useAzureAISearch ? searchService.outputs.name : ''
+
+output QDRANT_URI string = useQdrant ? '${qdrant.outputs.uri}:6333' : ''
 
 output FRONTEND_URI string = frontend.outputs.uri
 output BACKEND_API_URI string = backendApi.outputs.uri
