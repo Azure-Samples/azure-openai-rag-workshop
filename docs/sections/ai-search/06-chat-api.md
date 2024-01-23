@@ -178,13 +178,16 @@ Now that we have the query vector, we can call the Azure AI Search client to ret
 // For a vector search, replace the query by an empty string
 const searchResults = await this.searchClient.search(query, {
   top: 3,
-  vectors: [
-    {
-      value: queryVector,
-      kNearestNeighborsCount: 50,
-      fields: ['embedding'],
-    },
-  ],
+  vectorSearchOptions: {
+    queries: [
+      {
+        kind: 'vector',
+        vector: queryVector,
+        kNearestNeighborsCount: 50,
+        fields: ['embedding'],
+      },
+    ],
+  }
 });
 ```
 
@@ -389,7 +392,7 @@ After you checked that everything works as expected, don't forget to commit your
 
 Open up a new terminal in VS Code, and run the following commands:
   
-  ```bash
+```bash
 curl -X POST "http://localhost:3000/chat" \
      -H "Content-Type: application/json" \
      -d '{
@@ -398,9 +401,9 @@ curl -X POST "http://localhost:3000/chat" \
           "role": "user"
         }]
       }'
-  ```
+```
 
-  ```bash
+```bash
 curl -X POST "http://localhost:3000/chat" \
      -H "Content-Type: application/json" \
      -d '{
@@ -410,7 +413,7 @@ curl -X POST "http://localhost:3000/chat" \
         }],
         "stream": true
       }'
-  ```
+```
 
 You can play a bit and change the question to see how the model behaves.
 
