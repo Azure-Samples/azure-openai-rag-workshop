@@ -19,7 +19,8 @@ background-image: url(images/ai.jpg)
 .full-layer.who.text-right.small.middle.light-text.darkened[
   .ms.responsive[![](images/ms-full-logo.svg)]
   |
-  Yohan | Christopher | Julien
+  <!-- Yohan | Christopher | Julien -->
+  Yohan | Olivier
 ]
 
 ---
@@ -30,6 +31,20 @@ class: center, middle, hide-handle
 .table.row.middle.center[
 .col-2[]
 .col-3.center[
+  .w-70.responsive.avatar.bounceInLeft.animated[![](images/yohan.jpg)]
+
+  **Yohan Lasorsa**<br>
+  .fab.fa-linkedin[] .e[/yohanlasorsa]<br>
+  .fab.fa-x-twitter[] .e[@sinedied]
+]
+.col-3.center[
+  .w-70.responsive.avatar.bounceInUp.animated[![](images/olivier.jpg)]
+
+  **Olivier Mertens**<br>
+  .fab.fa-linkedin[] .e[/olivMertens]<br>
+  .fab.fa-x-twitter[] .e[@xam1311]
+]
+<!-- .col-3.center[
   .w-70.responsive.avatar.bounceInLeft.animated[![](images/yohan.jpg)]
 
   **Yohan Lasorsa**<br>
@@ -49,7 +64,7 @@ class: center, middle, hide-handle
   **Julien Dubois**<br>
   .fab.fa-linkedin[] .e[/juliendubois]<br>
   .fab.fa-x-twitter[] .e[@juliendubois]
-]
+] -->
 ]
 
 ---
@@ -383,7 +398,7 @@ import openai
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 response = openai.ChatCompletion.create(
-  model="gpt-3.5-turbo",
+  model="gpt-4",
   messages=[],
   temperature=0,
   max_tokens=256
