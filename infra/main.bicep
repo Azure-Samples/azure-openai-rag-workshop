@@ -416,7 +416,7 @@ output AZURE_OPENAI_EMBEDDING_MODEL string = embeddingModelName
 output AZURE_SEARCH_INDEX string =  useAzureAISearch ? searchIndexName : ''
 output AZURE_SEARCH_SERVICE string = useAzureAISearch ? searchService.outputs.name : ''
 
-output QDRANT_URI string = useQdrant ? '${qdrant.outputs.uri}:6333' : ''
+output QDRANT_URL string = useQdrant ? '${qdrant.outputs.uri}:6333' : ''
 
 output FRONTEND_URI string = frontend.outputs.uri
 output BACKEND_API_URI string = backendApi.outputs.uri
