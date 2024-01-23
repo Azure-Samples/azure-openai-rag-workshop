@@ -3,7 +3,7 @@ import { AppConfig, unusedService } from '../plugins/config.js';
 import { type AzureClients } from '../plugins/azure.js';
 import { type OpenAiService } from '../plugins/openai.js';
 import { FileInfos } from './file.js';
-import { AzureAISearchVectorDB, VectorDB } from './vector-db/index.js';
+import { AzureAISearchVectorDB, QdrantVectorDB, VectorDB } from './vector-db/index.js';
 import { EmbeddingModel } from './embedding-model.js';
 
 export interface IndexFileOptions {
@@ -23,11 +23,11 @@ export class Indexer {
   ) {
     this.embeddingModel = new EmbeddingModel(logger, openai, embeddingModelName);
 
-    // if (config.azureSearchService === unusedService) {
-    //   // TODO
-    // } else {
+    if (config.azureSearchService !== unusedService) {
       this.vectorDB = new AzureAISearchVectorDB(logger, this.embeddingModel, azure);
-    // }
+    } else {
+      this.vectorDB = new QdrantVectorDB(logger, this.embeddingModel, config);
+    }
   }
 
   async createSearchIndex(indexName: string) {

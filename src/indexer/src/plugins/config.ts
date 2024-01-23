@@ -11,7 +11,10 @@ export interface AppConfig {
   azureOpenAiEmbeddingModel: string;
   kbFieldsContent: string;
   kbFieldsSourcePage: string;
+  qdrantUrl: string;
 }
+
+export const unusedService = '__not_used__';
 
 const camelCaseToUpperSnakeCase = (s: string) => s.replaceAll(/[A-Z]/g, (l) => `_${l}`).toUpperCase();
 
@@ -30,7 +33,13 @@ export default fp(
       azureOpenAiEmbeddingModel: process.env.AZURE_OPENAI_EMBEDDING_MODEL || 'text-embedding-ada-002',
       kbFieldsContent: process.env.KB_FIELDS_CONTENT || 'content',
       kbFieldsSourcePage: process.env.KB_FIELDS_SOURCEPAGE || 'sourcepage',
+      qdrantUrl: process.env.QDRANT_URL || '',
     };
+
+    // If Qdrant is used, disable Azure Search but set the config value to avoid errors
+    if (config.qdrantUrl) {
+      config.azureSearchService = unusedService;
+    }
 
     // Check that all config values are set
     for (const [key, value] of Object.entries(config)) {

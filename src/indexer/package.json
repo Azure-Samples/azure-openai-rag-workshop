@@ -30,6 +30,7 @@
     "@fastify/multipart": "^8.0.0",
     "@fastify/sensible": "^5.0.0",
     "@fastify/type-provider-json-schema-to-ts": "^2.2.2",
+    "@qdrant/qdrant-js": "^1.7.0",
     "commander": "^11.0.0",
     "dotenv": "^16.3.1",
     "fastify": "^4.22.2",
