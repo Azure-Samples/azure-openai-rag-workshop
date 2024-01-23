@@ -3,7 +3,6 @@ import { DefaultAzureCredential } from '@azure/identity';
 import { SearchClient } from '@azure/search-documents';
 import { ChatOpenAI, type OpenAIChatInput } from 'langchain/chat_models/openai';
 import { OpenAIEmbeddings, type OpenAIEmbeddingsParams } from 'langchain/embeddings/openai';
-import { AIMessage, HumanMessage, SystemMessage } from 'langchain/schema';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
 
 const SYSTEM_MESSAGE_PROMPT = `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
@@ -50,16 +49,19 @@ export class ChatService {
     const queryVector = await embeddingsClient.embedQuery(query);
 
     // Performs a hybrid search (vectors + text)
-    // For a vector search, replace the query by an empty string
+    // For a vector search, replace the query by '*'
     const searchResults = await this.searchClient.search(query, {
       top: 3,
-      vectors: [
-        {
-          value: queryVector,
-          kNearestNeighborsCount: 50,
-          fields: ['embedding'],
-        },
-      ],
+      vectorSearchOptions: {
+        queries: [
+          {
+            kind: 'vector',
+            vector: queryVector,
+            kNearestNeighborsCount: 50,
+            fields: ['embedding'],
+          },
+        ],
+      }
     });
 
     const results: string[] = [];
@@ -136,16 +138,19 @@ export class ChatService {
     const queryVector = await embeddingsClient.embedQuery(query);
 
     // Performs a hybrid search (vectors + text)
-    // For a vector search, replace the query by an empty string
+    // For a vector search, replace the query by '*'
     const searchResults = await this.searchClient.search(query, {
       top: 3,
-      vectors: [
-        {
-          value: queryVector,
-          kNearestNeighborsCount: 50,
-          fields: ['embedding'],
-        },
-      ],
+      vectorSearchOptions: {
+        queries: [
+          {
+            kind: 'vector',
+            vector: queryVector,
+            kNearestNeighborsCount: 50,
+            fields: ['embedding'],
+          },
+        ],
+      }
     });
 
     const results: string[] = [];
