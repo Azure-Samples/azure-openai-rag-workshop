@@ -7,7 +7,7 @@ export default fp(
 
     fastify.decorate(
       'indexer',
-      new Indexer(fastify.log, fastify.azure, fastify.openai, config.azureOpenAiEmbeddingModel),
+      new Indexer(fastify.log, fastify.config, fastify.azure, fastify.openai, config.azureOpenAiEmbeddingModel),
     );
   },
   {

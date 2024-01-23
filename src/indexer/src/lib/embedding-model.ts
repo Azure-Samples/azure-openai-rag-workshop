@@ -11,6 +11,10 @@ export class EmbeddingModel {
     private embeddingModelName: string = 'text-embedding-ada-002',
   ) {}
 
+  get size(): number {
+    return 1536;
+  }
+
   async createEmbedding(text: string): Promise<number[]> {
     // TODO: add retry
     const embeddingsClient = await this.openai.getEmbeddings();
