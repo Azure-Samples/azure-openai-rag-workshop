@@ -10,7 +10,6 @@ export interface IndexFilesOptions {
   indexerUrl: string;
   indexName?: string;
   category?: string;
-  useVectors: boolean;
   wait: boolean;
 }
 
@@ -30,15 +29,13 @@ export async function run(arguments_: string[] = process.argv) {
     .option('-i, --index-name <name>', 'The name of the target index', process.env.AZURE_SEARCH_INDEX || 'kbindex')
     .option('-c, --category <name>', 'Set document category')
     .option('-w, --wait', 'Wait for the indexer to finish processing the files', false)
-    .option('--no-vectors', 'Disable vectors generation for the files')
     .version(packageJson.version, '-v, --version', 'Show the current version')
     .showHelpAfterError()
     .action(async (files: string[], options: OptionValues) => {
-      const { indexerUrl, indexName, vectors, wait } = options;
+      const { indexerUrl, indexName, wait } = options;
       await indexFiles(files, {
         indexerUrl,
         indexName,
-        useVectors: vectors,
         wait,
       });
     });
@@ -84,11 +81,10 @@ async function ensureSearchIndex(options: IndexFilesOptions) {
 
 async function indexFile(file: string, options: IndexFilesOptions) {
   console.log(`Indexing file "${file}"...`);
-  const { indexerUrl, indexName, category, useVectors, wait } = options;
+  const { indexerUrl, indexName, category, wait } = options;
   const formData = new FormData();
   const fileIndexOptions = {
     category,
-    useVectors,
     wait,
   };
   const type = mime.getType(extname(file)) ?? 'application/octet-stream';
