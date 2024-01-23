@@ -3,7 +3,6 @@ import { type FastifyPluginAsyncJsonSchemaToTs } from '@fastify/type-provider-js
 export interface IndexFileOptionsField {
   category?: string;
   wait?: boolean;
-  useVectors?: boolean;
 }
 
 const root: FastifyPluginAsyncJsonSchemaToTs = async (fastify, _options): Promise<void> => {
@@ -136,7 +135,6 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (fastify, _options): Promis
         if (wait) {
           fastify.log.info(`Indexing file "${filesInfos.filename}" synchronously`);
           await fastify.indexer.indexFile(request.params.name, filesInfos, {
-            useVectors: fileOptions?.useVectors ?? true,
             throwErrors: true,
           });
           reply.code(204);
