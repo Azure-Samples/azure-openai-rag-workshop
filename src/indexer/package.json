@@ -29,7 +29,7 @@
     "@fastify/cors": "^8.3.0",
     "@fastify/multipart": "^8.0.0",
     "@fastify/sensible": "^5.0.0",
-    "@fastify/type-provider-json-schema-to-ts": "^2.2.2",
+    "@fastify/type-provider-json-schema-to-ts": "^3.0.0",
     "@qdrant/qdrant-js": "^1.7.0",
     "commander": "^11.0.0",
     "dotenv": "^16.3.1",
@@ -46,6 +46,6 @@
     "concurrently": "^8.2.0",
     "fastify-tsconfig": "^2.0.0",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "typescript": "^5.3.3"
   }
 }
