@@ -16,5 +16,8 @@ lerna-debug.log*
 *.env
 .azure
 
+# DB Storage
+.qdrant/
+
 # OS
 .DS_Store

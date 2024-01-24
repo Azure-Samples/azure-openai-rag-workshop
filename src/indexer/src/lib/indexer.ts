@@ -1,9 +1,9 @@
 import { type BaseLogger } from 'pino';
-import { AppConfig, unusedService } from '../plugins/config.js';
+import { type AppConfig, unusedService } from '../plugins/config.js';
 import { type AzureClients } from '../plugins/azure.js';
 import { type OpenAiService } from '../plugins/openai.js';
-import { FileInfos } from './file.js';
-import { AzureAISearchVectorDB, QdrantVectorDB, VectorDB } from './vector-db/index.js';
+import { type FileInfos } from './file.js';
+import { AzureAISearchVectorDB, QdrantVectorDB, type VectorDB } from './vector-db/index.js';
 import { EmbeddingModel } from './embedding-model.js';
 
 export interface IndexFileOptions {
@@ -23,26 +23,25 @@ export class Indexer {
   ) {
     this.embeddingModel = new EmbeddingModel(logger, openai, embeddingModelName);
 
-    if (config.azureSearchService !== unusedService) {
-      this.vectorDB = new AzureAISearchVectorDB(logger, this.embeddingModel, azure);
-    } else {
-      this.vectorDB = new QdrantVectorDB(logger, this.embeddingModel, config);
-    }
+    this.vectorDB =
+      config.azureSearchService === unusedService
+        ? new QdrantVectorDB(logger, this.embeddingModel, config)
+        : new AzureAISearchVectorDB(logger, this.embeddingModel, azure);
   }
 
   async createSearchIndex(indexName: string) {
     this.logger.debug(`Ensuring search index "${indexName}" exists`);
-    this.vectorDB.ensureSearchIndex(indexName);
+    await this.vectorDB.ensureSearchIndex(indexName);
   }
 
   async deleteSearchIndex(indexName: string) {
     this.logger.debug(`Deleting search index "${indexName}"`);
-    this.vectorDB.deleteSearchIndex(indexName);
+    await this.vectorDB.deleteSearchIndex(indexName);
   }
 
   async deleteFromIndex(indexName: string, filename?: string): Promise<void> {
     this.logger.debug(`Deleting file "${filename}" from search index "${indexName}"`);
-    this.vectorDB.deleteFromIndex(indexName, filename);
+    await this.vectorDB.deleteFromIndex(indexName, filename);
   }
 
   async indexFile(indexName: string, fileInfos: FileInfos, options: IndexFileOptions = {}) {
@@ -61,4 +60,3 @@ export class Indexer {
     }
   }
 }
-

@@ -38,10 +38,10 @@
     "fastify-plugin": "^4.0.0",
     "mime": "^4.0.1",
     "openai": "^4.4.0",
-    "pdfjs-dist": "^4.0.189"
+    "pdfjs-dist": "^4.0.189",
+    "uuid-by-string": "^4.0.0"
   },
   "devDependencies": {
-    "@types/mime": "^3.0.1",
     "@types/node": "^18.0.0",
     "concurrently": "^8.2.0",
     "fastify-tsconfig": "^2.0.0",

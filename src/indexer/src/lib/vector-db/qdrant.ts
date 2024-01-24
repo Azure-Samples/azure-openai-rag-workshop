@@ -1,9 +1,10 @@
 import { type BaseLogger } from 'pino';
 import { QdrantClient } from '@qdrant/qdrant-js';
-import { AppConfig } from '../../plugins/config.js';
+import getUuid from 'uuid-by-string';
+import { type AppConfig } from '../../plugins/config.js';
 import { DocumentProcessor } from '../document-processor.js';
-import { EmbeddingModel } from '../embedding-model.js';
-import { FileInfos } from '../file.js';
+import { type EmbeddingModel } from '../embedding-model.js';
+import { type FileInfos } from '../file.js';
 import { type VectorDB } from './vector-db.js';
 
 export class QdrantVectorDB implements VectorDB {
@@ -24,28 +25,28 @@ export class QdrantVectorDB implements VectorDB {
     const sections = document.sections;
     await this.embeddingModel.updateEmbeddingsInBatch(sections);
 
-    const ids = sections.map((section) => section.id);
-    const vectors = sections.map((section) => section.embedding!);
-    const payloads = sections.map((section) => ({ 
-      content: section.content,
-      category: section.category,
-      sourcepage: section.sourcepage,
-      sourcefile: section.sourcefile,
+    const points = sections.map((section) => ({
+      // ID must be either a 64-bit integer or a UUID
+      id: getUuid(section.id, 5),
+      vector: section.embedding!,
+      payload: {
+        id: section.id,
+        content: section.content,
+        category: section.category,
+        sourcepage: section.sourcepage,
+        sourcefile: section.sourcefile,
+      },
     }));
 
-    await this.qdrantClient.upsert(indexName, {
-      batch: { ids, vectors, payloads }
-    });
+    await this.qdrantClient.upsert(indexName, { points });
     this.logger.debug(`Indexed ${sections.length} sections from file "${filename}"`);
   }
 
   async deleteFromIndex(indexName: string, filename?: string): Promise<void> {
     await this.qdrantClient.delete(indexName, {
-      filter: { 
-        must: [
-          { key: 'sourcefile', match: { value: filename } },
-        ]
-      }
+      filter: {
+        must: [{ key: 'sourcefile', match: { value: filename } }],
+      },
     });
   }
 
@@ -54,14 +55,15 @@ export class QdrantVectorDB implements VectorDB {
       await this.qdrantClient.getCollection(indexName);
       this.logger.debug(`Search index "${indexName}" already exists`);
     } catch (_error: unknown) {
+      this.logger.debug(_error);
       const error = _error as Error;
-      if (error.message === 'Collection not found') {
+      if (error.message === 'Not Found') {
         this.logger.debug(`Creating search index "${indexName}"`);
         await this.qdrantClient.createCollection(indexName, {
           vectors: {
             size: this.embeddingModel.size,
             distance: 'Cosine',
-          }
+          },
         });
       } else {
         throw error;

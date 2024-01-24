@@ -6,16 +6,7 @@ import sensible, { type SensibleOptions } from '@fastify/sensible';
  * @see https://github.com/fastify/fastify-sensible
  */
 export default fp<SensibleOptions>(async (fastify) => {
-  fastify.register(sensible);
-
-  fastify.addSchema({
-    $id: 'httpError',
-    type: 'object',
-    properties: {
-      statusCode: { type: 'number' },
-      code: { type: 'string' },
-      error: { type: 'string' },
-      message: { type: 'string' },
-    },
+  fastify.register(sensible, {
+    sharedSchemaId: 'httpError',
   });
 });

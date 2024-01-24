@@ -1,4 +1,4 @@
-import { FileInfos } from "../file.js";
+import { type FileInfos } from '../file.js';
 
 export interface VectorDB {
   addToIndex(indexName: string, fileInfos: FileInfos): Promise<void>;

@@ -1,9 +1,9 @@
 import { type BaseLogger } from 'pino';
 import { type SearchIndex } from '@azure/search-documents';
-import { AzureClients } from '../../plugins/azure.js';
+import { type AzureClients } from '../../plugins/azure.js';
 import { DocumentProcessor, type Section } from '../document-processor.js';
-import { EmbeddingModel } from '../embedding-model.js';
-import { FileInfos } from '../file.js';
+import { type EmbeddingModel } from '../embedding-model.js';
+import { type FileInfos } from '../file.js';
 import { type VectorDB } from './vector-db.js';
 
 const INDEXING_BATCH_SIZE = 1000;
@@ -115,7 +115,7 @@ export class AzureAISearchVectorDB implements VectorDB {
           },
         ],
         semanticSearch: {
-          defaultConfigurationName: "semantic-search-config",
+          defaultConfigurationName: 'semantic-search-config',
           configurations: [
             {
               name: 'semantic-search-config',
@@ -129,7 +129,7 @@ export class AzureAISearchVectorDB implements VectorDB {
         vectorSearch: {
           algorithms: [
             {
-              name: "vector-search-algorithm",
+              name: 'vector-search-algorithm',
               kind: 'hnsw',
               parameters: {
                 metric: 'cosine',
@@ -138,8 +138,8 @@ export class AzureAISearchVectorDB implements VectorDB {
           ],
           profiles: [
             {
-              name: "vector-search-profile",
-              algorithmConfigurationName: "vector-search-algorithm",
+              name: 'vector-search-profile',
+              algorithmConfigurationName: 'vector-search-algorithm',
             },
           ],
         },
