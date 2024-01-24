@@ -18,7 +18,6 @@ export interface ChatResponse {
     index: number;
     message: ChatResponseMessage;
   }>;
-  object: 'chat.completion';
 }
 
 export interface ChatResponseChunk {
@@ -27,5 +26,4 @@ export interface ChatResponseChunk {
     delta: Partial<ChatResponseMessage>;
     finish_reason: string | null;
   }>;
-  object: 'chat.completion.chunk';
 }
