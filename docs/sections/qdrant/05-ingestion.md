@@ -40,18 +40,20 @@ async createEmbedding(text: string): Promise<number[]> {
 The embeddings along with the original texts are then added to the vector database using the [Qdrant JavaScript client library](https://www.npmjs.com/package/@qdrant/qdrant-js). This process is done in batches, to improve performance and limit the number of requests:
 
 ```ts
-const ids = sections.map((section) => section.id);
-const vectors = sections.map((section) => section.embedding!);
-const payloads = sections.map((section) => ({ 
-  content: section.content,
-  category: section.category,
-  sourcepage: section.sourcepage,
-  sourcefile: section.sourcefile,
+const points = sections.map((section) => ({
+  // ID must be either a 64-bit integer or a UUID
+  id: getUuid(section.id, 5),
+  vector: section.embedding!,
+  payload: {
+    id: section.id,
+    content: section.content,
+    category: section.category,
+    sourcepage: section.sourcepage,
+    sourcefile: section.sourcefile,
+  },
 }));
 
-await this.qdrantClient.upsert(indexName, {
-  batch: { ids, vectors, payloads }
-});
+await this.qdrantClient.upsert(indexName, { points });
 ```
 
 ### Running the ingestion process
@@ -86,10 +88,6 @@ Open the Qdrant dashboard again by opening the following URL in your browser: [h
 
 You should see the collection named `kbindex` in the list:
 
-TODO: screenshot
 ![Screenshot of the Qdrant dashboard](./assets/qdrant-dashboard.png)
 
-TODO: update
-You can select that collection and browse it. For example, in the **Search explorer** tab, if you ingested the original PDF files that were about the *Contoso Real Estate* company, you can search for `rentals` and see the results:
-
-![Screenshot of the search results in the index](./assets/azure-ai-search-results.png)
+You can select that collection and browse it. You should see the entries that were created by the ingestion process. Documents are split into multiple overlapping sections to improve the search results, so you should see multiple entries for each document.

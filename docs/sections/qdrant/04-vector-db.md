@@ -34,7 +34,7 @@ For this workshop, we'll use Qdrant as our vector database as it works well with
 To start Qdrant locally, you can use the following command:
 
 ```bash
-docker run -p 6333:6333 -v $(pwd)/.qdrant:/qdrant/storage:z qdrant/qdrant:1.7.3
+docker run -p 6333:6333 -v $(pwd)/.qdrant:/qdrant/storage:z qdrant/qdrant:v1.7.3
 ```
 
 This will pull the Docker image, start Qdrant on port `6333` and mount a volume to store the data in the `.qdrant` folder.

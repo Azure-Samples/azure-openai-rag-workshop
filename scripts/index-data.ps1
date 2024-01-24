@@ -14,6 +14,14 @@ foreach ($line in $output) {
   [Environment]::SetEnvironmentVariable($name, $value)
 }
 
+if ([string]::IsNullOrEmpty($env:INDEXER_API_URI)) {
+  [Environment]::SetEnvironmentVariable('INDEXER_API_URI', 'http://localhost:3001')
+}
+
+if ([string]::IsNullOrEmpty($env:AZURE_SEARCH_INDEX)) {
+  [Environment]::SetEnvironmentVariable('AZURE_SEARCH_INDEX', 'kbindex')
+}
+
 Write-Host 'Installing dependencies and building CLI'
 npm ci
 npm run build --workspace=indexer

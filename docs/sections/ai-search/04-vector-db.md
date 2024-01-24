@@ -19,6 +19,7 @@ Some of the most popular ones are:
 
 - [MemoryVectorStore](https://js.langchain.com/docs/integrations/vectorstores/memory) which is an in-memory vector store, which is great for testing and development, but not for production.
 - [Qdrant](https://qdrant.tech/)
+- [pgvector](https://github.com/pgvector/pgvector)
 - [Redis](https://redis.io)
 
 ### Introducing Azure AI Search
