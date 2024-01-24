@@ -28,9 +28,7 @@
   "keywords": [],
   "author": "Microsoft",
   "license": "MIT",
-  "workspaces": [
-    "src/*"
-  ],
+  "workspaces": ["src/*"],
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
@@ -52,6 +50,14 @@
     "semi": true,
     "singleQuote": true,
     "printWidth": 120,
-    "bracketSpacing": true
+    "bracketSpacing": true,
+    "overrides": [
+      {
+        "files": ["*.json"],
+        "options": {
+          "parser": "json"
+        }
+      }
+    ]
   }
 }
