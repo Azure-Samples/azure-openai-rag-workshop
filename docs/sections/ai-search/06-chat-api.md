@@ -1,6 +1,6 @@
 ## Chat API
 
-We'll start the code by creating the Chat API. This API will implement the [ChatBootAI OpenAPI Protocol](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) and will be used by the website to get message answers.
+We'll start the code by creating the Chat API. This API will implement the [ChatBootAI OpenAPI specification](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) and will be used by the website to get message answers.
 
 ### Introducing Fastify
 
@@ -308,10 +308,10 @@ First we create the LangChain chat client and pass a few options to control the 
 
 Then we call the `predictMessages` method to generate the response. We pass the messages we created earlier as input.
 
-The final step is to return the result in the Chat protocol format:
+The final step is to return the result in the Chat specification format:
 
 ```ts
-// Return the response in the Chat protocol format
+// Return the response in the Chat specification format
 return {
   choices: [
     {

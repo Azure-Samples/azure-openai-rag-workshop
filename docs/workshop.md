@@ -228,9 +228,9 @@ Otherwise, you can use your regular `npm` commands in any project folder and it 
 
 We generated the base code of our differents services with the respective CLI or generator of the frameworks we'll be using, and we've pre-written several service components so you can jump straight into the most interesting parts.
 
-### The Chat Backend Protocol
+### The Chat API specification
 
-Creating a chat-like experience requires two main components: a user interface and a service API. The [ChatBootAI OpenAPI protocol](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) standardizes their interactions. This standardization allows for the development of different client applications (like mobile apps) that can interact seamlessly with chat services written in various programming languages.
+Creating a chat-like experience requires two main components: a user interface and a service API. The [ChatBootAI OpenAPI specification](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) standardizes their interactions. This standardization allows for the development of different client applications (like mobile apps) that can interact seamlessly with chat services written in various programming languages.
 
 #### The Chat request
 
@@ -270,7 +270,7 @@ The chat service responds with a JSON object representing the generated response
 }
 ```
 
-You can learn more about the [ChatBootAI OpenAPI protocol here](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) and on [the GitHub repo](https://github.com/ChatBootAI/chatbootai-openapi).
+You can learn more about the [ChatBootAI OpenAPI specification here](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) and on [the GitHub repo](https://github.com/ChatBootAI/chatbootai-openapi).
 
 <div class="info" data-title="note">
 
@@ -610,7 +610,7 @@ You can select that index and browse it. For example, in the **Search explorer**
 
 ## Chat API
 
-We'll start the code by creating the Chat API. This API will implement the [ChatBootAI OpenAPI Protocol](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) and will be used by the website to get message answers.
+We'll start the code by creating the Chat API. This API will implement the [ChatBootAI OpenAPI specification](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) and will be used by the website to get message answers.
 
 ### Introducing Fastify
 
@@ -918,10 +918,10 @@ First we create the LangChain chat client and pass a few options to control the 
 
 Then we call the `predictMessages` method to generate the response. We pass the messages we created earlier as input.
 
-The final step is to return the result in the Chat protocol format:
+The final step is to return the result in the Chat specification format:
 
 ```ts
-// Return the response in the Chat protocol format
+// Return the response in the Chat specification format
 return {
   choices: [
     {
