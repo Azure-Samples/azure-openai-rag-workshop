@@ -26,7 +26,7 @@ We generated the base code of our differents services with the respective CLI or
 
 ### The Chat Backend Protocol
 
-Creating a chat-like experience requires two main components: a user interface and a service API. The [Chat Backend Protocol](https://github.com/Azure/azureml_run_specification/blob/chat-protocol/specs/chat-protocol/chat-app-protocol.md) standardizes their interactions. This standardization allows for the development of different client applications (like mobile apps) that can interact seamlessly with chat services written in various programming languages.
+Creating a chat-like experience requires two main components: a user interface and a service API. The [ChatBootAI OpenAPI protocol](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) standardizes their interactions. This standardization allows for the development of different client applications (like mobile apps) that can interact seamlessly with chat services written in various programming languages.
 
 #### The Chat request
 
@@ -63,11 +63,10 @@ The chat service responds with a JSON object representing the generated response
       }
     }
   ],
-  "object": "chat.completion"
 }
 ```
 
-You can learn more about the [chat protocol here](https://github.com/Azure/azureml_run_specification/blob/chat-protocol/specs/chat-protocol/chat-app-protocol.md).
+You can learn more about the [ChatBootAI OpenAPI protocol here](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) and on [the GitHub repo](https://github.com/ChatBootAI/chatbootai-openapi).
 
 <div class="info" data-title="note">
 

@@ -1,6 +1,6 @@
 ## Chat API
 
-We'll start the code by creating the Chat API. This API will implement the [AzureML Chat Backend Protocol](https://github.com/Azure/azureml_run_specification/blob/chat-protocol/specs/chat-protocol/chat-app-protocol.md) and will be used by the website to get message answers.
+We'll start the code by creating the Chat API. This API will implement the [ChatBootAI OpenAPI Protocol](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) and will be used by the website to get message answers.
 
 ### Introducing Fastify
 
@@ -23,7 +23,8 @@ export default fp(
 
     const chatService = new ChatService(
       /*
-      searchClient,
+      config,
+      qdrantClient,
       chatClient,
       embeddingsClient,
       config.azureOpenAiChatGptModel,
@@ -323,7 +324,6 @@ return {
       },
     },
   ],
-  object: 'chat.completion',
 };
 ```
 
