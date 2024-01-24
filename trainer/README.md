@@ -2,6 +2,8 @@
 
 This directory contains the material for the trainer, when this workshop is given in a classroom setting.
 
+It also contains a proxy that you can use to share your Azure OpenAI instance with your attendees.
+
 ## Content
 
 - The introduction slides are in the `docs/slides` folder, and available at https://azure-samples.github.io/azure-openai-rag-workshop/
