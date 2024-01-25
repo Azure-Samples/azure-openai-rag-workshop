@@ -9,8 +9,6 @@ services:
       - LOCAL=true
     ports:
       - "3000:3000"
-    volumes:
-      - "${HOME}/.azure:/root/.azure"
 
   indexer:
     build:
