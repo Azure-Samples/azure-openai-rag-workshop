@@ -26,7 +26,7 @@ include::sections/qdrant/06-chat-api.md[]
 
 ---
 
-include::sections/qdrant/07-dockerfile.md[]
+include::sections/07-dockerfile.md[]
 
 ---
 
@@ -34,7 +34,7 @@ include::sections/08-website.md[]
 
 ---
 
-include::sections/09-azure.md[]
+include::sections/qdrant/09-azure.md[]
 
 ---
 

@@ -38,7 +38,7 @@ include::sections/08-website.md[]
 
 ---
 
-include::sections/10-deployment.md[]
+include::sections/ai-search/10-deployment.md[]
 
 ---
 

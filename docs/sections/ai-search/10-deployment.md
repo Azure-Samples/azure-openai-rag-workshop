@@ -10,12 +10,6 @@ Run this command from the root of the project to build and deploy the applicatio
 azd deploy
 ```
 
-Once everything is deployed, run the ingestion process against your deployed indexer service, using `./scripts/index-data.sh` script on Linux or macOS, or `./scripts/index-data.ps1` on Windows:
-
-```bash
-./scripts/index-data.sh
-```
-
 This process should take a few minutes. Once it's done, you should see the URL of the deployed frontend application in the output of the command.
 
 ![Output of the azd command](./assets/azd-deploy-output.png)
