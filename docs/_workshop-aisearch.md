@@ -14,27 +14,27 @@ include::sections/03-overview.md[]
 
 ---
 
-include::sections/qdrant/04-vector.md[]
+include::sections/09-azure.md[]
 
 ---
 
-include::sections/qdrant/05-ingestion.md[]
+include::sections/ai-search/04-vector.md[]
 
 ---
 
-include::sections/qdrant/06-chat-api.md[]
+include::sections/ai-search/05-ingestion.md[]
 
 ---
 
-include::sections/qdrant/07-dockerfile.md[]
+include::sections/ai-search/06-chat-api.md[]
+
+---
+
+include::sections/ai-search/07-dockerfile.md[]
 
 ---
 
 include::sections/08-website.md[]
-
----
-
-include::sections/09-azure.md[]
 
 ---
 
