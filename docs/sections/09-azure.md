@@ -4,7 +4,7 @@
 
 ### Getting Started with Azure
 
-To participate in this workshop, you'll need an Azure account. If you don't already have one, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://azure.microsoft.com/free/).
+To complete this workshop, you'll need an Azure account. If you don't already have one, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://azure.microsoft.com/free/).
 
 <div class="important" data-title="important" data-visible="$$azpass$$">
 
