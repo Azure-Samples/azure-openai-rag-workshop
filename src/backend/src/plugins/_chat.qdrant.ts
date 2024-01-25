@@ -60,14 +60,13 @@ export class ChatService {
       },
     });
 
-    const results: string[] = [];
-    for await (const result of searchResults) {
+    const results: string[] = searchResults.map((result) => {
       const document = result.payload!;
       const sourcePage = document[this.sourcePageField] as string;
       let content = document[this.contentField] as string;
       content = content.replaceAll(/[\n\r]+/g, ' ');
-      results.push(`${sourcePage}: ${content}`);
-    }
+      return `${sourcePage}: ${content}`;
+    });
 
     const content = results.join('\n');
 
@@ -143,14 +142,13 @@ export class ChatService {
       },
     });
 
-    const results: string[] = [];
-    for await (const result of searchResults) {
+    const results: string[] = searchResults.map((result) => {
       const document = result.payload!;
       const sourcePage = document[this.sourcePageField] as string;
       let content = document[this.contentField] as string;
       content = content.replaceAll(/[\n\r]+/g, ' ');
-      results.push(`${sourcePage}: ${content}`);
-    }
+      return `${sourcePage}: ${content}`;
+    });
 
     const content = results.join('\n');
 
@@ -218,21 +216,28 @@ export default fp(
   async (fastify, options) => {
     const config = fastify.config;
 
-    // Set up Azure AI Search client
+    // Set up Qdrant client
     const qdrantClient = new QdrantClient({ url: config.qdrantUrl });
-
-    // Use the current user identity to authenticate with Azure OpenAI.
-    // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
-    const credential = new DefaultAzureCredential();
-
+   
     // Set up Langchain clients
     fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);
 
-    const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
+    // Automatic Azure identity is not supported in the local dev environment, so we use a dummy key.
+    let openAIApiKey = '__dummy';
+    try {
+      // Use the current user identity to authenticate with Azure OpenAI.
+      // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
+      const credential = new DefaultAzureCredential();
+      const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
+      openAIApiKey = openAiToken.token;
+    } catch {
+      fastify.log.warn('Failed to get Azure OpenAI token, using dummy key');
+    }
+
     const commonOptions = {
-      openAIApiKey: openAiToken.token,
+      openAIApiKey,
       azureOpenAIApiVersion: '2023-05-15',
-      azureOpenAIApiKey: openAiToken.token,
+      azureOpenAIApiKey: openAIApiKey,
       azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,
     };
 
