@@ -67,29 +67,19 @@ With this setup, Docker will first create a container to build our app, and then
 
 ### Testing our Docker image
 
-You can now build the Docker image and run it locally to test it. First, let's have a look at the commands to build and run the Docker image in our `src/backend/package.json` file:
-
-```json
-{
-  "scripts": {
-    "docker:build": "docker build --tag backend --file ./Dockerfile ../..",
-    "docker:run": "docker run --rm --publish 3000:3000 --env-file ../../.env backend",
-  },
-}
-```
-
-Now we can build the image by running this command from the `backend` folder:
+You can now build the Docker image and run it locally to test it.
+Build the image by running this command:
 
 ```bash
-npm run docker:build
+docker compose build backend
 ```
 
 After the build is complete, you can run the image with the following command:
 
 ```bash
-npm run docker:run
+docker compose run backend
 ```
 
-You can now test the API again using the api.http file just like before, to check that everything works. When you're done with the testing, stop the server by pressing `Ctrl+C`.
+You can now test the API again using the `api.http` file or `curl` just like before, to check that everything works. When you're done with the testing, stop the server by pressing `Ctrl+C`.
 
 After that, commit the changes to the repository to keep track of your progress.

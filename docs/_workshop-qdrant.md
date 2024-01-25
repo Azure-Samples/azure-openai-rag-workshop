@@ -46,4 +46,4 @@ include::sections/11-improvements.md[]
 
 ---
 
-include::sections/12-conclusion.md[]
+include::sections/qdrant/12-conclusion.md[]
