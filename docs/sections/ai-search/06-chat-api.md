@@ -211,7 +211,7 @@ for await (const result of searchResults.results) {
 const content = results.join('\n');
 ```
 
-The object `searchResults.results` containing the search results is an [AsyncIterator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator), so we need to use a `for await` loop to iterate over the results. For each result, we extract the page number and the content of the document, and add it to an array.
+The object `searchResults.results` containing the search results is an [AsyncIterator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator), so we need to use a `for await` loop to iterate over the results. For each result, we extract the page information and the content of the document, and add it to an array.
 For the content, we use a regular expression to replace all the new lines with spaces, so it's easier to feed it to the GPT model later.
 
 Finally we join all the results into a single string, and separate each document with a new line. We'll use this content to generate the augmented prompt.
@@ -389,29 +389,17 @@ After you checked that everything works as expected, don't forget to commit your
 
 #### Option 2: using cURL requests
 
-Open up a new terminal in VS Code, and run the following commands:
+Open up a new terminal in VS Code, and run the following command:
   
 ```bash
 curl -X POST "http://localhost:3000/chat" \
-     -H "Content-Type: application/json" \
-     -d '{
-        "messages": [{
-          "content": "How to search and book rentals?",
-          "role": "user"
-        }]
-      }'
-```
-
-```bash
-curl -X POST "http://localhost:3000/chat" \
-     -H "Content-Type: application/json" \
-     -d '{
-        "messages": [{
-          "content": "How to search and book rentals?",
-          "role": "user"
-        }],
-        "stream": true
-      }'
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [{
+      "content": "How to search and book rentals?",
+      "role": "user"
+    }]
+  }'
 ```
 
 You can play a bit and change the question to see how the model behaves.

@@ -54,6 +54,29 @@ We have the starting point to implement our chat service. Let's have a look at t
 
 We'll now replace the `// TODO: initialize clients here` with the actual code to set up our clients.
 
+#### Qdrant client
+
+Next we'll create the Qdrant client. Add this import at the top of the file:
+
+```ts
+import { QdrantClient } from '@qdrant/js-client-rest';
+```
+
+Then add this code below the `const config = fastify.config;` line:
+
+```ts
+// Set up Qdrant client
+const qdrantClient = new QdrantClient({ url: config.qdrantUrl });
+```
+
+We just need to provide the URL of our Qdrant service.
+
+<div class="info" data-title="note">
+
+> You can optionally define an [authentication key](https://qdrant.tech/documentation/guides/security/#authentication) to secure your Qdrant service. If you do that, you'll need to pass it to the `QdrantClient` constructor using the `apiKey` property.
+
+</div>
+
 #### Managing Azure credentials
 
 Before we can create the clients, we need to retrieve the credentials to access our Azure services. We'll use the [Azure Identity SDK](https://learn.microsoft.com/javascript/api/overview/azure/identity-readme?view=azure-node-latest) to do that.
@@ -64,40 +87,33 @@ Add this import at the top of the file:
 import { DefaultAzureCredential } from '@azure/identity';
 ```
 
-Then add this code to retrieve the credentials below the `const config = fastify.config;` line:
+Then add this code to retrieve the credentials below the Qdrant client initialization:
 
 ```ts
-// Use the current user identity to authenticate with Azure OpenAI and AI Search.
-// (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
-const credential = new DefaultAzureCredential();
+// Automatic Azure identity is not supported in the local dev environment, so we use a dummy key.
+let openAIApiKey = '__dummy';
+try {
+  // Use the current user identity to authenticate with Azure OpenAI.
+  // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
+  const credential = new DefaultAzureCredential();
+  const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
+  openAIApiKey = openAiToken.token;
+} catch {
+  fastify.log.warn('Failed to get Azure OpenAI token, using dummy key');
+}
 ```
 
-This will use the current user identity to authenticate with Azure OpenAI and AI Search. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
+This will use the current user identity to authenticate with Azure OpenAI. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
 
-#### Azure AI Search client
+<div class="info" data-title="note">
 
-Next we'll create the Azure AI Search client. Add this import at the top of the file:
+> When run locally inside a container, the Azure Identity SDK will will not be able to retrieve the current user identity from the Azure CLI. For simplicity, we'll use a dummy key in this case. But if need to properly authenticate locally, you should use a [Service Principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal) and pass the environment variables to the container.
 
-```ts
-import { SearchClient } from '@azure/search-documents';
-```
-
-Then add this code below the credentials retrieval:
-
-```ts
-// Set up Azure AI Search client
-const searchClient = new SearchClient<any>(
-  `https://${config.azureSearchService}.search.windows.net`,
-  config.azureSearchIndex,
-  credential,
-);
-```
-
-We need to provide the URL of our Azure AI Search service, the name of the index we want to use, and the credentials we retrieved earlier.
+</div>
 
 #### LangChain clients
 
-Finally, it's time to create the LangChain clients. Add this code below the Azure AI Search client initialization:
+Finally, it's time to create the LangChain clients. Add this code below the below the credentials retrieval:
 
 ```ts
 // Show the OpenAI URL used in the logs
@@ -110,7 +126,7 @@ const openAiToken = await credential.getToken('https://cognitiveservices.azure.c
 const commonOptions = {
   openAIApiKey: openAiToken.token,
   azureOpenAIApiVersion: '2023-05-15',
-  azureOpenAIApiKey: openAiToken.token,
+  azureOpenAIApiKey: openAIApiKey,
   azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,
 };
 
@@ -139,7 +155,8 @@ Now that we have created all the clients, it's time to properly initialize the `
 
 ```ts
 const chatService = new ChatService(
-  searchClient,
+  config,
+  qdrantClient,
   chatClient,
   embeddingsClient,
   config.azureOpenAiChatGptModel,
@@ -152,8 +169,8 @@ const chatService = new ChatService(
 We feed the `ChatService` instance with the different clients we created, and the a few configuration options that we need:
 - The name of the GPT model to use (`gpt-35-turbo`)
 - The name of the embedding model to use (`text-embedding-ada-002`)
-- The name of the field in the Azure AI Search index that contains the page number of the document (`sourcepage`)
-- The name of the field in the Azure AI Search index that contains the content of the document (`content`)
+- The name of the field in the search index that contains the page number of the document (`sourcepage`)
+- The name of the field in the search index that contains the content of the document (`content`)
 
 #### Retrieving the documents
 
@@ -172,44 +189,42 @@ const queryVector = await embeddingsClient.embedQuery(query);
 
 To compute the embedding, we first use the embeddings client we created earlier, and call the `embedQuery` method. This method will convert the query into a vector, using the embedding model we specified.
 
-Now that we have the query vector, we can call the Azure AI Search client to retrieve the documents:
+Now that we have the query vector, we can call the Qdrant client to retrieve the documents:
 
 ```ts
-// Performs a hybrid search (vectors + text)
-// For a vector search, replace the query by an empty string
-const searchResults = await this.searchClient.search(query, {
-  top: 3,
-  vectors: [
-    {
-      value: queryVector,
-      kNearestNeighborsCount: 50,
-      fields: ['embedding'],
-    },
-  ],
+// Performs a vector search
+const searchResults = await this.qdrantClient.search(this.config.azureSearchIndex, {
+  vector: queryVector,
+  limit: 3,
+  params: {
+    hnsw_ef: 128,
+    exact: false,
+  },
 });
 ```
 
 We pass a few options to the `search` method:
-- The query, which is the question we want to ask. If we pass both a query and a vector, Azure AI Search will perform a hybrid search, which combines semantic and vector search in the same query. To only perform a vector search, we can pass an empty string as the query.
-- `top` is the number of documents we want to retrieve
-- `vectors` is an array of vectors to use for the search. In our case we only have one vector, the query vector we computed earlier. We also specify the number of nearest neighbors to retrieve, and the name of the field that contains the vector in the Azure AI Search index.
+- The name of the index (collection) to search in
+- `limit` is the number of documents we want to retrieve
+- The parameters for the vector search.
+  * The `hnsw_ef` parameter controls the number of neighbors to visit during search. The higher the value, the more accurate and slower the search will be.
+  * The `exact` parameter allows to perform an exact search, which will be slower, but more accurate. You can use it to compare results of the search with different `hnsw_ef` values versus the ground truth.
 
 Let's process the search results to extract the documents' content:
 
 ```ts
-const results: string[] = [];
-
-for await (const result of searchResults.results) {
-  const document = result.document;
-  const sourcePage = document[this.sourcePageField];
-  const content = document[this.contentField].replaceAll(/[\n\r]+/g, ' ')
-  results.push(`${sourcePage}: ${content}`);
-}
+const results: string[] = searchResults.map((result) => {
+  const document = result.payload!;
+  const sourcePage = document[this.sourcePageField] as string;
+  let content = document[this.contentField] as string;
+  content = content.replaceAll(/[\n\r]+/g, ' ');
+  return `${sourcePage}: ${content}`;
+});
 
 const content = results.join('\n');
 ```
 
-The object `searchResults.results` containing the search results is an [AsyncIterator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator), so we need to use a `for await` loop to iterate over the results. For each result, we extract the page number and the content of the document, and add it to an array.
+The object `searchResults.results` contains the search results. For each result, we extract the page information and the content of the document, and create a string from it.
 For the content, we use a regular expression to replace all the new lines with spaces, so it's easier to feed it to the GPT model later.
 
 Finally we join all the results into a single string, and separate each document with a new line. We'll use this content to generate the augmented prompt.
@@ -385,31 +400,19 @@ When you're done with the testing, stop the server by pressing `Ctrl+C` in each 
 
 After you checked that everything works as expected, don't forget to commit your changes to the repository, to keep track of your progress.
 
-#### Option 2: using cURL requests
+#### Option 2: using cURL
 
 Open up a new terminal in VS Code, and run the following commands:
   
 ```bash
 curl -X POST "http://localhost:3000/chat" \
-     -H "Content-Type: application/json" \
-     -d '{
-        "messages": [{
-          "content": "How to search and book rentals?",
-          "role": "user"
-        }]
-      }'
-```
-
-```bash
-curl -X POST "http://localhost:3000/chat" \
-     -H "Content-Type: application/json" \
-     -d '{
-        "messages": [{
-          "content": "How to search and book rentals?",
-          "role": "user"
-        }],
-        "stream": true
-      }'
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [{
+      "content": "How to search and book rentals?",
+      "role": "user"
+    }]
+  }'
 ```
 
 You can play a bit and change the question to see how the model behaves.
