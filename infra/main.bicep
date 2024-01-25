@@ -16,7 +16,7 @@ param backendApiImageName string = ''
 param indexerApiName string = 'indexer'
 param indexerApiImageName string = ''
 param qdrantName string = 'qdrant'
-param qdrantImageName string = 'qdrant/qdrant:1.7.3'
+param qdrantImageName string = 'docker.io/qdrant/qdrant:v1.7.3'
 
 // The free tier does not support managed identity (required) or semantic search (optional)
 @allowed(['basic', 'standard', 'standard2', 'standard3', 'storage_optimized_l1', 'storage_optimized_l2'])
@@ -304,7 +304,7 @@ module qdrant './core/host/container-app.bicep' = if (useQdrant) {
       name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
       secretRef: 'appinsights-cs'
     }] : [])
-    imageName: !empty(qdrantImageName) ? qdrantImageName : 'nginx:latest'
+    imageName: !empty(qdrantImageName) ? qdrantImageName : 'docker.io/qdrant/qdrant'
     targetPort: 6333
   }
 }
@@ -416,7 +416,7 @@ output AZURE_OPENAI_EMBEDDING_MODEL string = embeddingModelName
 output AZURE_SEARCH_INDEX string =  useAzureAISearch ? searchIndexName : ''
 output AZURE_SEARCH_SERVICE string = useAzureAISearch ? searchService.outputs.name : ''
 
-output QDRANT_URL string = useQdrant ? '${qdrant.outputs.uri}:6333' : ''
+output QDRANT_URL string = useQdrant ? '${qdrant.outputs.uri}:443' : ''
 
 output FRONTEND_URI string = frontend.outputs.uri
 output BACKEND_API_URI string = backendApi.outputs.uri
