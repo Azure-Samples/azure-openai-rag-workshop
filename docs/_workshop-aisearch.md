@@ -18,7 +18,7 @@ include::sections/09-azure.md[]
 
 ---
 
-include::sections/ai-search/04-vector.md[]
+include::sections/ai-search/04-vector-db.md[]
 
 ---
 

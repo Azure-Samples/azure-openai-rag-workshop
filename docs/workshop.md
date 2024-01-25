@@ -110,6 +110,8 @@ The RAG process involves the following steps:
 
 4. **Response Generation**: Use the model to generate a response using the augmented prompt. The model uses the additional context provided by the retrieved documents to produce a more informed and accurate output.
 
+
+
 ---
 
 ## Preparation
@@ -200,6 +202,7 @@ gh --version
 bash --version
 ```
 
+
 ---
 
 ## Overview of the project
@@ -278,6 +281,7 @@ You can learn more about the [ChatBootAI OpenAPI specification here](https://edi
 
 </div>
 
+
 ---
 
 ## Azure setup
@@ -286,13 +290,13 @@ You can learn more about the [ChatBootAI OpenAPI specification here](https://edi
 
 ### Getting Started with Azure
 
-To participate in this workshop, you'll need an Azure account. If you don't already have one, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://azure.microsoft.com/free/).
+To complete this workshop, you'll need an Azure account. If you don't already have one, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://azure.microsoft.com/free/).
 
-<!-- <div class="important" data-title="important">
+<div class="important" data-title="important" data-visible="$$azpass$$">
 
-> For participants attending this workshop in-person, you can obtain a $50 Azure Pass credit by using this link: [redeem your Azure Pass](https://azcheck.in/duc231109).
+> For participants attending this workshop in-person, you can obtain a free Azure Pass credit by using this link: [redeem your Azure Pass](https://azcheck.in/$$azpass$$).
 
-</div> -->
+</div>
 
 ### Configure your project and deploy infrastructure
 
@@ -306,7 +310,7 @@ Begin by logging into your Azure subscription with the following command:
 azd auth login --use-device-code
 ```
 
-If you're using Codespaces or your local machine, this command will either log you in directly or provide a *device code* to enter in a browser window. Follow the prompts until you're notified of a successful login.
+This command will provide you a *device code* to enter in a browser window. Follow the prompts until you're notified of a successful login.
 
 #### Create a New Environment
 
@@ -316,16 +320,17 @@ Next, set up a new environment. The Azure Developer CLI uses environments to man
 azd env new openai-rag-workshop
 ```
 
+<div data-visible="$$proxy$$">
+
+As we have deployed an Open AI service for you, run this command to set the OpenAI URL we want to use:
+
+```
+azd env set AZURE_OPENAI_URL $$proxy$$
+```
+
+</div>
+
 #### Deploy Azure Infrastructure
-
-<!-- <div class="important" data-title="important">
-
-> If you're following this workshop in-person at Microsoft France, We have deployed an Open AI service for you. Run this command to leverage this deployment before executing the next command.
-> ```
-> azd env set AZURE_OPENAI_URL https://openai-proxy.icymeadow-771e8803.westeurope.azurecontainerapps.io
-> ```
-
-</div> -->
 
 Now it's time to deploy the Azure infrastructure for the workshop. Execute the following command:
 
@@ -333,11 +338,11 @@ Now it's time to deploy the Azure infrastructure for the workshop. Execute the f
 azd provision
 ```
 
-You will be prompted to select an Azure subscription and a deployment region. It's generally best to choose a region closest to your user base for optimal performance.
+You will be prompted to select an Azure subscription and a deployment region. It's generally best to choose a region closest to your user base for optimal performance, but for this workshop, choose `North Europe` or `East US 2` as they support a wide range of Azure services.
 
 <div class="info" data-title="Note">
 
-> Some Azure services, such as AI Vector Search and Azure Open AI, have [limited regional availability](https://azure.microsoft.com/explore/global-infrastructure/products-by-region/?products=cognitive-services,search&regions=non-regional,europe-north,europe-west,france-central,france-south,us-central,us-east,us-east-2,us-north-central,us-south-central,us-west-central,us-west,us-west-2,us-west-3,asia-pacific-east,asia-pacific-southeast). If you're unsure which region to select, _East US 2_ and _West Europe_ are typically safe choices as they support a wide range of services.
+> Some Azure services, such as AI Vector Search and Azure Open AI, have [limited regional availability](https://azure.microsoft.com/explore/global-infrastructure/products-by-region/?products=cognitive-services,search&regions=non-regional,europe-north,europe-west,france-central,france-south,us-central,us-east,us-east-2,us-north-central,us-south-central,us-west-central,us-west,us-west-2,us-west-3,asia-pacific-east,asia-pacific-southeast). If you're unsure which region to select, _West US 2_ and _West Europe_ are typically safe choices as they support a wide range of services.
 
 </div>
 
@@ -467,7 +472,9 @@ Explore the `./infra` directory to see how the Bicep files are structured for th
 
 Bicep streamlines the template creation process, and you can get started with existing templates from the [Azure Quickstart Templates](https://github.com/Azure/azure-quickstart-templates/tree/master/quickstarts), use the [Bicep VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep) for assistance, or try out the [Bicep playground](https://aka.ms/bicepdemo) for converting between ARM and Bicep formats.
 
+
 ---
+
 
 ## The vector database
 
@@ -489,6 +496,7 @@ Some of the most popular ones are:
 
 - [MemoryVectorStore](https://js.langchain.com/docs/integrations/vectorstores/memory) which is an in-memory vector store, which is great for testing and development, but not for production.
 - [Qdrant](https://qdrant.tech/)
+- [pgvector](https://github.com/pgvector/pgvector)
 - [Redis](https://redis.io)
 
 ### Introducing Azure AI Search
@@ -510,6 +518,7 @@ Open the [Azure Portal](https://portal.azure.com/), and search for the **AI Sear
 You should see a service named `gptkb-<your_random_name>` in the list. This instance is currently empty, and we will create an index and populate it with data in the next section.
 
 ![Screenshot of Azure AI Search](./assets/azure-ai-search.png)
+
 
 ---
 
@@ -605,6 +614,7 @@ In the **Search management** section on the left, select the **Indexes** tab. Yo
 You can select that index and browse it. For example, in the **Search explorer** tab, if you ingested the original PDF files that were about the *Contoso Real Estate* company, you can search for `rentals` and see the results:
 
 ![Screenshot of the search results in the index](./assets/azure-ai-search-results.png)
+
 
 ---
 
@@ -821,7 +831,7 @@ for await (const result of searchResults.results) {
 const content = results.join('\n');
 ```
 
-The object `searchResults.results` containing the search results is an [AsyncIterator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator), so we need to use a `for await` loop to iterate over the results. For each result, we extract the page number and the content of the document, and add it to an array.
+The object `searchResults.results` containing the search results is an [AsyncIterator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator), so we need to use a `for await` loop to iterate over the results. For each result, we extract the page information and the content of the document, and add it to an array.
 For the content, we use a regular expression to replace all the new lines with spaces, so it's easier to feed it to the GPT model later.
 
 Finally we join all the results into a single string, and separate each document with a new line. We'll use this content to generate the augmented prompt.
@@ -999,29 +1009,17 @@ After you checked that everything works as expected, don't forget to commit your
 
 #### Option 2: using cURL requests
 
-Open up a new terminal in VS Code, and run the following commands:
+Open up a new terminal in VS Code, and run the following command:
   
 ```bash
 curl -X POST "http://localhost:3000/chat" \
-     -H "Content-Type: application/json" \
-     -d '{
-        "messages": [{
-          "content": "How to search and book rentals?",
-          "role": "user"
-        }]
-      }'
-```
-
-```bash
-curl -X POST "http://localhost:3000/chat" \
-     -H "Content-Type: application/json" \
-     -d '{
-        "messages": [{
-          "content": "How to search and book rentals?",
-          "role": "user"
-        }],
-        "stream": true
-      }'
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [{
+      "content": "How to search and book rentals?",
+      "role": "user"
+    }]
+  }'
 ```
 
 You can play a bit and change the question to see how the model behaves.
@@ -1029,6 +1027,7 @@ You can play a bit and change the question to see how the model behaves.
 When you're done with the testing, stop the server by pressing `Ctrl+C` in each of the terminals.
 
 After you checked that everything works as expected, don't forget to commit your changes to the repository, to keep track of your progress.
+
 
 ---
 
@@ -1124,9 +1123,10 @@ After the build is complete, you can run the image with the following command:
 npm run docker:run
 ```
 
-You can now test the API again using the api.http file just like before, to check that everything works. When you're done with the testing, stop the server by pressing `Ctrl+C`.
+You can now test the API again using the `api.http` or `curl` file just like before, to check that everything works. When you're done with the testing, stop the server by pressing `Ctrl+C`.
 
 After that, commit the changes to the repository to keep track of your progress.
+
 
 ---
 
@@ -1231,19 +1231,19 @@ Now go back to your browser, and send a question to the chatbot. You should see 
 
 ![Screenshot of the chatbot answer](./assets/chatbot-answer.png)
 
+
 ---
 
-# Deploying to Azure
+## Deploying to Azure
 
 Our application is now ready to be deployed to Azure!
 
-We'll use [Azure Static Web Apps](https://docs.microsoft.com/azure/static-web-apps/overview) to deploy the frontend, and [Azure Container Instances](https://docs.microsoft.com/azure/container-instances/) to deploy the backend.
+We'll use [Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/overview) to deploy the frontend, and [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/overview) to deploy the backend and indexer services.
 
 Run these commands to build and deploy the application:
 
 ```bash
-azd deploy backend
-azd deploy frontend
+azd deploy
 ```
 
 This process should take a few minutes. Once it's done, you should see the URL of the deployed frontend application in the output of the command.
@@ -1256,11 +1256,12 @@ You can now open this URL in a browser and test the deployed application.
 
 <div class="tip" data-title="Tip">
 
-> You can also build and deploy all the services at once by running `azd deploy`. This command will build and deploy the backend, frontend and indexer services.
+> You can also build and deploy the services separately by running `azd deploy <service_name>`. This allows you to deploy independently the backend, frontend and indexer services if needed.
 >
 > Even better! If you're starting from scratch and have a completed code, you can use the `azd up` command. This command combines both `azd provision` and `azd deploy` to provision the Azure resources and deploy the application in one command.
 
 </div>
+
 
 ---
 
@@ -1327,6 +1328,7 @@ In the chat webapp you should now see the follow-up questions after the answer:
 
 You can now redeploy your improved backend by running `azd deploy backend` and test it in production.
 
+
 ---
 
 ## Conclusion
@@ -1373,3 +1375,4 @@ If you want to go further with more advanced use-cases, authentication, history 
 - The base template for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop)
 - If something does not work: [Report an issue](https://github.com/Azure-Samples/azure-openai-rag-workshop/issues)
 - Introduction presentation for this workshop: [Slides](https://azure-samples.github.io/azure-openai-rag-workshop/)
+

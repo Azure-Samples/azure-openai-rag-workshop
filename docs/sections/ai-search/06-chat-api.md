@@ -175,7 +175,7 @@ Now that we have the query vector, we can call the Azure AI Search client to ret
 
 ```ts
 // Performs a hybrid search (vectors + text)
-// For a vector search, replace the query by an empty string
+// For a vector search, replace the query by '*'
 const searchResults = await this.searchClient.search(query, {
   top: 3,
   vectorSearchOptions: {
