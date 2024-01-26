@@ -78,7 +78,7 @@ You can now build the Docker image and run it locally to test it. First, let's h
 }
 ```
 
-Now we can build the image by running this command from the `backend` folder:
+Then we can build the image by running this command from the `backend` folder:
 
 ```bash
 npm run docker:build

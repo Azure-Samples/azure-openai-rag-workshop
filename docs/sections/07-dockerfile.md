@@ -67,7 +67,28 @@ With this setup, Docker will first create a container to build our app, and then
 
 ### Testing our Docker image
 
-You can now build the Docker image and run it locally to test it.
+Before we can test our Docker image, we need to update the `docker-compose.yml`.
+Open the `docker-compose.yml` file at the project root, and uncomment the `backend` service section:
+
+```yaml
+  backend:
+    build:
+      dockerfile: ./src/backend/Dockerfile
+    environment:
+      - AZURE_OPENAI_URL=${AZURE_OPENAI_URL}
+      - QDRANT_URL=http://qdrant:6333
+      - LOCAL=true
+    ports:
+      - 3000:3000
+```
+
+<div class="important" data-title="important">
+
+> Be careful to keep the indentation correct for the `backend` service section, as YAML is very sensitive to indentation.
+
+</div>
+
+You can then build the Docker image and run it locally to test it.
 Build the image by running this command:
 
 ```bash
