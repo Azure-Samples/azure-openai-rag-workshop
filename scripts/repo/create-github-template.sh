@@ -25,7 +25,7 @@ git reset --hard origin/base
 popd
 
 find . -type d -not -path '*node_modules*' -not -path '*.git/*' -not -path '*/dist' -not -path '*dist/*' -exec mkdir -p '{}' "$TEMPLATE_HOME/{}" ';'
-find . -type f -not -path '*node_modules*' -not -path '*.git/*' -not -path '*dist/*' -exec cp -r '{}' "$TEMPLATE_HOME/{}" ';'
+find . -type f -not -path '*node_modules*' -not -path '*.git/*' -not -path '*dist/*' -not -path '*/.DS_Store' -exec cp -r '{}' "$TEMPLATE_HOME/{}" ';'
 cd "$TEMPLATE_HOME"
 
 # Remove unnecessary files
@@ -38,7 +38,9 @@ rm -rf docs
 rm -rf .prettierignore
 rm -rf trainer
 rm -rf .azure
+rm -rf .qdrant
 rm -rf .env
+rm -rf ./*.env
 rm -rf docker-compose.yml
 
 # Prepare files
