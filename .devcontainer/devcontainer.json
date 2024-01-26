@@ -14,11 +14,11 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "moby": "false"
     },
-    "ghcr.io/devcontainers/features/powershell:1": {},
     "ghcr.io/devcontainers/features/azure-cli:1": {
       "version": "latest",
       "installBicep": true
     },
+    // "ghcr.io/devcontainers/features/powershell:1": {},
     "ghcr.io/azure/azure-dev/azd:latest": {}
   },
 
