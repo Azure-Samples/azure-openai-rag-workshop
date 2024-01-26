@@ -74,14 +74,6 @@ This will create a `.env` file at the root of your repository, containing the en
 
 As this file may sometimes contains application secrets, it's a best practice to keep it safe and not commit it to your repository. We already added it to the `.gitignore` file, so you don't have to worry about it.
 
-### Deploying the indexer service
-
-Once your infrastructure is deployed, you can immediately deploy the indexer service so we can some gain time later. We'll explore the indexer service in more detail later in the workshop.
-
-```sh
-azd deploy indexer
-```
-
 ### Introducing Azure services
 
 In our journey to deploy the chat application, we'll be utilizing a suite of Azure services, each playing a crucial role in the application's architecture and performance.
