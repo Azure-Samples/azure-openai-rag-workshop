@@ -18,7 +18,7 @@ include::sections/03-overview.md[]
 
 ---
 
-include::sections/qdrant/04-vector.md[]
+include::sections/qdrant/04-vector-db.md[]
 
 ---
 

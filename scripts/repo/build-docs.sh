@@ -5,8 +5,7 @@
 ##############################################################################
 
 set -euo pipefail
-cd "$(dirname "${BASH_SOURCE[0]}")"
-cd ../..
+cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 
 DOCS_HOME=/tmp/azure-openai-rag-workshop-docs
 GH_USER=$(git config user.name)
@@ -14,12 +13,17 @@ REPO=https://$GH_USER:$GH_TOKEN@github.com/Azure-Samples/azure-openai-rag-worksh
 
 echo "Preparing all workshop docs..."
 echo "(temp folder: $DOCS_HOME)"
+rm -rf "$DOCS_HOME"
+mkdir -p "$DOCS_HOME"
+
 cp -R docs "$DOCS_HOME"
 cd "$DOCS_HOME"
 
 # Build docs
 cd docs
-moaw build _workshop-qdrant.md workshop-qdrant.md
+moaw build _workshop-qdrant.md -d workshop-qdrant.md
+moaw build _workshop-aisearch.md -d workshop-aisearch.md
+moaw build _workshop-aisearch.md -d workshop.md
 
 if [[ ${1-} == "--local" ]]; then
   echo "Local mode: skipping GitHub push."
