@@ -83,10 +83,16 @@ makeArchive . solution-qdrant solution-qdrant
 # Backend Dockerfile
 ##############################################################################
 
-echo "Creating backend-dockerfile package..."
+echo "Creating backend-dockerfile package (for JS + Azure AI Search)..."
 mkdir -p "$target_folder/src/backend"
 cp -R src/backend/Dockerfile "$target_folder/src/backend/Dockerfile"
-makeArchive src backend-dockerfile
+makeArchive src backend-dockerfile-aisearch
+
+echo "Creating backend-dockerfile package (for JS + Qdrant)..."
+mkdir -p "$target_folder/backend-dockerfile/src/backend"
+cp -R src/backend/Dockerfile "$target_folder/backend-dockerfile/src/backend/Dockerfile"
+cp -R docker-compose.yml "$target_folder/backend-dockerfile/docker-compose.yml"
+makeArchive . backend-dockerfile backend-dockerfile
 
 ##############################################################################
 # Frontend
