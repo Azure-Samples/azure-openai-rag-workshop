@@ -32,7 +32,6 @@ cd "$TEMPLATE_HOME"
 rm -rf node_modules
 rm -rf .github
 rm -rf TODO
-rm -rf docker-compose.yml
 rm -rf package-lock.json
 rm -rf scripts/repo
 rm -rf docs
@@ -40,9 +39,11 @@ rm -rf .prettierignore
 rm -rf trainer
 rm -rf .azure
 rm -rf .env
+rm -rf docker-compose.yml
 
 # Prepare files
-rm -rf src/backend/src/plugins/chat-langchain.ts
+rm -rf src/backend/src/plugins/_chat*
+rm -rf src/backend/src/plugins/chat.ts
 rm -rf src/backend/Dockerfile
 
 echo -e "import { type FastifyReply, type FastifyPluginAsync } from 'fastify';
