@@ -66,7 +66,12 @@ Then add this code below the `const config = fastify.config;` line:
 
 ```ts
 // Set up Qdrant client
-const qdrantClient = new QdrantClient({ url: config.qdrantUrl });
+const qdrantClient = new QdrantClient({
+  url: config.qdrantUrl,
+  // Port needs to be set explicitly if it's not the default,
+  // see https://github.com/qdrant/qdrant-js/issues/59
+  port: Number(config.qdrantUrl.split(':')[2])
+});
 ```
 
 We just need to provide the URL of our Qdrant service.

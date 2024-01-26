@@ -40,9 +40,11 @@ export default fp(
       qdrantUrl: process.env.QDRANT_URL || '',
     };
 
-    // If Qdrant is used, disable Azure Search but set the config value to avoid errors
+    // Set the config value for unused database service to avoid errors
     if (config.qdrantUrl) {
       config.azureSearchService = unusedService;
+    } else {
+      config.qdrantUrl = unusedService;
     }
 
     // Check that all config values are set

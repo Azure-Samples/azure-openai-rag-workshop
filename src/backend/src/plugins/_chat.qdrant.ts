@@ -217,7 +217,12 @@ export default fp(
     const config = fastify.config;
 
     // Set up Qdrant client
-    const qdrantClient = new QdrantClient({ url: config.qdrantUrl });
+    const qdrantClient = new QdrantClient({
+      url: config.qdrantUrl,
+      // Port needs to be set explicitly if it's not the default,
+      // see https://github.com/qdrant/qdrant-js/issues/59
+      port: Number(config.qdrantUrl.split(':')[2])
+    });
    
     // Set up Langchain clients
     fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);

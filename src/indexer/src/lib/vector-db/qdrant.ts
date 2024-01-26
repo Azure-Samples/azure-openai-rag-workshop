@@ -15,7 +15,12 @@ export class QdrantVectorDB implements VectorDB {
     private embeddingModel: EmbeddingModel,
     config: AppConfig,
   ) {
-    this.qdrantClient = new QdrantClient({ url: config.qdrantUrl });
+    this.logger.debug(`Connecting to Qdrant at ${config.qdrantUrl}`);
+    this.qdrantClient = new QdrantClient({
+      url: config.qdrantUrl,
+      // https://github.com/qdrant/qdrant-js/issues/59
+      port: Number(config.qdrantUrl.split(':')[2])
+    });
   }
 
   async addToIndex(indexName: string, fileInfos: FileInfos): Promise<void> {
