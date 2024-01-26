@@ -1,6 +1,7 @@
 import fp from 'fastify-plugin';
 import { DefaultAzureCredential } from '@azure/identity';
 import { SearchIndexClient } from '@azure/search-documents';
+import { unusedService } from './config.js';
 
 export type AzureClients = {
   credential: DefaultAzureCredential;
@@ -16,15 +17,15 @@ export default fp(
     // If you need to use keys, use separate AzureKeyCredential instances with the keys for each service
     const credential = new DefaultAzureCredential();
 
-    // Set up Azure clients
-    const searchIndexClient = new SearchIndexClient(
-      `https://${config.azureSearchService}.search.windows.net`,
-      credential,
-    );
+    let searchIndexClient: SearchIndexClient;
+    if (config.azureSearchService !== unusedService) {
+      // Set up Azure clients
+      searchIndexClient = new SearchIndexClient(`https://${config.azureSearchService}.search.windows.net`, credential);
+    }
 
     fastify.decorate('azure', {
       credential,
-      searchIndex: searchIndexClient,
+      searchIndex: searchIndexClient!,
     });
   },
   {

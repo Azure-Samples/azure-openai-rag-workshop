@@ -26,7 +26,15 @@ export default fp(
 
     const refreshOpenAiToken = async () => {
       if (!openAiToken || openAiToken.expiresOnTimestamp < Date.now() + 60 * 1000) {
-        openAiToken = await fastify.azure.credential.getToken(AZURE_COGNITIVE_SERVICES_AD_SCOPE);
+        try {
+          openAiToken = await fastify.azure.credential.getToken(AZURE_COGNITIVE_SERVICES_AD_SCOPE);
+        } catch {
+          // Automatic Azure identity is not supported in local containers, so we use a dummy key.
+          openAiToken = {
+            token: '__dummy',
+            expiresOnTimestamp: Date.now() + 60 * 1000 * 60, // 1h
+          };
+        }
 
         const commonOptions = {
           apiKey: openAiToken.token,
