@@ -4,11 +4,17 @@
 
 ### Getting Started with Azure
 
+<div data-hidden="$$azpass$$">
+
 To complete this workshop, you'll need an Azure account. If you don't already have one, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://azure.microsoft.com/free/).
 
-<div class="important" data-title="important" data-visible="$$azpass$$">
+</div>
 
-> For participants attending this workshop in-person, you can obtain a free Azure Pass credit by using this link: [redeem your Azure Pass](https://azcheck.in/$$azpass$$).
+<div data-visible="$$azpass$$">
+
+To complete this workshop, you'll need an Azure account. As you're attending this workshop in-person, you can create one and obtain a free Azure Pass credit by using this link: [redeem your Azure Pass](https://azcheck.in/$$azpass$$).
+
+> If you're **not** attending this workshop in-person, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://azure.microsoft.com/free/).
 
 </div>
 
