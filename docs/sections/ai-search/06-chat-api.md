@@ -87,7 +87,7 @@ Then add this code below the credentials retrieval:
 // Set up Azure AI Search client
 const searchClient = new SearchClient<any>(
   `https://${config.azureSearchService}.search.windows.net`,
-  config.azureSearchIndex,
+  config.indexName,
   credential,
 );
 ```

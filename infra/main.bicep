@@ -17,11 +17,11 @@ param indexerApiName string = 'indexer'
 param indexerApiImageName string = ''
 param qdrantName string = 'qdrant'
 param qdrantImageName string = 'docker.io/qdrant/qdrant:v1.7.3'
+param indexName string // Set in main.parameters.json
 
 // The free tier does not support managed identity (required) or semantic search (optional)
 @allowed(['basic', 'standard', 'standard2', 'standard3', 'storage_optimized_l1', 'storage_optimized_l2'])
 param searchServiceSkuName string // Set in main.parameters.json
-param searchIndexName string // Set in main.parameters.json
 
 @description('Location for the OpenAI resource group')
 @allowed(['australiaeast', 'canadaeast', 'eastus', 'eastus2', 'francecentral', 'japaneast', 'northcentralus', 'swedencentral', 'switzerlandnorth', 'uksouth', 'westeurope'])
@@ -155,12 +155,12 @@ module backendApi './core/host/container-app.bicep' = {
         value: finalOpenAiUrl
       }
       {
-        name: 'AZURE_SEARCH_INDEX'
-        value: searchIndexName
-      }
-      {
         name: 'AZURE_SEARCH_SERVICE'
         value: azureSearchService
+      }
+      {
+        name: 'INDEX_NAME'
+        value: indexName
       }
       {
         name: 'QDRANT_URL'
@@ -218,6 +218,10 @@ module indexerApi './core/host/container-app.bicep' = {
       {
         name: 'AZURE_SEARCH_SERVICE'
         value: azureSearchService
+      }
+      {
+        name: 'INDEX_NAME'
+        value: indexName
       }
       {
         name: 'QDRANT_URL'
@@ -419,11 +423,10 @@ output AZURE_OPENAI_CHATGPT_MODEL string = chatGptModelName
 output AZURE_OPENAI_EMBEDDING_DEPLOYMENT string = embeddingDeploymentName
 output AZURE_OPENAI_EMBEDDING_MODEL string = embeddingModelName
 
-output AZURE_SEARCH_INDEX string =  searchIndexName
 output AZURE_SEARCH_SERVICE string = azureSearchService
-
 output QDRANT_URL string = qdrantUrl
 
+output INDEX_NAME string =  indexName
 output FRONTEND_URI string = frontend.outputs.uri
 output BACKEND_API_URI string = backendApi.outputs.uri
 output INDEXER_API_URI string = indexerApi.outputs.uri

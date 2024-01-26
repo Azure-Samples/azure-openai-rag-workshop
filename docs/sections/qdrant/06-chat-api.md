@@ -199,7 +199,7 @@ Now that we have the query vector, we can call the Qdrant client to retrieve the
 
 ```ts
 // Performs a vector search
-const searchResults = await this.qdrantClient.search(this.config.azureSearchIndex, {
+const searchResults = await this.qdrantClient.search(this.config.indexName, {
   vector: queryVector,
   limit: 3,
   params: {

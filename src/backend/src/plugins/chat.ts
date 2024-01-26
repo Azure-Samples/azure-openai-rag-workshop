@@ -50,7 +50,7 @@ export class ChatService {
     const queryVector = await embeddingsClient.embedQuery(query);
 
     // Performs a vector search
-    const searchResults = await this.qdrantClient.search(this.config.azureSearchIndex, {
+    const searchResults = await this.qdrantClient.search(this.config.indexName, {
       vector: queryVector,
       limit: 3,
       params: {
@@ -132,7 +132,7 @@ export class ChatService {
     const queryVector = await embeddingsClient.embedQuery(query);
 
     // Performs a vector search
-    const searchResults = await this.qdrantClient.search(this.config.azureSearchIndex, {
+    const searchResults = await this.qdrantClient.search(this.config.indexName, {
       vector: queryVector,
       limit: 3,
       params: {

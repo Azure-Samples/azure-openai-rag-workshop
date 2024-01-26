@@ -20,14 +20,14 @@
     "openAiUrl": {
       "value": "${AZURE_OPENAI_URL}"
     },
-    "searchIndexName": {
-      "value": "${AZURE_SEARCH_INDEX=kbindex}"
-    },
     "searchServiceSkuName": {
       "value": "${AZURE_SEARCH_SERVICE_SKU=standard}"
     },
     "chatGptDeploymentName": {
       "value": "${AZURE_OPENAI_CHATGPT_DEPLOYMENT=chat}"
+    },
+    "indexName": {
+      "value": "${INDEX_NAME=kbindex}"
     },
     "useQdrant": {
       "value": "${USE_QDRANT=false}"

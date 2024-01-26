@@ -14,5 +14,5 @@ echo 'Running "index-files" CLI tool'
 npx index-files \
   --wait \
   --indexer-url "${INDEXER_API_URI:-http://localhost:3001}" \
-  --index-name "${AZURE_SEARCH_INDEX:-kbindex}" \
+  --index-name "${INDEX_NAME:-kbindex}" \
   ./data/*.pdf

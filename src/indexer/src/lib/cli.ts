@@ -26,7 +26,7 @@ export async function run(arguments_: string[] = process.argv) {
     .arguments('<files...>')
     .description('CLI utility to send files to an indexer service instance')
     .option('-u, --indexer-url <url>', 'The indexer service URL', 'http://localhost:3001')
-    .option('-i, --index-name <name>', 'The name of the target index', process.env.AZURE_SEARCH_INDEX || 'kbindex')
+    .option('-i, --index-name <name>', 'The name of the target index', process.env.INDEX_NAME || 'kbindex')
     .option('-c, --category <name>', 'Set document category')
     .option('-w, --wait', 'Wait for the indexer to finish processing the files', false)
     .version(packageJson.version, '-v, --version', 'Show the current version')

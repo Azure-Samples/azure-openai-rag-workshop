@@ -5,12 +5,12 @@ import fp from 'fastify-plugin';
 
 export interface AppConfig {
   azureSearchService: string;
-  azureSearchIndex: string;
   azureOpenAiUrl: string;
   azureOpenAiEmbeddingDeployment: string;
   azureOpenAiEmbeddingModel: string;
   kbFieldsContent: string;
   kbFieldsSourcePage: string;
+  indexName: string;
   qdrantUrl: string;
 }
 
@@ -27,12 +27,12 @@ export default fp(
 
     const config: AppConfig = {
       azureSearchService: process.env.AZURE_SEARCH_SERVICE || '',
-      azureSearchIndex: process.env.AZURE_SEARCH_INDEX || 'kbindex',
       azureOpenAiUrl: process.env.AZURE_OPENAI_URL || '',
       azureOpenAiEmbeddingDeployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT || 'embedding',
       azureOpenAiEmbeddingModel: process.env.AZURE_OPENAI_EMBEDDING_MODEL || 'text-embedding-ada-002',
       kbFieldsContent: process.env.KB_FIELDS_CONTENT || 'content',
       kbFieldsSourcePage: process.env.KB_FIELDS_SOURCEPAGE || 'sourcepage',
+      indexName: process.env.INDEX_NAME || 'kbindex',
       qdrantUrl: process.env.QDRANT_URL || '',
     };
 

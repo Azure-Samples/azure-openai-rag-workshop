@@ -18,8 +18,8 @@ if ([string]::IsNullOrEmpty($env:INDEXER_API_URI)) {
   [Environment]::SetEnvironmentVariable('INDEXER_API_URI', 'http://localhost:3001')
 }
 
-if ([string]::IsNullOrEmpty($env:AZURE_SEARCH_INDEX)) {
-  [Environment]::SetEnvironmentVariable('AZURE_SEARCH_INDEX', 'kbindex')
+if ([string]::IsNullOrEmpty($env:INDEX_NAME)) {
+  [Environment]::SetEnvironmentVariable('INDEX_NAME', 'kbindex')
 }
 
 Write-Host 'Installing dependencies and building CLI'
@@ -28,4 +28,4 @@ npm run build --workspace=indexer
 
 Write-Host 'Running "index-files" CLI tool'
 $files = Get-Item "data/*.pdf"
-npx index-files --wait --indexer-url "$env:INDEXER_API_URI" --index-name "$env:AZURE_SEARCH_INDEX" $files
+npx index-files --wait --indexer-url "$env:INDEXER_API_URI" --index-name "$env:INDEX_NAME" $files
