@@ -67,6 +67,8 @@ var resourceToken = toLower(uniqueString(subscription().id, environmentName, loc
 var tags = { 'azd-env-name': environmentName }
 var finalOpenAiUrl = empty(openAiUrl) ? 'https://${openAi.outputs.name}.openai.azure.com' : openAiUrl
 var useAzureAISearch = !useQdrant
+var azureSearchService = useAzureAISearch ? searchService.outputs.name : ''
+var qdrantUrl = useQdrant ? '${qdrant.outputs.uri}:443' : ''
 
 // Organize resources in a resource group
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -158,7 +160,11 @@ module backendApi './core/host/container-app.bicep' = {
       }
       {
         name: 'AZURE_SEARCH_SERVICE'
-        value: searchService.outputs.name
+        value: azureSearchService
+      }
+      {
+        name: 'QDRANT_URL'
+        value: qdrantUrl
       }
     ], useApplicationInsights ? [{
       name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
@@ -210,12 +216,12 @@ module indexerApi './core/host/container-app.bicep' = {
         value: finalOpenAiUrl
       }
       {
-        name: 'AZURE_SEARCH_INDEX'
-        value: searchIndexName
+        name: 'AZURE_SEARCH_SERVICE'
+        value: azureSearchService
       }
       {
-        name: 'AZURE_SEARCH_SERVICE'
-        value: searchService.outputs.name
+        name: 'QDRANT_URL'
+        value: qdrantUrl
       }
     ], useApplicationInsights ? [{
       name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
@@ -413,10 +419,10 @@ output AZURE_OPENAI_CHATGPT_MODEL string = chatGptModelName
 output AZURE_OPENAI_EMBEDDING_DEPLOYMENT string = embeddingDeploymentName
 output AZURE_OPENAI_EMBEDDING_MODEL string = embeddingModelName
 
-output AZURE_SEARCH_INDEX string =  useAzureAISearch ? searchIndexName : ''
-output AZURE_SEARCH_SERVICE string = useAzureAISearch ? searchService.outputs.name : ''
+output AZURE_SEARCH_INDEX string =  searchIndexName
+output AZURE_SEARCH_SERVICE string = azureSearchService
 
-output QDRANT_URL string = useQdrant ? '${qdrant.outputs.uri}:443' : ''
+output QDRANT_URL string = qdrantUrl
 
 output FRONTEND_URI string = frontend.outputs.uri
 output BACKEND_API_URI string = backendApi.outputs.uri
