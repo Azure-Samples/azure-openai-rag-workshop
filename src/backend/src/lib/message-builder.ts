@@ -1,5 +1,5 @@
 import { encoding_for_model, type TiktokenModel } from '@dqbd/tiktoken';
-import { type BaseMessage, AIMessage, HumanMessage, SystemMessage } from 'langchain/schema';
+import { type BaseMessage, AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { type Message, type MessageRole } from './models.js';
 
 export class MessageBuilder {

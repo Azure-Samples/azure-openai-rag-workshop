@@ -1,8 +1,7 @@
 import fp from 'fastify-plugin';
 import { DefaultAzureCredential } from '@azure/identity';
 import { QdrantClient } from '@qdrant/js-client-rest';
-import { ChatOpenAI, type OpenAIChatInput } from 'langchain/chat_models/openai';
-import { OpenAIEmbeddings, type OpenAIEmbeddingsParams } from 'langchain/embeddings/openai';
+import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
 import { type AppConfig } from './config.js';
 
@@ -103,14 +102,14 @@ export class ChatService {
       // Number of completions to generate
       n: 1,
     });
-    const completion = await chatClient.predictMessages(messageBuilder.getMessages());
+    const completion = await chatClient.invoke(messageBuilder.getMessages());
 
     return {
       choices: [
         {
           index: 0,
           message: {
-            content: completion.content,
+            content: completion.content as string,
             role: 'assistant',
             context: {
               data_points: results,
@@ -195,7 +194,7 @@ export class ChatService {
           {
             index: 0,
             delta: {
-              content: chunk.content ?? '',
+              content: (chunk.content as string) ?? '',
               role: 'assistant' as const,
               context: {
                 data_points: id === 0 ? results : undefined,
@@ -221,9 +220,9 @@ export default fp(
       url: config.qdrantUrl,
       // Port needs to be set explicitly if it's not the default,
       // see https://github.com/qdrant/qdrant-js/issues/59
-      port: Number(config.qdrantUrl.split(':')[2])
+      port: Number(config.qdrantUrl.split(':')[2]),
     });
-   
+
     // Set up Langchain clients
     fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);
 

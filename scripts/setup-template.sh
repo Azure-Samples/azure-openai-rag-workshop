@@ -11,8 +11,7 @@ if [ "$template_name" == "qdrant" ]; then
   echo "Preparing project template for Qdrant..."
 
 echo -e "import fp from 'fastify-plugin';
-import { ChatOpenAI, type OpenAIChatInput } from 'langchain/chat_models/openai';
-import { OpenAIEmbeddings, type OpenAIEmbeddingsParams } from 'langchain/embeddings/openai';
+import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
 import { type AppConfig } from './config.js';
 

@@ -1,9 +1,9 @@
 import fp from 'fastify-plugin';
 import { DefaultAzureCredential } from '@azure/identity';
-import { SearchClient } from '@azure/search-documents';
-import { ChatOpenAI, type OpenAIChatInput } from 'langchain/chat_models/openai';
-import { OpenAIEmbeddings, type OpenAIEmbeddingsParams } from 'langchain/embeddings/openai';
+import { QdrantClient } from '@qdrant/js-client-rest';
+import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
+import { type AppConfig } from './config.js';
 
 const SYSTEM_MESSAGE_PROMPT = `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
 Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
@@ -29,7 +29,8 @@ export class ChatService {
   tokenLimit: number = 4000;
 
   constructor(
-    private searchClient: SearchClient<any>,
+    private config: AppConfig,
+    private qdrantClient: QdrantClient,
     private chatClient: (options?: Partial<OpenAIChatInput>) => ChatOpenAI,
     private embeddingsClient: (options?: Partial<OpenAIEmbeddingsParams>) => OpenAIEmbeddings,
     private chatGptModel: string,
@@ -48,29 +49,23 @@ export class ChatService {
     const embeddingsClient = this.embeddingsClient({ modelName: this.embeddingModel });
     const queryVector = await embeddingsClient.embedQuery(query);
 
-    // Performs a hybrid search (vectors + text)
-    // For a vector search, replace the query by '*'
-    const searchResults = await this.searchClient.search(query, {
-      top: 3,
-      vectorSearchOptions: {
-        queries: [
-          {
-            kind: 'vector',
-            vector: queryVector,
-            kNearestNeighborsCount: 50,
-            fields: ['embedding'],
-          },
-        ],
-      }
+    // Performs a vector search
+    const searchResults = await this.qdrantClient.search(this.config.azureSearchIndex, {
+      vector: queryVector,
+      limit: 3,
+      params: {
+        hnsw_ef: 128,
+        exact: false,
+      },
     });
 
-    const results: string[] = [];
-    for await (const result of searchResults.results) {
-      const document = result.document;
-      const sourcePage = document[this.sourcePageField];
-      const content = document[this.contentField].replaceAll(/[\n\r]+/g, ' ');
-      results.push(`${sourcePage}: ${content}`);
-    }
+    const results: string[] = searchResults.map((result) => {
+      const document = result.payload!;
+      const sourcePage = document[this.sourcePageField] as string;
+      let content = document[this.contentField] as string;
+      content = content.replaceAll(/[\n\r]+/g, ' ');
+      return `${sourcePage}: ${content}`;
+    });
 
     const content = results.join('\n');
 
@@ -107,14 +102,14 @@ export class ChatService {
       // Number of completions to generate
       n: 1,
     });
-    const completion = await chatClient.predictMessages(messageBuilder.getMessages());
+    const completion = await chatClient.invoke(messageBuilder.getMessages());
 
     return {
       choices: [
         {
           index: 0,
           message: {
-            content: completion.content,
+            content: completion.content as string,
             role: 'assistant',
             context: {
               data_points: results,
@@ -123,7 +118,6 @@ export class ChatService {
           },
         },
       ],
-      object: 'chat.completion',
     };
   }
 
@@ -137,29 +131,23 @@ export class ChatService {
     const embeddingsClient = this.embeddingsClient({ modelName: this.embeddingModel });
     const queryVector = await embeddingsClient.embedQuery(query);
 
-    // Performs a hybrid search (vectors + text)
-    // For a vector search, replace the query by '*'
-    const searchResults = await this.searchClient.search(query, {
-      top: 3,
-      vectorSearchOptions: {
-        queries: [
-          {
-            kind: 'vector',
-            vector: queryVector,
-            kNearestNeighborsCount: 50,
-            fields: ['embedding'],
-          },
-        ],
-      }
+    // Performs a vector search
+    const searchResults = await this.qdrantClient.search(this.config.azureSearchIndex, {
+      vector: queryVector,
+      limit: 3,
+      params: {
+        hnsw_ef: 128,
+        exact: false,
+      },
     });
 
-    const results: string[] = [];
-    for await (const result of searchResults.results) {
-      const document = result.document;
-      const sourcePage = document[this.sourcePageField];
-      const content = document[this.contentField].replaceAll(/[\n\r]+/g, ' ');
-      results.push(`${sourcePage}: ${content}`);
-    }
+    const results: string[] = searchResults.map((result) => {
+      const document = result.payload!;
+      const sourcePage = document[this.sourcePageField] as string;
+      let content = document[this.contentField] as string;
+      content = content.replaceAll(/[\n\r]+/g, ' ');
+      return `${sourcePage}: ${content}`;
+    });
 
     const content = results.join('\n');
 
@@ -206,7 +194,7 @@ export class ChatService {
           {
             index: 0,
             delta: {
-              content: chunk.content ?? '',
+              content: (chunk.content as string) ?? '',
               role: 'assistant' as const,
               context: {
                 data_points: id === 0 ? results : undefined,
@@ -216,7 +204,6 @@ export class ChatService {
             finish_reason: '',
           },
         ],
-        object: 'chat.completion.chunk' as const,
       };
       yield responseChunk;
       id++;
@@ -228,25 +215,33 @@ export default fp(
   async (fastify, options) => {
     const config = fastify.config;
 
-    // Use the current user identity to authenticate with Azure OpenAI and AI Search.
-    // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
-    const credential = new DefaultAzureCredential();
-
-    // Set up Azure AI Search client
-    const searchClient = new SearchClient<any>(
-      `https://${config.azureSearchService}.search.windows.net`,
-      config.azureSearchIndex,
-      credential,
-    );
+    // Set up Qdrant client
+    const qdrantClient = new QdrantClient({
+      url: config.qdrantUrl,
+      // Port needs to be set explicitly if it's not the default,
+      // see https://github.com/qdrant/qdrant-js/issues/59
+      port: Number(config.qdrantUrl.split(':')[2]),
+    });
 
     // Set up Langchain clients
     fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);
 
-    const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
+    // Automatic Azure identity is not supported in the local dev environment, so we use a dummy key.
+    let openAIApiKey = '__dummy';
+    try {
+      // Use the current user identity to authenticate with Azure OpenAI.
+      // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
+      const credential = new DefaultAzureCredential();
+      const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
+      openAIApiKey = openAiToken.token;
+    } catch {
+      fastify.log.warn('Failed to get Azure OpenAI token, using dummy key');
+    }
+
     const commonOptions = {
-      openAIApiKey: openAiToken.token,
+      openAIApiKey,
       azureOpenAIApiVersion: '2023-05-15',
-      azureOpenAIApiKey: openAiToken.token,
+      azureOpenAIApiKey: openAIApiKey,
       azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,
     };
 
@@ -264,7 +259,8 @@ export default fp(
       });
 
     const chatService = new ChatService(
-      searchClient,
+      config,
+      qdrantClient,
       chatClient,
       embeddingsClient,
       config.azureOpenAiChatGptModel,

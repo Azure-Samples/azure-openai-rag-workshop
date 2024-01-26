@@ -60,8 +60,7 @@ export default root;
 " > src/backend/src/routes/root.ts
 
 echo -e "import fp from 'fastify-plugin';
-import { ChatOpenAI, type OpenAIChatInput } from 'langchain/chat_models/openai';
-import { OpenAIEmbeddings, type OpenAIEmbeddingsParams } from 'langchain/embeddings/openai';
+import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
 
 export class ChatService {
