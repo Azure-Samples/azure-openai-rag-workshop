@@ -8,7 +8,7 @@ services:
       - QDRANT_URL=http://qdrant:6333
       - LOCAL=true
     ports:
-      - "3000:3000"
+      - 3000:3000
 
   indexer:
     build:
@@ -17,7 +17,7 @@ services:
       - AZURE_OPENAI_URL=${AZURE_OPENAI_URL}
       - QDRANT_URL=http://qdrant:6333
     ports:
-      - '3001:3001'
+      - 3001:3001
 
   qdrant:
     image: docker.io/qdrant/qdrant:v1.7.3
