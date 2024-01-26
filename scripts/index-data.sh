@@ -7,7 +7,7 @@ if azd_env=$(azd env get-values); then
 fi
 
 echo 'Installing dependencies and building CLI'
-npm ci
+npm install
 npm run build --workspace=indexer
 
 echo 'Running "index-files" CLI tool'

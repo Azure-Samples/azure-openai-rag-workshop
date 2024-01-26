@@ -23,7 +23,7 @@ if ([string]::IsNullOrEmpty($env:INDEX_NAME)) {
 }
 
 Write-Host 'Installing dependencies and building CLI'
-npm ci
+npm install
 npm run build --workspace=indexer
 
 Write-Host 'Running "index-files" CLI tool'
