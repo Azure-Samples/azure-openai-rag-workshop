@@ -183,7 +183,7 @@ If you want to work locally without using a dev container, you need to clone the
 |---------------|--------------------------------|
 | Git           | [Get Git](https://git-scm.com) |
 | Docker v20+   | [Get Docker](https://docs.docker.com/get-docker) |
-| Node.js v18+  | [Get Node.js](https://nodejs.org) |
+| Node.js v20+  | [Get Node.js](https://nodejs.org) |
 | Azure CLI     | [Get Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli#install) |
 | Azure Developer CLI | [Get Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd) |
 | GitHub CLI    | [Get GitHub CLI](https://cli.github.com/manual/installation) |
@@ -918,7 +918,7 @@ const chatClient = this.chatClient({
   maxTokens: 1024,
   n: 1,
 });
-const completion = await chatClient.predictMessages(messageBuilder.getMessages());
+const completion = await chatClient.invoke(messageBuilder.getMessages());
 ```
 
 First we create the LangChain chat client and pass a few options to control the behavior of the model:
@@ -926,7 +926,7 @@ First we create the LangChain chat client and pass a few options to control the 
 - `maxTokens` is the maximum number of tokens the model will generate. If you set it too low, the model will not be able to generate long answers. If you set it too high, the model may generate answers that are too long.
 - `n` is the number of answers the model will generate. In our case we only want one answer, so we set it to 1.
 
-Then we call the `predictMessages` method to generate the response. We pass the messages we created earlier as input.
+Then we call the `invoke` method to generate the response. We pass the messages we created earlier as input.
 
 The final step is to return the result in the Chat specification format:
 
@@ -937,7 +937,7 @@ return {
     {
       index: 0,
       message: {
-        content: completion.content,
+        content: completion.content as string,
         role: 'assistant',
         context: {
           data_points: results,
@@ -1052,7 +1052,7 @@ Let's create a file `Dockerfile` under the `src/backend` folder to build a Docke
 
 # Build Node.js app
 # ------------------------------------
-FROM node:18-alpine as build
+FROM node:20-alpine as build
 WORKDIR /app
 COPY ./package*.json ./
 COPY ./src/backend ./src/backend
@@ -1060,7 +1060,7 @@ RUN npm ci --cache /tmp/empty-cache
 RUN npm run build --workspace=backend
 ```
 
-The first statement `FROM node:18-alpine` means that we use the [node image](https://hub.docker.com/_/node) as a base, with Node.js 18 installed. The `alpine` variant is a lightweight version of the image, that results in a smaller container size, which is great for production environments. With the `as build` statement, we're naming this stage `build`, so we can reference it later.
+The first statement `FROM node:20-alpine` means that we use the [node image](https://hub.docker.com/_/node) as a base, with Node.js 20 installed. The `alpine` variant is a lightweight version of the image, that results in a smaller container size, which is great for production environments. With the `as build` statement, we're naming this stage `build`, so we can reference it later.
 
 After that, we are specifying our work directory with `WORKDIR /app`. We then need to copy our project files to the container. Because we are using NPM workspaces, it's not enough to copy the `./src/backend` folder, we also need to copy the root `package.json` file and more importantly the `package-lock.json` file, to make sure that the dependencies are installed in the same version as in our local environment.
 
@@ -1075,7 +1075,7 @@ Now we can create the second stage of our Dockerfile, that will be used to creat
 ```dockerfile
 # Run Node.js app
 # ------------------------------------
-FROM node:18-alpine
+FROM node:20-alpine
 ENV NODE_ENV=production
 
 WORKDIR /app
@@ -1111,7 +1111,7 @@ You can now build the Docker image and run it locally to test it. First, let's h
 }
 ```
 
-Now we can build the image by running this command from the `backend` folder:
+Then we can build the image by running this command from the `backend` folder:
 
 ```bash
 npm run docker:build
@@ -1240,7 +1240,7 @@ Our application is now ready to be deployed to Azure!
 
 We'll use [Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/overview) to deploy the frontend, and [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/overview) to deploy the backend and indexer services.
 
-Run these commands to build and deploy the application:
+Run this command from the root of the project to build and deploy the application:
 
 ```bash
 azd deploy

@@ -2,7 +2,7 @@
 
 # Build Node.js app
 # ------------------------------------
-FROM node:18-alpine as build
+FROM node:20-alpine as build
 WORKDIR /app
 COPY ./package*.json ./
 COPY ./tsconfig.json ./
@@ -12,7 +12,7 @@ RUN npm run build
 
 # Run Node.js app
 # ------------------------------------
-FROM node:18-alpine
+FROM node:20-alpine
 ENV NODE_ENV=production
 
 WORKDIR /app

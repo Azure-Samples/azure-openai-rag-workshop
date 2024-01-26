@@ -19,7 +19,7 @@ Let's create a file `Dockerfile` under the `src/backend` folder to build a Docke
 
 # Build Node.js app
 # ------------------------------------
-FROM node:18-alpine as build
+FROM node:20-alpine as build
 WORKDIR /app
 COPY ./package*.json ./
 COPY ./src/backend ./src/backend
@@ -27,7 +27,7 @@ RUN npm ci --cache /tmp/empty-cache
 RUN npm run build --workspace=backend
 ```
 
-The first statement `FROM node:18-alpine` means that we use the [node image](https://hub.docker.com/_/node) as a base, with Node.js 18 installed. The `alpine` variant is a lightweight version of the image, that results in a smaller container size, which is great for production environments. With the `as build` statement, we're naming this stage `build`, so we can reference it later.
+The first statement `FROM node:20-alpine` means that we use the [node image](https://hub.docker.com/_/node) as a base, with Node.js 20 installed. The `alpine` variant is a lightweight version of the image, that results in a smaller container size, which is great for production environments. With the `as build` statement, we're naming this stage `build`, so we can reference it later.
 
 After that, we are specifying our work directory with `WORKDIR /app`. We then need to copy our project files to the container. Because we are using NPM workspaces, it's not enough to copy the `./src/backend` folder, we also need to copy the root `package.json` file and more importantly the `package-lock.json` file, to make sure that the dependencies are installed in the same version as in our local environment.
 
@@ -42,7 +42,7 @@ Now we can create the second stage of our Dockerfile, that will be used to creat
 ```dockerfile
 # Run Node.js app
 # ------------------------------------
-FROM node:18-alpine
+FROM node:20-alpine
 ENV NODE_ENV=production
 
 WORKDIR /app

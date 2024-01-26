@@ -67,7 +67,7 @@ If you want to work locally without using a dev container, you need to clone the
 |---------------|--------------------------------|
 | Git           | [Get Git](https://git-scm.com) |
 | Docker v20+   | [Get Docker](https://docs.docker.com/get-docker) |
-| Node.js v18+  | [Get Node.js](https://nodejs.org) |
+| Node.js v20+  | [Get Node.js](https://nodejs.org) |
 | Azure CLI     | [Get Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli#install) |
 | Azure Developer CLI | [Get Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd) |
 | GitHub CLI    | [Get GitHub CLI](https://cli.github.com/manual/installation) |

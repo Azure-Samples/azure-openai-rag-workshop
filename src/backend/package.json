@@ -33,7 +33,7 @@
     "langchain": "^0.1.7"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0",
+    "@types/node": "^20.11.7",
     "concurrently": "^8.2.0",
     "fastify-tsconfig": "^2.0.0",
     "ts-node": "^10.9.1",
