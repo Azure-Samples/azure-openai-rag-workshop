@@ -42,7 +42,7 @@ makeArchive() {
 # Complete solution
 ##############################################################################
 
-echo "Creating solution package..."
+echo "Creating solution package (for JS + Azure AI Search)..."
 copyFolder . solution
 rm -rf "$target_folder/solution/.azure"
 rm -rf "$target_folder/solution/.env"
@@ -54,7 +54,26 @@ rm -rf "$target_folder/solution/TODO"
 rm -rf "$target_folder/solution/SUPPORT.md"
 rm -rf "$target_folder/solution/CODE_OF_CONDUCT.md"
 rm -rf "$target_folder/solution/SECURITY.md"
+rm -rf "$target_folder/solution/docker-compose.yml"
+cp -R src/backend/plugins/_chat.ai-search.ts "$target_folder/src/backend/plugins/chat.ts"
+rm -rf "$target_folder/solution/src/backend/plugins/_chat*"
 makeArchive . solution solution
+
+echo "Creating solution package (for JS + Qdrant)..."
+copyFolder . solution-qdrant
+rm -rf "$target_folder/solution/.azure"
+rm -rf "$target_folder/solution/.env"
+rm -rf "$target_folder/solution/docs"
+rm -rf "$target_folder/solution/trainer"
+rm -rf "$target_folder/solution/scripts/repo"
+rm -rf "$target_folder/solution/.github"
+rm -rf "$target_folder/solution/TODO"
+rm -rf "$target_folder/solution/SUPPORT.md"
+rm -rf "$target_folder/solution/CODE_OF_CONDUCT.md"
+rm -rf "$target_folder/solution/SECURITY.md"
+cp -R src/backend/plugins/_chat.qdrant.ts "$target_folder/src/backend/plugins/chat.ts"
+rm -rf "$target_folder/solution/src/backend/plugins/_chat*"
+makeArchive . solution-qdrant solution-qdrant
 
 ##############################################################################
 # Backend Dockerfile
