@@ -4,15 +4,14 @@
   "name": "OpenAI Workshop",
 
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:18-bullseye",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20-bullseye",
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
-      "version": "18"
+      "version": "20"
     },
-    "ghcr.io/devcontainers/features/docker-in-docker:1": {
-      "version": 20,
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "moby": "false"
     },
     "ghcr.io/devcontainers/features/powershell:1": {},
