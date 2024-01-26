@@ -104,5 +104,8 @@ fi
 
 rm -rf ./scripts/setup-template.sh
 
+git add .
+git commit -m "chore: complete project setup"
+
 echo "Template ready!"
 
