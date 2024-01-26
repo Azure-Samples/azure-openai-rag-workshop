@@ -19,7 +19,7 @@ export class QdrantVectorDB implements VectorDB {
     this.qdrantClient = new QdrantClient({
       url: config.qdrantUrl,
       // https://github.com/qdrant/qdrant-js/issues/59
-      port: Number(config.qdrantUrl.split(':')[2])
+      port: Number(config.qdrantUrl.split(':')[2]),
     });
   }
 
