@@ -317,7 +317,7 @@ const chatClient = this.chatClient({
   maxTokens: 1024,
   n: 1,
 });
-const completion = await chatClient.predictMessages(messageBuilder.getMessages());
+const completion = await chatClient.invoke(messageBuilder.getMessages());
 ```
 
 First we create the LangChain chat client and pass a few options to control the behavior of the model:
@@ -325,7 +325,7 @@ First we create the LangChain chat client and pass a few options to control the 
 - `maxTokens` is the maximum number of tokens the model will generate. If you set it too low, the model will not be able to generate long answers. If you set it too high, the model may generate answers that are too long.
 - `n` is the number of answers the model will generate. In our case we only want one answer, so we set it to 1.
 
-Then we call the `predictMessages` method to generate the response. We pass the messages we created earlier as input.
+Then we call the `invoke` method to generate the response. We pass the messages we created earlier as input.
 
 The final step is to return the result in the Chat specification format:
 
@@ -336,7 +336,7 @@ return {
     {
       index: 0,
       message: {
-        content: completion.content,
+        content: completion.content as string,
         role: 'assistant',
         context: {
           data_points: results,
