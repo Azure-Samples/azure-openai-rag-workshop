@@ -68,10 +68,9 @@ This will start both Qdrant and the indexer service locally. This may takes a fe
 
 <div class="tip" data-title="tip">
 
-> You can look at the `docker-compose.yml` at the root of the project file to see how the services are configured. Docker Compose automatically loads the `.env` file, so we can use the environment variables exposed there. To learn more about Docker Compose, check out the [official documentation](https://docs.docker.com/compose/).
+> You can look at the `docker-compose.yml` file at the root of the project to see how the services are configured. Docker Compose automatically loads the `.env` file, so we can use the environment variables exposed there. To learn more about Docker Compose, check out the [official documentation](https://docs.docker.com/compose/).
 
 </div>
-
 
 Once all services are started, you can run the ingestion process by opening a new terminal and running the `./scripts/index-data.sh` script on Linux or macOS, or `./scripts/index-data.ps1` on Windows:
 

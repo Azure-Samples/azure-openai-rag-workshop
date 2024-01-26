@@ -95,11 +95,18 @@ Build the image by running this command:
 docker compose build backend
 ```
 
-After the build is complete, you can run the image with the following command:
+After the build is complete, you can run the image and the database using the following command:
 
 ```bash
-docker compose run backend
+docker compose up
 ```
+
+<div class="tip" data-title="tip">
+
+> If needed, you can also rebuild all images and start all services in one command by running `docker compose up --build`.
+
+</div>
+
 
 You can now test the API again using the `api.http` file or `curl` just like before, to check that everything works. When you're done with the testing, stop the server by pressing `Ctrl+C`.
 

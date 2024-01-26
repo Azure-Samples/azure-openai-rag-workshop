@@ -37,7 +37,7 @@ If you want to go further with more advanced use-cases, authentication, history 
 
 ### References
 
-- This workshop URL: [aka.ms/ws/openai-rag](https://aka.ms/ws/openai-rag)
+- This workshop URL: [aka.ms/ws/openai-rag-qdrant](https://aka.ms/ws/openai-rag-qdrant)
 - The source repository for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop/tree/base)
 - The base template for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop)
 - If something does not work: [Report an issue](https://github.com/Azure-Samples/azure-openai-rag-workshop/issues)

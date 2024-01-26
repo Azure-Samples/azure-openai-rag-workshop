@@ -16,7 +16,7 @@ Once the fork is created, select the **Code** button, then the **Codespaces** ta
 
 ![Screenshot of GitHub showing the Codespaces creation](./assets/create-codespaces.png)
 
-This will initialize a development container with all necessary tools pre-installed. Once it's ready, you have everything you need to start coding. It will also automatically run `npm install` for you.
+This will initialize a development container with all necessary tools pre-installed. Once it's ready, you have everything you need to start coding. Wait a few minutes after the UI is loaded to ensure everything is ready, as some tasks will be triggered after everything is fully loaded, such as the installation of the npm packages with `npm install`.
 
 <div class="info" data-title="note">
 

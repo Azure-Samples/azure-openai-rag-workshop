@@ -43,7 +43,8 @@ You can test that Qdrant is running by opening the following URL in your browser
 
 <div class="tip" data-title="tip">
 
-> In Codespaces, once the servce is running, you can click on the **Open in browser** button in the bottom right corner of your terminal when prompted and add `/dashboard` at the end of the URL.
+> In Codespaces, once the servce is running, you click on the **Open in browser** button when prompted and add `/dashboard` at the end of the URL.
+> You can also click on the **Ports** tab of the bottom panel, and right click on the URL in the **Forwarded Address** column next to the `6333` port, and select **Open in browser**.
 
 </div>
 
