@@ -125,12 +125,9 @@ Finally, it's time to create the LangChain clients. Add this code below the belo
 // Show the OpenAI URL used in the logs
 fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);
 
-// Get the OpenAI token from the credentials
-const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
-
 // Set common options for the clients
 const commonOptions = {
-  openAIApiKey: openAiToken.token,
+  openAIApiKey,
   azureOpenAIApiVersion: '2023-05-15',
   azureOpenAIApiKey: openAIApiKey,
   azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,

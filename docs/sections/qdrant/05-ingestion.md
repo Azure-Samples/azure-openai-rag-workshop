@@ -88,7 +88,7 @@ Open the Qdrant dashboard again by opening the following URL in your browser: [h
 
 <div class="tip" data-title="tip">
 
-> In Codespaces, you need to open the port 6333 from the **Ports** tab of the bottom panel.
+> In Codespaces, you need to select the **Ports** tab in the bottom panel, right click on the URL in the **Forwarded Address** column next to the `6333` port, and select **Open in browser**.
 
 </div>
 
@@ -97,3 +97,5 @@ You should see the collection named `kbindex` in the list:
 ![Screenshot of the Qdrant dashboard](./assets/qdrant-dashboard.png)
 
 You can select that collection and browse it. You should see the entries that were created by the ingestion process. Documents are split into multiple overlapping sections to improve the search results, so you should see multiple entries for each document.
+
+Keep the services running, as we'll use them in the next section.

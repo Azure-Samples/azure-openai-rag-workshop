@@ -8,8 +8,6 @@
 
 We now have a working application, but there are still a few things we can improve to make it better, like adding a follow-up questions feature.
 
-<!-- TODO: streaming -->
-
 ### Add follow-up questions
 
 After your chatbot has answered the user's question, it can be useful to provide some follow-up questions to the user, to help them find the information they need.
@@ -60,3 +58,6 @@ In the chat webapp you should now see the follow-up questions after the answer:
 ![Screenshot of the follow-up questions](./assets/follow-up-questions.png)
 
 You can now redeploy your improved backend by running `azd deploy backend` and test it in production.
+
+<!-- TODO: streaming -->
+<!-- TODO: explore langchain integrations: document retrievers & tools -->

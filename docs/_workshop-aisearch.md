@@ -34,7 +34,7 @@ include::sections/ai-search/07-dockerfile.md[]
 
 ---
 
-include::sections/08-website.md[]
+include::sections/ai-search/08-website.md[]
 
 ---
 

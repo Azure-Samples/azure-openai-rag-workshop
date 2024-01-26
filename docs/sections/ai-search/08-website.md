@@ -87,11 +87,13 @@ This method will be called from the Web component, in the `onSendClicked` method
 
 ### Testing the completed website
 
-Once you completed the code, you also need to run the backend to be able to test the application. Keep your frontend server running, and open a new terminal. Run this command from the project root to restart the backend services:
+Once you completed the code, you also need to run the backend to be able to test the application. Keep your frontend server running, and open a new terminal to run the backend:
 
 ```bash
-docker compose up
+npm run dev --workspace=backend
 ```
+
+By specifying the `--workspace=backend` option, we tell NPM to run the `dev` script in the `backend` workspace, and this will work whatever the current directory is.
 
 Now go back to your browser, and send a question to the chatbot. You should see the answer appear in the chat window.
 
