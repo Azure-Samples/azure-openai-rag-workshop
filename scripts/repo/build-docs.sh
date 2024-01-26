@@ -12,7 +12,7 @@ DOCS_HOME=/tmp/azure-openai-rag-workshop-docs
 GH_USER=$(git config user.name)
 REPO=https://$GH_USER:$GH_TOKEN@github.com/Azure-Samples/azure-openai-rag-workshop.git
 
-echo "Preparing workshop docs..."
+echo "Preparing all workshop docs..."
 echo "(temp folder: $DOCS_HOME)"
 cp -R docs "$DOCS_HOME"
 cd "$DOCS_HOME"
