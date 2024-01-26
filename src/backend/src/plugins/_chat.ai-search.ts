@@ -204,7 +204,7 @@ export class ChatService {
           {
             index: 0,
             delta: {
-              content: chunk.content as string ?? '',
+              content: (chunk.content as string) ?? '',
               role: 'assistant' as const,
               context: {
                 data_points: id === 0 ? results : undefined,
