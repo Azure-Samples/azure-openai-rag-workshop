@@ -123,7 +123,7 @@ echo -e "import { type ChatResponse, type ChatRequestOptions, type ChatResponseC
 
 export const apiBaseUrl = import.meta.env.VITE_BACKEND_API_URI || '';
 
-export async function getCompletion(options: ChatRequestOptions, oneShot = false) {
+export async function getCompletion(options: ChatRequestOptions) {
   const apiUrl = options.apiUrl || apiBaseUrl;
 
   // TODO: complete call to Chat API here
