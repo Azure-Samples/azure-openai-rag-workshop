@@ -59,7 +59,7 @@ rm -rf "$target_folder/solution/SECURITY.md"
 rm -rf "$target_folder/solution/docker-compose.yml"
 rm -rf "$target_folder/solution/scripts/setup-template.sh"
 cp -R src/backend/src/plugins/_chat.ai-search.ts "$target_folder/solution/src/backend/src/plugins/chat.ts"
-rm -rf "$target_folder/solution/src/backend/src/plugins/_chat*"
+rm -rf "$target_folder/solution/src/backend/src/plugins/_chat."*
 makeArchive . solution solution
 
 echo "Creating solution package (for JS + Qdrant)..."
@@ -78,7 +78,7 @@ rm -rf "$target_folder/solution-qdrant/CODE_OF_CONDUCT.md"
 rm -rf "$target_folder/solution-qdrant/SECURITY.md"
 rm -rf "$target_folder/solution-qdrant/scripts/setup-template.sh"
 cp -R src/backend/src/plugins/_chat.qdrant.ts "$target_folder/solution-qdrant/src/backend/src/plugins/chat.ts"
-rm -rf "$target_folder/solution-qdrant/src/backend/src/plugins/_chat*"
+rm -rf "$target_folder/solution-qdrant/src/backend/src/plugins/_chat."*
 makeArchive . solution-qdrant solution-qdrant
 
 ##############################################################################
