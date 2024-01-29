@@ -84,7 +84,7 @@ As this file may sometimes contains application secrets, it's a best practice to
 
 In our journey to deploy the chat application, we'll be utilizing a suite of Azure services, each playing a crucial role in the application's architecture and performance.
 
-![Application architecture](./assets/azure-architecture.png)
+![Application architecture](./assets/azure-architecture-generic-db.png)
 
 Here's a brief overview of the Azure services we'll use:
 

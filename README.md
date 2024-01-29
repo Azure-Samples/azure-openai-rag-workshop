@@ -23,6 +23,10 @@ You can also use the [Dev Containers extension for VS Code](https://aka.ms/vscod
 
 This project is structured as monorepo and makes use of [NPM Workspaces](https://docs.npmjs.com/cli/using-npm/workspaces).
 
+Here's the architecture of the application:
+
+![Architecture diagram](./docs/assets/architecture.png)
+
 ## How to run locally
 
 ```bash
