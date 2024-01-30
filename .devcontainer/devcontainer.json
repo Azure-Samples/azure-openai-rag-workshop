@@ -20,6 +20,7 @@
       "version": "latest",
       "installBicep": true
     },
+    "ghcr.io/devcontainers/features/github-cli:1": {},
     // "ghcr.io/devcontainers/features/powershell:1": {},
     "ghcr.io/azure/azure-dev/azd:latest": {}
   },
