@@ -113,7 +113,7 @@ This will use the current user identity to authenticate with Azure OpenAI. We do
 <div class="info" data-title="note">
 
 > When run locally inside a container, the Azure Identity SDK will will not be able to retrieve the current user identity from the Azure CLI. For simplicity, we'll use a dummy key in this case but it only works if you use the OpenAI proxy we provide if you attend this workshop in-person.
-> If need to properly authenticate locally, you should either run the app outside of a container with `npm run dev`, or create a [Service Principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal) and pass the environment variables to the container.
+> If need to properly authenticate locally, you should either run the app outside of a container with `npm run dev`, or create a [Service Principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal), assign it the needed permissions and pass the environment variables to the container.
 
 </div>
 

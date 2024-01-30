@@ -68,9 +68,9 @@ Finally we tell Docker to expose port `3000`, and run the `npm start --workspace
 
 With this setup, Docker will first create a container to build our app, and then create a second container where we copy the compiled app code from the first container to create the final Docker image.
 
-### Testing our Docker image
+### Build our Docker image
 
-You can now build the Docker image and run it locally to test it. First, let's have a look at the commands to build and run the Docker image in our `src/backend/package.json` file:
+You can now test if the Docker image builds correctly. First, let's have a look at the commands to build and run the Docker image in our `src/backend/package.json` file:
 
 ```json
 {
@@ -87,12 +87,13 @@ Then we can build the image by running this command from the `backend` folder:
 npm run docker:build
 ```
 
-After the build is complete, you can run the image with the following command:
-
-```bash
-npm run docker:run
-```
-
-You can now test the API again using the `api.http` or `curl` file just like before, to check that everything works. When you're done with the testing, stop the server by pressing `Ctrl+C`.
+If the build is successful, you can continue to the next section. If you have an error, make sure that you did not miss a section in your Dockerfile, and that your backend code compiles correctly.
 
 After that, commit the changes to the repository to keep track of your progress.
+
+<div class="info" data-title="note">
+
+> If you try to run the image with `npm run docker:run`, you will get an error as the `@azure/identity` SDK cannot automatically authenticate in a local container.
+> There are several ways to fix this, the easiest one would be to create a [Service Principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal), assign it the needed permissions, and pass the environment variables to the container. However, this goes beyond the scope of this workshop, so we'll skip this step for now.
+
+</div>
