@@ -8,6 +8,13 @@
 
 To complete this workshop, you'll need an Azure account. If you don't already have one, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://azure.microsoft.com/free/).
 
+<div class="important" data-title="important">
+
+> If you already have an Azure account from your company, **DO NOT** use it for this workshop as it may have restrictions that will prevent you from completing the workshop.
+> You'll need to create a new account to redeem the Azure Pass.
+
+</div>
+
 </div>
 
 <div data-visible="$$azpass$$">
