@@ -80,7 +80,7 @@ rm -rf "$target_folder/solution-qdrant/SECURITY.md"
 rm -rf "$target_folder/solution-qdrant/scripts/setup-template.sh"
 cp -R src/backend/src/plugins/_chat.qdrant.ts "$target_folder/solution-qdrant/src/backend/src/plugins/chat.ts"
 rm -rf "$target_folder/solution-qdrant/src/backend/src/plugins/_chat."*
-perl -pi -e 's/stream: false/stream: true/g' "$target_folder/solution/src/frontend/src/components/chat.ts"
+perl -pi -e 's/stream: false/stream: true/g' "$target_folder/solution-qdrant/src/frontend/src/components/chat.ts"
 makeArchive . solution-qdrant solution-qdrant
 
 ##############################################################################
