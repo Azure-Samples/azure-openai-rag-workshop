@@ -230,7 +230,7 @@ This was the final step! Mae sure you still have the backend running, and run th
 
 ![Screenshot of the chat response streaming](./assets/chat-streaming.gif)
 
-You can now redeploy your improved backend by running `azd deploy backend` and test it in production.
+You can now redeploy your improved app by running `azd deploy` and test it in production.
 
 
 <!-- TODO: explore langchain integrations: document retrievers & tools -->
