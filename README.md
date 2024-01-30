@@ -1,16 +1,21 @@
 # 🤖 azure-openai-rag-workshop
 
 In this workshop, we will build a chatbot based on OpenAI language models and implementing the Retrieval Augmented Generation (RAG) pattern. You'll use [Fastify](https://fastify.dev) to create a [Node.js](https://nodejs.org/en/) service that leverage [OpenAI SDK](https://platform.openai.com/docs/libraries/) and [LangChain](https://js.langchain.com/) to build a chatbot that will answer questions based on a corpus of documents, as well as a website to test it.
-
 <!-- Finally, we will deploy everything on Azure with a CI/CD pipeline. -->
 
-👉 [See the workshop](https://aka.ms/ws/openai-rag)
+This workshop exists in different variants:
+
+- 👉 [**See the workshop using Azure AI Search**](https://aka.ms/ws/openai-rag): we will use [Azure AI Search](https://azure.microsoft.com/services/search/) to index and search the documents.
+
+- 👉 [**See the workshop using Qdrant**](https://aka.ms/ws/openai-rag-qdrant): we will use [Qdrant](https://qdrant.tech/) to index and search the documents.
+
+
 
 👉 [See the completed solution and workshop source](https://github.com/Azure-Samples/azure-openai-rag-workshop/tree/base)
 
 ## Prerequisites
 
-- **Node.js v18+**
+- **Node.js v20+**
 - **Docker v20+**
 - **Azure account**. If you're new to Azure, [get an Azure account for free](https://azure.microsoft.com/free/?WT.mc_id=javascript-0000-cxa) to get free Azure credits to get started.
 - **Azure subscription with access enabled for the Azure OpenAI service**. You can request access with [this form](https://aka.ms/oaiapply).
