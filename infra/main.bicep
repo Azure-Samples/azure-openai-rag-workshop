@@ -62,6 +62,9 @@ param useApplicationInsights bool = false
 @description('Use Qdrant as the vector DB')
 param useQdrant bool = false
 
+// Differentiates between automated and manual deployments
+param isContinuousDeployment bool = false
+
 var abbrs = loadJsonContent('abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
@@ -321,7 +324,7 @@ module qdrant './core/host/container-app.bicep' = if (useQdrant) {
 
 
 // USER ROLES
-module openAiRoleUser 'core/security/role.bicep' = if (empty(openAiUrl)) {
+module openAiRoleUser 'core/security/role.bicep' = if (empty(openAiUrl) && !isContinuousDeployment) {
   scope: resourceGroup
   name: 'openai-role-user'
   params: {
@@ -332,7 +335,7 @@ module openAiRoleUser 'core/security/role.bicep' = if (empty(openAiUrl)) {
   }
 }
 
-module searchContribRoleUser 'core/security/role.bicep' = if (useAzureAISearch) {
+module searchContribRoleUser 'core/security/role.bicep' = if (useAzureAISearch && !isContinuousDeployment) {
   scope: resourceGroup
   name: 'search-contrib-role-user'
   params: {
@@ -343,7 +346,7 @@ module searchContribRoleUser 'core/security/role.bicep' = if (useAzureAISearch) 
   }
 }
 
-module searchSvcContribRoleUser 'core/security/role.bicep' = if (useAzureAISearch) {
+module searchSvcContribRoleUser 'core/security/role.bicep' = if (useAzureAISearch && !isContinuousDeployment) {
   scope: resourceGroup
   name: 'search-svccontrib-role-user'
   params: {
