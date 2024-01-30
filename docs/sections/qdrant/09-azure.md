@@ -66,7 +66,7 @@ Now it's time to deploy the Azure infrastructure for the workshop. Execute the f
 azd provision
 ```
 
-You will be prompted to select an Azure subscription and a deployment region. It's generally best to choose a region closest to your user base for optimal performance, but for this workshop, choose `North Europe` or `East US 2` as they support a wide range of Azure services.
+You will be prompted to select an Azure subscription and a deployment region. It's generally best to choose a region closest to your user base for optimal performance, but for this workshop, choose `North Europe` or `East US 2` depending of which one is the closest to you.
 
 <div class="info" data-title="Note">
 
