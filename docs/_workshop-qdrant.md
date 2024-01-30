@@ -46,6 +46,10 @@ include::sections/10-deployment.md[]
 
 ---
 
+include::sections/10.1-ci-cd.md[]
+
+---
+
 include::sections/11-improvements.md[]
 
 ---
