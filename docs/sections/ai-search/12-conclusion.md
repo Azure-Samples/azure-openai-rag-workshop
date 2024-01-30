@@ -5,7 +5,7 @@ This is the end of the workshop. We hope you enjoyed it, learned something new a
 If you missed any of the steps or would like to check your final code, you can run this command in the terminal at the root of the project to get the completed solution (be sure to commit your code first!):
 
 ```bash
-curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/solution.tar.gz | tar -xvz`
+curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/solution.tar.gz | tar -xvz
 ```
 
 <div class="warning" data-title="had issues?">
