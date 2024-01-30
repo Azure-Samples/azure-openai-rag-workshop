@@ -228,7 +228,7 @@ export const defaultOptions: ChatComponentOptions = {
 
 This was the final step! Mae sure you still have the backend running, and run the command `npm run dev` from the `src/frontend` folder to start the frontend. You should now see the chat response being streamed as it's generated:
 
-![Screenshot of the chat response streaming](./assets/streaming-chat.gif)
+![Screenshot of the chat response streaming](./assets/chat-streaming.gif)
 
 You can now redeploy your improved backend by running `azd deploy backend` and test it in production.
 
