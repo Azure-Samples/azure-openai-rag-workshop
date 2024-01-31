@@ -107,13 +107,10 @@ copyFolder src/frontend
 makeArchive src frontend
 
 ##############################################################################
-# Deployment
+# Deployment (CI/CD)
 ##############################################################################
 
-# echo "Creating deploy package..."
-# mkdir -p "$target_folder/deploy/.github/workflows"
-# mkdir -p "$target_folder/deploy/.azure"
-# cp .github/workflows/deploy.yml "$target_folder/deploy/.github/workflows/deploy.yml"
-# cp .azure/build.sh "$target_folder/deploy/.azure/build.sh"
-# cp .azure/deploy.sh "$target_folder/deploy/.azure/deploy.sh"
-# makeArchive . deploy deploy
+echo "Creating CI/CD package..."
+mkdir -p "$target_folder/ci-cd/.github/workflows"
+cp .github/workflows/deploy.yml "$target_folder/ci-cd/.github/workflows/deploy.yml"
+makeArchive . ci-cd ci-cd
