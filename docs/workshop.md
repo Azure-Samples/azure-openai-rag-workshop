@@ -132,7 +132,7 @@ Once the fork is created, select the **Code** button, then the **Codespaces** ta
 
 ![Screenshot of GitHub showing the Codespaces creation](./assets/create-codespaces.png)
 
-This will initialize a development container with all necessary tools pre-installed. Once it's ready, you have everything you need to start coding. It will also automatically run `npm install` for you.
+This will initialize a development container with all necessary tools pre-installed. Once it's ready, you have everything you need to start coding. Wait a few minutes after the UI is loaded to ensure everything is ready, as some tasks will be triggered after everything is fully loaded, such as the installation of the npm packages with `npm install`.
 
 <div class="info" data-title="note">
 
@@ -185,6 +185,7 @@ If you want to work locally without using a dev container, you need to clone the
 | Docker v20+   | [Get Docker](https://docs.docker.com/get-docker) |
 | Node.js v20+  | [Get Node.js](https://nodejs.org) |
 | Azure CLI     | [Get Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli#install) |
+| GitHub CLI    | [Get GitHub CLI](https://cli.github.com/manual/installation) |
 | Azure Developer CLI | [Get Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd) |
 | GitHub CLI    | [Get GitHub CLI](https://cli.github.com/manual/installation) |
 | Bash v3+      | [Get bash](https://www.gnu.org/software/bash/) (Windows users can use **Git bash** that comes with Git) |
@@ -197,6 +198,7 @@ git --version
 docker --version
 node --version
 az --version
+gh --version
 azd version
 gh --version
 bash --version
@@ -290,11 +292,24 @@ You can learn more about the [ChatBootAI OpenAPI specification here](https://edi
 
 ### Getting Started with Azure
 
+<div data-hidden="$$azpass$$">
+
 To complete this workshop, you'll need an Azure account. If you don't already have one, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://azure.microsoft.com/free/).
 
-<div class="important" data-title="important" data-visible="$$azpass$$">
+<div class="important" data-title="important">
 
-> For participants attending this workshop in-person, you can obtain a free Azure Pass credit by using this link: [redeem your Azure Pass](https://azcheck.in/$$azpass$$).
+> If you already have an Azure account from your company, **DO NOT** use it for this workshop as it may have restrictions that will prevent you from completing the workshop.
+> You'll need to create a new account to redeem the Azure Pass.
+
+</div>
+
+</div>
+
+<div data-visible="$$azpass$$">
+
+To complete this workshop, you'll need an Azure account. As you're attending this workshop in-person, you can create one and obtain a free Azure Pass credit by using this link: [redeem your Azure Pass](https://azcheck.in/$$azpass$$).
+
+> If you're **not** attending this workshop in-person, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://azure.microsoft.com/free/).
 
 </div>
 
@@ -338,7 +353,7 @@ Now it's time to deploy the Azure infrastructure for the workshop. Execute the f
 azd provision
 ```
 
-You will be prompted to select an Azure subscription and a deployment region. It's generally best to choose a region closest to your user base for optimal performance, but for this workshop, choose `North Europe` or `East US 2` as they support a wide range of Azure services.
+You will be prompted to select an Azure subscription and a deployment region. It's generally best to choose a region closest to your user base for optimal performance, but for this workshop, choose `West Europe` or `East US 2` depending of which one is the closest to you.
 
 <div class="info" data-title="Note">
 
@@ -893,7 +908,10 @@ Because the previous messages in the conversation may also help the model, we'll
 ```ts
 // Add the previous messages to the prompt, as long as we don't exceed the token limit
 for (const historyMessage of messages.slice(0, -1).reverse()) {
-  if (messageBuilder.tokens > this.tokenLimit) break;
+  if (messageBuilder.tokens > this.tokenLimit) {
+    messageBuilder.popMessage();
+    break;
+  };
   messageBuilder.appendMessage(historyMessage.role, historyMessage.content);
 }
 ```
@@ -1033,7 +1051,10 @@ After you checked that everything works as expected, don't forget to commit your
 
 <div class="info" data-title="Skip notice">
 
-> If you want to skip the Dockerfile implementation and jump directly to the next section, run this command in the terminal at the root of the project to get the completed code directly: `curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/backend-dockerfile.tar.gz | tar -xvz`
+> If you want to skip the Dockerfile implementation and jump directly to the next section, run this command in the terminal **at the root of the project** to get the completed code directly:
+> ```bash
+> curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/backend-dockerfile-aisearch.tar.gz | tar -xvz
+> ```
 
 <div>
 
@@ -1098,9 +1119,9 @@ Finally we tell Docker to expose port `3000`, and run the `npm start --workspace
 
 With this setup, Docker will first create a container to build our app, and then create a second container where we copy the compiled app code from the first container to create the final Docker image.
 
-### Testing our Docker image
+### Build our Docker image
 
-You can now build the Docker image and run it locally to test it. First, let's have a look at the commands to build and run the Docker image in our `src/backend/package.json` file:
+You can now test if the Docker image builds correctly. First, let's have a look at the commands to build and run the Docker image in our `src/backend/package.json` file:
 
 ```json
 {
@@ -1117,22 +1138,26 @@ Then we can build the image by running this command from the `backend` folder:
 npm run docker:build
 ```
 
-After the build is complete, you can run the image with the following command:
-
-```bash
-npm run docker:run
-```
-
-You can now test the API again using the `test.http` or `curl` file just like before, to check that everything works. When you're done with the testing, stop the server by pressing `Ctrl+C`.
+If the build is successful, you can continue to the next section. If you have an error, make sure that you did not miss a section in your Dockerfile, and that your backend code compiles correctly.
 
 After that, commit the changes to the repository to keep track of your progress.
+
+<div class="info" data-title="note">
+
+> If you try to run the image with `npm run docker:run`, you will get an error as the `@azure/identity` SDK cannot automatically authenticate in a local container.
+> There are several ways to fix this, the easiest one would be to create a [Service Principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal), assign it the needed permissions, and pass the environment variables to the container. However, this goes beyond the scope of this workshop, so we'll skip this step for now.
+
+</div>
 
 
 ---
 
 <div class="info" data-title="Skip notice">
 
-> If you want to skip the Chat website implementation and jump directly to the next section, run this command in the terminal at the root of the project to get the completed code directly: `curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/frontend.tar.gz | tar -xvz`
+> If you want to skip the Chat website implementation and jump directly to the next section, run this command in the terminal **at the root of the project** to get the completed code directly:
+> ```bash
+> curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/frontend.tar.gz | tar -xvz
+> ```
 
 <div>
 
@@ -1275,8 +1300,6 @@ You can now open this URL in a browser and test the deployed application.
 
 We now have a working application, but there are still a few things we can improve to make it better, like adding a follow-up questions feature.
 
-<!-- TODO: streaming -->
-
 ### Add follow-up questions
 
 After your chatbot has answered the user's question, it can be useful to provide some follow-up questions to the user, to help them find the information they need.
@@ -1328,6 +1351,182 @@ In the chat webapp you should now see the follow-up questions after the answer:
 
 You can now redeploy your improved backend by running `azd deploy backend` and test it in production.
 
+### Add streaming support
+
+The current version of the chat API is using the `chat` endpoint to send the messages and get the response once the model has finished generating it. This creates longer wait times for the user, which is not ideal.
+
+OpenAI API have an option to stream the response message, allowing to see the response as soon as it's generated. 
+While it doesn't make the model generate the response faster, it allows you to display the response to the user faster so they can start reading it directly while it's being generated.
+
+#### Implement streaming in the backend
+
+To enable streaming, we first have to implement it in the backend. Open the file `src/backend/src/plugins/chat.ts`.
+
+First, make a copy of your method `run()` and give it the name `runWithStreaming()`. Update the method signature with this one:
+
+```ts
+async *runWithStreaming(messages: Message[]): AsyncGenerator<ChatResponseChunk, void> {
+```
+
+You can notice a few changes here:
+- The star `*` after `async` indicates that this method is an [async generator function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/async_function*#description). Generators are functions that can be exited and later re-entered, yielding multiple values. In our case, we'll use it to yield the response chunks as they are generated.
+- We update the return type of the method to `AsyncGenerator<ChatResponseChunk, void>`. Since the method is now an async generator, it will yield partial results as they are generated. The `ChatResponseChunk` type is a new type similar to the `ChatResponse` type, but with a `delta` property in place of `message`, containing the new content delta since the last chunk.
+
+Now that we update the signature, we need to update the method body to make it work. We need to change the last part of the method, where we call the chat client to get the completion result. Replace this code:
+
+```ts
+const completion = await chatClient.invoke(messageBuilder.getMessages());
+
+return {
+  choices: [
+    {
+      index: 0,
+      message: {
+      content: completion.content as string,
+      role: 'assistant',
+      context: {
+          data_points: results,
+          thoughts: thoughts,
+      },
+      },
+    },
+  ],
+};
+```
+
+with this:
+
+```ts
+const completion = await chatClient.stream(messageBuilder.getMessages());
+let id = 0;
+
+// Process the completion in chunks
+for await (const chunk of completion) {
+  const responseChunk = {
+    choices: [
+      {
+        index: 0,
+        delta: {
+          content: (chunk.content as string) ?? '',
+          role: 'assistant' as const,
+          context: {
+            data_points: id === 0 ? results : undefined,
+            thoughts: id === 0 ? thoughts : undefined,
+          },
+        },
+        finish_reason: '',
+      },
+    ],
+  };
+  yield responseChunk;
+  id++;
+}
+```
+
+Let's analyze the changes to understand what's going on:
+- We call the `stream()` method instead of `invoke()`. This will return an [async iterable](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols) that we can iterate over to get the response chunks.
+- We use [for-await-of](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/for-await...of) to iterate over the response chunks. This is a new syntax introduced in ES2018 that allows us to iterate over async iterables.
+- We fill the `context` only for the first chunk, since we don't want to send the same data points and thoughts for each chunk.
+- We use `yield` to return the response chunk to the caller. This is the syntax used to return values from a generator.
+
+Now that we have our new method, we need to update the `/chat` endpoint to use it. Open the file `src/backend/src/routes/root.ts` and replace this code:
+
+```ts
+fastify.post('/chat', async function (request, reply) {
+  const { messages } = request.body as any;
+  try {
+    return await fastify.chat.run(messages);
+  } catch (_error: unknown) {
+    const error = _error as Error;
+    fastify.log.error(error);
+    return reply.internalServerError(error.message);
+  }
+});
+```
+
+with this:
+
+```ts
+fastify.post('/chat', async function (request, reply) {
+  const { messages, stream } = request.body as any;
+  try {
+    if (stream) {
+      const chunks = await fastify.chat.runWithStreaming(messages);
+      await replyNdJsonStream(reply, chunks);
+    } else {
+      return await fastify.chat.run(messages);
+    }
+  } catch (_error: unknown) {
+    const error = _error as Error;
+    fastify.log.error(error);
+    return reply.internalServerError(error.message);
+  }
+});
+```
+
+We retrieve now a `stream` property from the request body, and if it's set to `true`, we call the `runWithStreaming()` method instead of `run()`. One key difference here is that we don't return the response directly, but we use a new helper function `replyNdJsonStream()` to send the response chunks to the client.
+
+Let's add this new function to our file:
+
+```ts
+// Reply to a request with a stream of NDJSON chunks
+async function replyNdJsonStream(reply: FastifyReply, chunks: AsyncGenerator<object>) {
+  // Create a new stream buffer
+  const buffer = new Readable();
+  // We must implement the _read method, but we don't need to do anything
+  buffer._read = () => {};
+
+  // Start streaming the buffer to the client
+  reply.type('application/x-ndjson').send(buffer);
+
+  for await (const chunk of chunks) {
+    // Send JSON chunks, separated by newlines
+    buffer.push(JSON.stringify(chunk) + '\n');
+  }
+
+  // Signal end of stream
+  buffer.push(null);
+}
+```
+
+This function is a bit technical, but its overall goal it to transform the async iterable returned by `runWithStreaming()` into a stream that we can send to the client.
+
+We use the [Newline Delimited JSON (ndjson) format](https://github.com/ndjson/ndjson-spec) to send the chunks to the client. This format is a sequence of JSON objects separated by newlines. 
+
+At this point, you can run the backend again with `docker compose up --build` and test your changes using either the `REST Client` extension, or with this cURL command:
+
+```bash
+curl -X POST "http://localhost:3000/chat" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [{
+      "content": "How to search and book rentals?",
+      "role": "user"
+    }],
+    "stream": true
+  }'
+```
+
+#### Implement streaming in the frontend
+
+Now that we have streaming support in the backend, we need to update the frontend to use it. Open the file `src/frontend/src/components/chat.ts` and set the `stream` property to `true` in the default options of the component:
+
+```ts
+export const defaultOptions: ChatComponentOptions = {
+  enableContentLinks: false,
+  stream: true,
+  ...
+```
+
+This was the final step! Mae sure you still have the backend running, and run the command `npm run dev` from the `src/frontend` folder to start the frontend. You should now see the chat response being streamed as it's generated:
+
+![Screenshot of the chat response streaming](./assets/chat-streaming.gif)
+
+You can now redeploy your improved app by running `azd deploy` and test it in production.
+
+
+<!-- TODO: explore langchain integrations: document retrievers & tools -->
+
 
 ---
 
@@ -1335,7 +1534,11 @@ You can now redeploy your improved backend by running `azd deploy backend` and t
 
 This is the end of the workshop. We hope you enjoyed it, learned something new and more importantly, that you'll be able to take this knowledge back to your projects.
 
-If you missed any of the steps or would like to check your final code, you can run this command in the terminal to get the completed solution (be sure to commit your code first!): `curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/solution.tar.gz | tar -xvz`
+If you missed any of the steps or would like to check your final code, you can run this command in the terminal at the root of the project to get the completed solution (be sure to commit your code first!):
+
+```bash
+curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/solution.tar.gz | tar -xvz
+```
 
 <div class="warning" data-title="had issues?">
 
@@ -1375,4 +1578,5 @@ If you want to go further with more advanced use-cases, authentication, history 
 - The base template for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop)
 - If something does not work: [Report an issue](https://github.com/Azure-Samples/azure-openai-rag-workshop/issues)
 - Introduction presentation for this workshop: [Slides](https://azure-samples.github.io/azure-openai-rag-workshop/)
+- Outperforming vector search performance with hybrid retrieval and semantic ranking: [Blog post](https://techcommunity.microsoft.com/t5/ai-azure-ai-services-blog/azure-ai-search-outperforming-vector-search-with-hybrid/ba-p/3929167)
 
