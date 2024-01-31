@@ -58,7 +58,7 @@ await this.qdrantClient.upsert(indexName, { points });
 
 ### Running the ingestion process
 
-Let's now execute this process. First, you need to make sure you have Qdrant and the indexer service running locally. We'll use Docker Compose to run both services at the same time. Run the following command in a terminal:
+Let's now execute this process. First, you need to make sure you have Qdrant and the indexer service running locally. We'll use Docker Compose to run both services at the same time. Run the following command in a terminal (**make sure you stopped the Qdrant container before!**):
 
 ```bash
 docker compose up
