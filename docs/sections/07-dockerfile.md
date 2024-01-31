@@ -112,6 +112,6 @@ docker compose up
 
 </div>
 
-You can now test the API again using the `api.http` file or `curl` just like before, to check that everything works. When you're done with the testing, stop the server by pressing `Ctrl+C`.
+You can now test the API again using the `test.http` file or `curl` just like before, to check that everything works. When you're done with the testing, stop the server by pressing `Ctrl+C`.
 
 After that, commit the changes to the repository to keep track of your progress.
