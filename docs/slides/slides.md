@@ -161,6 +161,7 @@ LLMs don't work with words, but with tokens.
 #### Context window
 - Common limits: .em-text[**2-4K tokens**] (GPT-4: 8k or 32K)
 - Context window limits .em-text[**input + output**]
+- Some models differenciate input and output limits (GPT-4 Turbo: 128k in / 4k out)
 ???
 - context training: O(n^2) complexity
 - 4K tokens ~ 3K words ~ 6 pages
@@ -173,6 +174,7 @@ LLMs don't work with words, but with tokens.
 #### .circled[Context window]
 - Common limits: .em-text[**2-4K tokens**] (GPT-4: 8k or 32K)
 - Context window limits .em-text[**input + output**]
+- Some models differenciate input and output limits (GPT-4 Turbo: 128k in / 4k out)
 
 <script>
 rough('.circled', { type: 'circle', color: '#f22', strokeWidth: 4, padding: 50, animationDuration: 2000 }, 500);
@@ -184,10 +186,13 @@ rough('.circled', { type: 'circle', color: '#f22', strokeWidth: 4, padding: 50, 
 --
 
 #### Statistical bias
-- LLMs may reflect the biases of the training data
+- LLMs may reflect the biases of the training data (and context)
 ???
 - Humans do both logical and stereotypical reasoning, LLMs do not have logic
 - Who can give some biases examples?
+  * Optimized code?
+  * Accessible code?
+  * Best language to learn?
 --
 
 - Examples?
@@ -238,7 +243,7 @@ Use in-context examples to condition the output
 .small[*Prompt:*]
 .up[
 ```
-Bonjour Devoxx: french
+Bonjour le monde: french
 Brian is in the kitchen: english
 Dankeschön: german
 Den här koden är hemsk:
