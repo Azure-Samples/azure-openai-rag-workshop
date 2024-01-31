@@ -30,6 +30,18 @@ export class MessageBuilder {
   }
 
   /**
+   * Get and remove the last message from the conversation.
+   * @returns {Message} The removed message.
+   */
+  popMessage(): Message | undefined {
+    const message = this.messages.pop();
+    if (message) {
+      this.tokens -= this.getTokenCountFromMessages(message, this.model);
+    }
+    return message;
+  }
+
+  /**
    * Get the messages in the conversation in LangChain format.
    * @returns {BaseMessage[]} The messages.
    */
