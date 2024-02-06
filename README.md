@@ -30,7 +30,7 @@ This project is structured as monorepo and makes use of [NPM Workspaces](https:/
 
 Here's the architecture of the application:
 
-![Architecture diagram](./docs/assets/architecture.png)
+![Architecture diagram](https://github.com/Azure-Samples/azure-openai-rag-workshop/blob/base/docs/assets/architecture.png)
 
 ## How to run locally
 
