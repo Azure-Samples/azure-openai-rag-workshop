@@ -19,8 +19,8 @@ background-image: url(images/ai.jpg)
 .full-layer.who.text-right.small.middle.light-text.darkened[
   .ms.responsive[![](images/ms-full-logo.svg)]
   |
-  <!-- Yohan | Christopher | Julien -->
-  Yohan | Olivier
+  Yohan | Christopher | Julien
+  <!-- Yohan | Olivier -->
 ]
 
 ---
@@ -28,7 +28,7 @@ background-image: url(images/ai.jpg)
 class: center, middle, hide-handle
 # Who are we?
 
-.table.row.middle.center[
+<!-- .table.row.middle.center[
 .col-2[]
 .col-3.center[
   .w-70.responsive.avatar.bounceInLeft.animated[![](images/yohan.jpg)]
@@ -44,7 +44,11 @@ class: center, middle, hide-handle
   .fab.fa-linkedin[] .e[/olivMertens]<br>
   .fab.fa-x-twitter[] .e[@xam1311]
 ]
-<!-- .col-3.center[
+] -->
+
+.table.row.middle.center[
+.col-2[]
+.col-3.center[
   .w-70.responsive.avatar.bounceInLeft.animated[![](images/yohan.jpg)]
 
   **Yohan Lasorsa**<br>
@@ -64,7 +68,7 @@ class: center, middle, hide-handle
   **Julien Dubois**<br>
   .fab.fa-linkedin[] .e[/juliendubois]<br>
   .fab.fa-x-twitter[] .e[@juliendubois]
-] -->
+]
 ]
 
 ---
