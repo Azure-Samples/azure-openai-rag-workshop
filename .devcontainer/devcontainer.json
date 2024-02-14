@@ -11,6 +11,11 @@
     "ghcr.io/devcontainers/features/node:1": {
       "version": "20"
     },
+    "ghcr.io/devcontainers/features/java:1": {
+			"version": "21",
+			"installMaven": "true",
+			"installGradle": "false"
+		},
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "version": 20,
       "moby": "false",
@@ -32,6 +37,7 @@
         "ms-azuretools.azure-dev",
         "ms-azuretools.vscode-bicep",
         "ms-azuretools.vscode-docker",
+        "vscjava.vscode-java-pack",
         "esbenp.prettier-vscode",
         "humao.rest-client",
         "runem.lit-plugin"
