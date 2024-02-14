@@ -8,77 +8,16 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 template_name=$1
 if [ -z "$template_name" ]; then
-  echo "Usage: setup-template.sh [aisearch|qdrant]"
+  echo "Usage: setup-template.sh [aisearch|qdrant|quarkus]"
   exit 1
 fi
 
 if [ "$template_name" == "qdrant" ]; then
   echo "Preparing project template for Qdrant..."
-  # mv src/backend-nodejs src/backend
+  mv src/backend-node-qdrant src/backend
   rm -rf src/backend-*
 
-  echo -e "import fp from 'fastify-plugin';
-import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
-import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
-import { type AppConfig } from './config.js';
-
-export class ChatService {
-  tokenLimit: number = 4000;
-
-  constructor(
-    private config: AppConfig,
-    private qdrantClient: QdrantClient,
-    private chatClient: (options?: Partial<OpenAIChatInput>) => ChatOpenAI,
-    private embeddingsClient: (options?: Partial<OpenAIEmbeddingsParams>) => OpenAIEmbeddings,
-    private chatGptModel: string,
-    private embeddingModel: string,
-    private sourcePageField: string,
-    private contentField: string,
-  ) {}
-
-  async run(messages: Message[]): Promise<ChatResponse> {
-
-    // TODO: implement Retrieval Augmented Generation (RAG) here
-
-  }
-}
-
-export default fp(
-  async (fastify, options) => {
-    const config = fastify.config;
-
-    // TODO: initialize clients here
-
-    const chatService = new ChatService(
-      /*
-      config,
-      qdrantClient,
-      chatClient,
-      embeddingsClient,
-      config.azureOpenAiChatGptModel,
-      config.azureOpenAiEmbeddingModel,
-      config.kbFieldsSourcePage,
-      config.kbFieldsContent,
-      */
-    );
-
-    fastify.decorate('chat', chatService);
-  },
-  {
-    name: 'chat',
-    dependencies: ['config'],
-  },
-);
-
-// When using .decorate you have to specify added properties for Typescript
-declare module 'fastify' {
-  export interface FastifyInstance {
-    chat: ChatService;
-  }
-}
-" > src/backend/src/plugins/chat.ts
-
-echo -e "version: '3.9'
+  echo -e "version: '3.9'
 services:
   # backend:
   #   build:
@@ -109,12 +48,11 @@ services:
   npm install
 elif [ "$template_name" == "aisearch" ]; then
   echo "Preparing project template for Azure AI Search..."
-  # mv src/backend-nodejs src/backend
+  mv src/backend-node-aisearch src/backend
   rm -rf src/backend-*
   npm install
 elif [ "$template_name" == "quarkus" ]; then
   echo "Preparing project template for Quarkus..."
-  rm -rf src/backend
   mv src/backend-java-quarkus src/backend
   rm -rf src/backend-*
 else
