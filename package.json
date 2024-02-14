@@ -29,7 +29,9 @@
   "author": "Microsoft",
   "license": "MIT",
   "workspaces": [
-    "src/*"
+    "src/indexer",
+    "src/backend",
+    "src/frontend"
   ],
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.7.0",
