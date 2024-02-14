@@ -44,6 +44,7 @@ makeArchive() {
 
 echo "Creating solution package (for JS + Azure AI Search)..."
 copyFolder . solution
+mv "$target_folder/solution/src/backend-node-aisearch" "$target_folder/solution/src/backend"
 rm -rf "$target_folder/solution/.azure"
 rm -rf "$target_folder/solution/.qdrant"
 rm -rf "$target_folder/solution/.env"
@@ -66,6 +67,7 @@ makeArchive . solution solution
 
 echo "Creating solution package (for JS + Qdrant)..."
 copyFolder . solution-qdrant
+mv "$target_folder/solution-qdrant/src/backend-node-qdrant" "$target_folder/solution/src/backend"
 rm -rf "$target_folder/solution-qdrant/.azure"
 rm -rf "$target_folder/solution-qdrant/.qdrant"
 rm -rf "$target_folder/solution-qdrant/.env"
@@ -91,12 +93,12 @@ makeArchive . solution-qdrant solution-qdrant
 
 echo "Creating backend-dockerfile package (for JS + Azure AI Search)..."
 mkdir -p "$target_folder/src/backend"
-cp -R src/backend/Dockerfile "$target_folder/src/backend/Dockerfile"
+cp -R src/backend-node-qdrant/Dockerfile "$target_folder/src/backend/Dockerfile"
 makeArchive src backend-dockerfile-aisearch
 
 echo "Creating backend-dockerfile package (for JS + Qdrant)..."
 mkdir -p "$target_folder/backend-dockerfile/src/backend"
-cp -R src/backend/Dockerfile "$target_folder/backend-dockerfile/src/backend/Dockerfile"
+cp -R src/backend-node-aisearch/Dockerfile "$target_folder/backend-dockerfile/src/backend/Dockerfile"
 cp -R docker-compose.yml "$target_folder/backend-dockerfile/docker-compose.yml"
 makeArchive . backend-dockerfile backend-dockerfile
 
