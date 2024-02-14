@@ -1,4 +1,4 @@
-include::sections/00-welcome.md[]
+include::sections/java-quarkus/00-welcome.md[]
 
 ---
 
