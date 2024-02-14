@@ -19,5 +19,6 @@ lerna-debug.log*
 # DB Storage
 .qdrant/
 
-# OS
+# Misc
 .DS_Store
+.current
