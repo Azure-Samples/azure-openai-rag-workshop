@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+##############################################################################
+# Usage: ./setup-template.sh [aisearch|qdrant|quarkus]
+# Setup the current project template.
+##############################################################################
+set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 template_name=$1
