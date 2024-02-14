@@ -49,7 +49,7 @@
   "forwardPorts": [3000, 3001, 8000],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "npm install && npm install -g @moaw/cli fuzz-run",
+  "postCreateCommand": "npm install -g @moaw/cli fuzz-run",
 
   // Set minimal host requirements for the container.
   "hostRequirements": {

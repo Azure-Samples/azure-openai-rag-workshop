@@ -45,10 +45,12 @@ services:
     volumes:
       - .qdrant:/qdrant/storage:z
 " > docker-compose.yml
+  npm install
 elif [ "$template_name" == "aisearch" ]; then
   echo "Preparing project template for Azure AI Search..."
   mv src/backend-node-aisearch src/backend
   rm -rf src/backend-*
+  npm install
 elif [ "$template_name" == "quarkus" ]; then
   echo "Preparing project template for Quarkus..."
   mv src/backend-java-quarkus src/backend
