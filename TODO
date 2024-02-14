@@ -1,7 +1,7 @@
 # Tasks
 
 - [ ] /!\ Update Azure OpenAI version
-- [ ] Add troubleshooting for npm run dev backend if it fails (restart) timeout
+- [ ] Add troubleshooting for npm run dev backend if it fails (restart) timeout (node-qdrant)
   * try to reproduce!
 
 ## For later
