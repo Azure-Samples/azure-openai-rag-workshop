@@ -44,81 +44,6 @@ rm -rf ./*.env
 rm -rf docker-compose.yml
 
 # Prepare files
-rm -rf src/backend/src/plugins/_chat*
-rm -rf src/backend/src/plugins/chat.ts
-rm -rf src/backend/Dockerfile
-
-echo -e "import { type FastifyReply, type FastifyPluginAsync } from 'fastify';
-
-const root: FastifyPluginAsync = async (fastify, options): Promise<void> => {
-  fastify.get('/', async function (request, reply) {
-    return { message: 'server up' };
-  });
-
-  // TODO: create /chat endpoint
-};
-
-export default root;
-" > src/backend/src/routes/root.ts
-
-echo -e "import fp from 'fastify-plugin';
-import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
-import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
-
-export class ChatService {
-  tokenLimit: number = 4000;
-
-  constructor(
-    private searchClient: SearchClient<any>,
-    private chatClient: (options?: Partial<OpenAIChatInput>) => ChatOpenAI,
-    private embeddingsClient: (options?: Partial<OpenAIEmbeddingsParams>) => OpenAIEmbeddings,
-    private chatGptModel: string,
-    private embeddingModel: string,
-    private sourcePageField: string,
-    private contentField: string,
-  ) {}
-
-  async run(messages: Message[]): Promise<ChatResponse> {
-
-    // TODO: implement Retrieval Augmented Generation (RAG) here
-
-  }
-}
-
-export default fp(
-  async (fastify, options) => {
-    const config = fastify.config;
-
-    // TODO: initialize clients here
-
-    const chatService = new ChatService(
-      /*
-      searchClient,
-      chatClient,
-      embeddingsClient,
-      config.azureOpenAiChatGptModel,
-      config.azureOpenAiEmbeddingModel,
-      config.kbFieldsSourcePage,
-      config.kbFieldsContent,
-      */
-    );
-
-    fastify.decorate('chat', chatService);
-  },
-  {
-    name: 'chat',
-    dependencies: ['config'],
-  },
-);
-
-// When using .decorate you have to specify added properties for Typescript
-declare module 'fastify' {
-  export interface FastifyInstance {
-    chat: ChatService;
-  }
-}
-" > src/backend/src/plugins/chat.ts
-
 echo -e "import { type ChatResponse, type ChatRequestOptions, type ChatResponseChunk } from './models.js';
 
 export const apiBaseUrl = import.meta.env.VITE_BACKEND_API_URI || '';
@@ -186,6 +111,149 @@ export async function* getChunksFromResponse<T>(response: Response, intervalMs: 
   }
 }
 " > src/frontend/src/api.ts
+
+##############################################################################
+# Node.js + AI Search
+##############################################################################
+rm -rf src/backend-aisearch/Dockerfile
+
+echo -e "import { type FastifyReply, type FastifyPluginAsync } from 'fastify';
+
+const root: FastifyPluginAsync = async (fastify, options): Promise<void> => {
+  fastify.get('/', async function (request, reply) {
+    return { message: 'server up' };
+  });
+
+  // TODO: create /chat endpoint
+};
+
+export default root;
+" > src/backend-aisearch/src/routes/root.ts
+
+echo -e "import fp from 'fastify-plugin';
+import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
+import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
+
+export class ChatService {
+  tokenLimit: number = 4000;
+
+  constructor(
+    private searchClient: SearchClient<any>,
+    private chatClient: (options?: Partial<OpenAIChatInput>) => ChatOpenAI,
+    private embeddingsClient: (options?: Partial<OpenAIEmbeddingsParams>) => OpenAIEmbeddings,
+    private chatGptModel: string,
+    private embeddingModel: string,
+    private sourcePageField: string,
+    private contentField: string,
+  ) {}
+
+  async run(messages: Message[]): Promise<ChatResponse> {
+
+    // TODO: implement Retrieval Augmented Generation (RAG) here
+
+  }
+}
+
+export default fp(
+  async (fastify, options) => {
+    const config = fastify.config;
+
+    // TODO: initialize clients here
+
+    const chatService = new ChatService(
+      /*
+      searchClient,
+      chatClient,
+      embeddingsClient,
+      config.azureOpenAiChatGptModel,
+      config.azureOpenAiEmbeddingModel,
+      config.kbFieldsSourcePage,
+      config.kbFieldsContent,
+      */
+    );
+
+    fastify.decorate('chat', chatService);
+  },
+  {
+    name: 'chat',
+    dependencies: ['config'],
+  },
+);
+
+// When using .decorate you have to specify added properties for Typescript
+declare module 'fastify' {
+  export interface FastifyInstance {
+    chat: ChatService;
+  }
+}
+" > src/backend-aisearch/src/plugins/chat.ts
+
+##############################################################################
+# Node.js + Qdrant
+##############################################################################
+rm -rf src/backend-aisearch/Dockerfile
+cp -f src/backend-aisearch/src/routes/root.ts src/backend-qdrant/src/routes/root.ts
+
+echo -e "import fp from 'fastify-plugin';
+import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
+import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
+import { type AppConfig } from './config.js';
+
+export class ChatService {
+  tokenLimit: number = 4000;
+
+  constructor(
+    private config: AppConfig,
+    private qdrantClient: QdrantClient,
+    private chatClient: (options?: Partial<OpenAIChatInput>) => ChatOpenAI,
+    private embeddingsClient: (options?: Partial<OpenAIEmbeddingsParams>) => OpenAIEmbeddings,
+    private chatGptModel: string,
+    private embeddingModel: string,
+    private sourcePageField: string,
+    private contentField: string,
+  ) {}
+
+  async run(messages: Message[]): Promise<ChatResponse> {
+
+    // TODO: implement Retrieval Augmented Generation (RAG) here
+
+  }
+}
+
+export default fp(
+  async (fastify, options) => {
+    const config = fastify.config;
+
+    // TODO: initialize clients here
+
+    const chatService = new ChatService(
+      /*
+      config,
+      qdrantClient,
+      chatClient,
+      embeddingsClient,
+      config.azureOpenAiChatGptModel,
+      config.azureOpenAiEmbeddingModel,
+      config.kbFieldsSourcePage,
+      config.kbFieldsContent,
+      */
+    );
+
+    fastify.decorate('chat', chatService);
+  },
+  {
+    name: 'chat',
+    dependencies: ['config'],
+  },
+);
+
+// When using .decorate you have to specify added properties for Typescript
+declare module 'fastify' {
+  export interface FastifyInstance {
+    chat: ChatService;
+  }
+}
+" > src/backend-node-qdrant/src/plugins/chat.ts
 
 # Prepare the commit
 git add .
