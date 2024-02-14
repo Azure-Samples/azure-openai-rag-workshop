@@ -20,10 +20,11 @@ elif [ -d "src/backend" ]; then
   exit 1
 fi
 
-template_name=$1
+template_name=${1:-}
 # If no template name is specified, then just restore the current template
 if [ -z "$template_name" ]; then
   echo "No template name specified, done."
+  rm -f .current
   exit 0
 fi
 
@@ -32,7 +33,7 @@ if [ -d "src/backend-$template_name" ]; then
   echo "Switching to ${template_name}..."
   mv "src/backend-$template_name" "src/backend"
   echo "$template_name" > .current
-  echo "Switched to ${template_name}."
+  echo "Working on ${template_name}."
 else
   echo "Template not found: ${template_name}."
   exit 1
