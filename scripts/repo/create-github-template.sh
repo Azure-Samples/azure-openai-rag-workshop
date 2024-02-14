@@ -115,7 +115,7 @@ export async function* getChunksFromResponse<T>(response: Response, intervalMs: 
 ##############################################################################
 # Node.js + AI Search
 ##############################################################################
-rm -rf src/backend-aisearch/Dockerfile
+rm -rf src/backend-node-aisearch/Dockerfile
 
 echo -e "import { type FastifyReply, type FastifyPluginAsync } from 'fastify';
 
@@ -128,7 +128,7 @@ const root: FastifyPluginAsync = async (fastify, options): Promise<void> => {
 };
 
 export default root;
-" > src/backend-aisearch/src/routes/root.ts
+" > src/backend-node-aisearch/src/routes/root.ts
 
 echo -e "import fp from 'fastify-plugin';
 import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
@@ -186,13 +186,13 @@ declare module 'fastify' {
     chat: ChatService;
   }
 }
-" > src/backend-aisearch/src/plugins/chat.ts
+" > src/backend-node-aisearch/src/plugins/chat.ts
 
 ##############################################################################
 # Node.js + Qdrant
 ##############################################################################
-rm -rf src/backend-aisearch/Dockerfile
-cp -f src/backend-aisearch/src/routes/root.ts src/backend-qdrant/src/routes/root.ts
+rm -rf src/backend-node-aisearch/Dockerfile
+cp -f src/backend-node-aisearch/src/routes/root.ts src/backend-node-qdrant/src/routes/root.ts
 
 echo -e "import fp from 'fastify-plugin';
 import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
