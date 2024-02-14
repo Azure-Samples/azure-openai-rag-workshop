@@ -100,6 +100,12 @@ services:
       - .qdrant:/qdrant/storage:z
 " > docker-compose.yml
 
+elif [ "$template_name" == "aisearch" ]; then
+  echo "Preparing project template for Azure AI Search..."
+else
+  echo "Invalid template name. Please use 'aisearch' or 'qdrant' as the template name."
+  echo "Usage: setup-template.sh [aisearch|qdrant]"
+  exit 1
 fi
 
 rm -rf ./scripts/setup-template.sh
