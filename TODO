@@ -1,31 +1,14 @@
 # Tasks
 
-- [x] /!\ add prepare section with .env
-- [x] /!\ update template scripts + solutions packages
-- [x] create prepare packages script
-- [x] update langchain
-- [x] use moaw vars to conditionnaly show the proxy and azure pass sections
-- [x] update to Node 20
-- [x] AZURE_SEARCH_INDEX to INDEX_NAME (in camelCase too)
-
-- [ ] architecture schema confusing: need to split more explicitely the pre-processing (indexer and db) and the app
-- [ ] + nicer architecture schema
-  * [ ] add it on README
-- [ ] comment psh extension in devcontainer to avoid confusion
-
-- [ ] rename indexer to ingestion?
-
-- [ ] generate aka.ms link for snowcamp and add it to the slides
-
-## Fixes
-- [ ] add test for docker and troubleshooting section
-- [ ] add npm i troubleshooting section => in devcontainer
-- [x] North europe: fix deployment region
-- [c] docker:run not working because of .env file
+- [ ] /!\ Update Azure OpenAI version
+- [ ] Add troubleshooting for npm run dev backend if it fails (restart) timeout
+  * try to reproduce!
 
 ## For later
 
-- [x] move Azure setup to the end of the workshop and use Qdrant locally?
+- [ ] add notes if using OPENAI_TOKEN instead of AZURE OAI + KEY
+- [ ] add docker and troubleshooting section (full rebuild container) / codespaces
+- [ ] add npm i troubleshooting section (npm install) / codespaces
 
 - [ ] improve frontend client
   * [ ] better catch errors when API is not available
@@ -35,9 +18,7 @@
   * [ ] clean up code
 
 - [ ] improve workshop
-  * [ ] add streaming in optional improvements
-  * [ ] use Langchain agent: search document source with private/public tool
-  * [ ] add CI/CD with GHA? (maybe not, problematic with azd and codespaces)
+  * [ ] add section in improvements about tools usage with LangChain.js and Retrievers
   * [ ] allow to use regular OpenAI API/token + LM Studio
 
 - [ ] trainer infra
@@ -45,6 +26,4 @@
   * [ ] get started docs on how to setup the workshop and the proxy
   * [ ] allow to configure how many OpenAI deployments you want, with region and capacity
 
-- [ ] change default model deployments names?
-
-- [ ] indexer issue with large PDFs? (timeout?)
+- [ ] indexer issue with large PDFs? (needs testing)
