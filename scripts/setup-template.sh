@@ -9,8 +9,10 @@ fi
 
 if [ "$template_name" == "qdrant" ]; then
   echo "Preparing project template for Qdrant..."
+  # mv src/backend-nodejs src/backend
+  rm -rf src/backend-*
 
-echo -e "import fp from 'fastify-plugin';
+  echo -e "import fp from 'fastify-plugin';
 import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
 import { type AppConfig } from './config.js';
@@ -102,9 +104,16 @@ services:
 
 elif [ "$template_name" == "aisearch" ]; then
   echo "Preparing project template for Azure AI Search..."
+  # mv src/backend-nodejs src/backend
+  rm -rf src/backend-*
+elif [ "$template_name" == "quarkus" ]; then
+  echo "Preparing project template for Quarkus..."
+  rm -rf src/backend
+  mv src/backend-java-quarkus src/backend
+  rm -rf src/backend-*
 else
-  echo "Invalid template name. Please use 'aisearch' or 'qdrant' as the template name."
-  echo "Usage: setup-template.sh [aisearch|qdrant]"
+  echo "Invalid template name. Please use 'aisearch', 'qdrant' or 'quarkus' as the template name."
+  echo "Usage: setup-template.sh [aisearch|qdrant|quarkus]"
   exit 1
 fi
 
