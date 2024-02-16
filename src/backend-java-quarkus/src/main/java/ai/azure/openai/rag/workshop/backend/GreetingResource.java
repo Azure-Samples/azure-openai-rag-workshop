@@ -1,4 +1,4 @@
-package ai.azure.openai.rag.workshop;
+package ai.azure.openai.rag.workshop.backend;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
