@@ -12,6 +12,10 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+# IntelliJ
+.idea
+*.iml
+
 # Deployment
 *.env
 .azure
