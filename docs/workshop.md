@@ -207,6 +207,17 @@ bash --version
 
 ---
 
+## Additional setup
+
+To complete the template setup, please run the following command in a terminal, at the root of the project:
+
+```bash
+./scripts/setup-template.sh aisearch
+```
+
+
+---
+
 ## Overview of the project
 
 The project template you've forked is a monorepo, which means it's a single repository that houses multiple projects. Here's how it's organized, focusing on the key files and directories:

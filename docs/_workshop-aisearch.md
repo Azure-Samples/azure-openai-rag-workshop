@@ -10,6 +10,10 @@ include::sections/02-preparation.md[]
 
 ---
 
+include::sections/ai-search/02.1-additional-setup.md[]
+
+---
+
 include::sections/03-overview.md[]
 
 ---
