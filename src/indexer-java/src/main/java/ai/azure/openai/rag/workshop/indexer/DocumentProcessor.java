@@ -13,6 +13,7 @@ import static dev.langchain4j.model.openai.OpenAiModelName.GPT_3_5_TURBO;
 import dev.langchain4j.model.openai.OpenAiTokenizer;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
+import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,10 +52,20 @@ public class DocumentProcessor {
     log.debug("Number of embeddings: {}", embeddings.size());
     log.debug("Vector length: {}", embeddings.get(0).vector().length);
 
-    log.info("### Store embeddings into embedding store for further search / retrieval");
-    EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
-    embeddingStore.addAll(embeddings, segments);
+    log.info("### Store embeddings into memory store for further search / retrieval");
+    EmbeddingStore<TextSegment> inMemoryEmbeddingStore = new InMemoryEmbeddingStore<>();
+    inMemoryEmbeddingStore.addAll(embeddings, segments);
 
+    log.info("### Store embeddings into Qdrant store for further search / retrieval");
+    EmbeddingStore<TextSegment> qdrantEmbeddingStore = QdrantEmbeddingStore.builder()
+        // Ensure the collection is configured with the appropriate dimensions of the embedding model.
+        .collectionName("{collection_name}")
+        .host("localhost")
+        // GRPC port of the Qdrant server
+        .port(6333)
+        .build();
+
+    qdrantEmbeddingStore.addAll(embeddings, segments);
   }
 
   private static Path toPath(String fileName) {
