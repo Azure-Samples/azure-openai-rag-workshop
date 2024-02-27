@@ -11,6 +11,6 @@
 
   <modules>
     <module>src/backend-java-quarkus</module>
-    <module>src/indexer-java</module>
+    <module>src/ingestion-java</module>
   </modules>
 </project>
