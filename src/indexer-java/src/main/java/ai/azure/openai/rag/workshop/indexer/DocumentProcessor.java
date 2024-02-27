@@ -29,25 +29,29 @@ public class DocumentProcessor {
 
   public static void main(String[] args) {
 
-    log.info("Read the PDF");
+    log.info("### Read the PDF");
     Path filePath = toPath("/privacy-policy.pdf");
 
-    log.info("Load the PDF");
+    log.info("### Load the PDF");
     Document document = FileSystemDocumentLoader.loadDocument(filePath, new ApachePdfBoxDocumentParser());
+    log.debug("PDF size: {}", document.text().length());
 
-    log.info("Split document into segments 100 tokens each");
+    log.info("### Split document into segments 100 tokens each");
     DocumentSplitter splitter = DocumentSplitters.recursive(
       100,
       0,
       new OpenAiTokenizer(GPT_3_5_TURBO)
     );
     List<TextSegment> segments = splitter.split(document);
+    log.debug("Number of segments: {}", segments.size());
 
-    log.info("Embed segments (convert them into vectors that represent the meaning) using embedding model");
+    log.info("### Embed segments (convert them into vectors that represent the meaning) using embedding model");
     EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
     List<Embedding> embeddings = embeddingModel.embedAll(segments).content();
+    log.debug("Number of embeddings: {}", embeddings.size());
+    log.debug("Vector length: {}", embeddings.get(0).vector().length);
 
-    log.info("Store embeddings into embedding store for further search / retrieval");
+    log.info("### Store embeddings into embedding store for further search / retrieval");
     EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
     embeddingStore.addAll(embeddings, segments);
 
