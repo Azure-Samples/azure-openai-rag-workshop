@@ -14,29 +14,38 @@ This will be used in the first component (the *Retriever*) of the Retrieval Augm
 
 There are many available vector databases, and a good list can be found in the supported Vector stores list from the LangChain4j project: [https://github.com/langchain4j/langchain4j](https://github.com/langchain4j/langchain4j).
 
-Some of the most popular ones are:
+Some of the popular ones are:
 
-- [Chroma](https://js.langchain.com/docs/integrations/vectorstores/memory) which is an in-memory vector store, which is great for testing and development, but not for production.
+- [MemoryVectorStore](https://js.langchain.com/docs/integrations/vectorstores/memory) which is an in-memory vector store, which is great for testing and development, but not for production.
 - [Qdrant](https://qdrant.tech/)
 - [pgvector](https://github.com/pgvector/pgvector)
 - [Redis](https://redis.io)
 
-### Introducing Azure AI Search
+### Introducing Qdrant
 
-![Azure AI Search Logo](./assets/azure-ai-search-logo.png)
+![Qdrant Logo](./assets/qdrant-logo.png)
 
-[Azure AI Search](https://azure.microsoft.com/products/ai-services/cognitive-search/) can be used as a vector database that can store, index, and query vector embeddings from a search index. You can use it to power similarity search, multi-modal search, recommendation systems, or applications implementing the RAG architecture.
+[Qdrant](https://qdrant.tech/) is an open-source vector database that is easy to use and deploy. The core of Qdrant is a vector similarity search engine that provides a production-ready service with a convenient API to store, search, and manage vectors with an additional payload. You can think of the payloads as additional pieces of information that can help you hone in on your search and also receive useful information that you can give to your users.
 
-It supports various data types, such as *text, images, audio, video,* and *graphs*, and can perform fast and accurate searches based on the similarity or distance between the vectors, rather than exact matches. It also offers an *hybrid search*, which combines semantic and vector search in the same query.
+For this workshop, we'll use Qdrant as our vector database as it works well with JavaScript and can run locally in Docker. For the RAG use-case, most vector databases will work in a similar way.
 
-For this workshop, we'll use Azure AI Search as our vector database as it's easy to create and manage within Azure. For the RAG use-case, most vector databases will work in a similar way.
+### Running Qdrant locally
 
-### Exploring Azure AI Search
+To start Qdrant locally, you can use the following command:
 
-By now, you should already have an Azure AI Search service created in your subscription, done by the `azd provision` command you ran in the setup process.
+```bash
+docker run -p 6333:6333 -v $(pwd)/.qdrant:/qdrant/storage:z qdrant/qdrant:v1.7.3
+```
 
-Open the [Azure Portal](https://portal.azure.com/), and search for the **AI Search** service in the top navigation bar.
+This will pull the Docker image, start Qdrant on port `6333` and mount a volume to store the data in the `.qdrant` folder.
 
-You should see a service named `gptkb-<your_random_name>` in the list. This instance is currently empty, and we will create an index and populate it with data in the next section.
+You can test that Qdrant is running by opening the following URL in your browser: [http://localhost:6333/dashboard](http://localhost:6333/dashboard).
 
-![Screenshot of Azure AI Search](./assets/azure-ai-search.png)
+<div class="tip" data-title="tip">
+
+> In Codespaces, once the servce is running, you click on the **Open in browser** button when prompted and add `/dashboard` at the end of the URL.
+> You can also select the **Ports** tab in the bottom panel, right click on the URL in the **Forwarded Address** column next to the `6333` port, and select **Open in browser**.
+
+</div>
+
+Once you tested that Qdrant is running correctly, you can stop it by pressing `CTRL+C` in your terminal.
