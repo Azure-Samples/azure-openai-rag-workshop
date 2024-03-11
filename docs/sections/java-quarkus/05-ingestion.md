@@ -1,15 +1,14 @@
 ## Data ingestion
 
-We are going to ingest the content of PDF documents in the vector database. We'll use a
-tool located in the `src/indexer` folder of the project. This tool will extract the text from the PDF files, and send it to the vector database.
+We are going to ingest the content of PDF documents in the vector database. We'll use the service located under the `src/ingestion-java` folder of the project. This service will extract the text from the PDF files, and send it to the vector database.
 
 The code of this is already written for you, but let's have a look at how it works.
 
 ### The ingestion process
 
-The `src/indexer/src/lib/indexer.ts` file contains the code that is used to ingest the data in the vector database. This runs inside a Node.js application, and deployed to Azure Container Apps.
+The `src/ingestion-java/src/ingestion-java/src/main/java/ai/azure/openai/rag/workshop/ingestion/DocumentIngestor.java` Java class contains the code that is used to ingest the data in the vector database. It has a `public static void main` so it can be executed locally.
 
-PDFs files, which are stored in the `data` folder, will be sent to this Node.js application using the command line. The files provided here are for demo purpose only, and suggested prompts we'll use later in the workshop are based on those files.
+PDFs files, which are stored in the `data` folder, will be read by the `DocumentIngestor` using the command line. The PDF files provided here are for demo purpose only, and suggested prompts we'll use later in the workshop are based on those files.
 
 <div class="tip" data-title="tip">
 
@@ -21,7 +20,7 @@ PDFs files, which are stored in the `data` folder, will be sent to this Node.js 
 
 The content the PDFs files will be used as part of the *Retriever* component of the RAG architecture, to generate answers to your questions using the GPT model.
 
-Text from the PDF files is extracted in the `src/indexer/src/lib/document-processor.ts` file, using the [pdf.js library](https://mozilla.github.io/pdf.js/). You can have a look at code of the `extractTextFromPdf()` function if you're curious about how it works.
+Text from the PDF files is extracted in the `DocumentIngestor` using LangChain4j. You can have a look at code of the `extractTextFromPdf()` method if you're curious about how it works.
 
 #### Computing the embeddings
 

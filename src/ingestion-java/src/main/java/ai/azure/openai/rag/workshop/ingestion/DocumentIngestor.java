@@ -1,4 +1,4 @@
-package ai.azure.openai.rag.workshop.indexer;
+package ai.azure.openai.rag.workshop.ingestion;
 
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentSplitter;
@@ -23,9 +23,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class DocumentProcessor {
+public class DocumentIngestor {
 
-  private static final Logger log = LoggerFactory.getLogger(DocumentProcessor.class);
+  private static final Logger log = LoggerFactory.getLogger(DocumentIngestor.class);
 
 
   public static void main(String[] args) {
@@ -70,7 +70,7 @@ public class DocumentProcessor {
 
   private static Path toPath(String fileName) {
     try {
-      URL fileUrl = DocumentProcessor.class.getResource(fileName);
+      URL fileUrl = DocumentIngestor.class.getResource(fileName);
       return Paths.get(fileUrl.toURI());
     } catch (URISyntaxException e) {
       throw new RuntimeException(e);
