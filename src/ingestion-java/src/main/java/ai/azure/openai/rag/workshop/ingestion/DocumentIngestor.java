@@ -59,7 +59,7 @@ public class DocumentIngestor {
     log.info("### Store embeddings into Qdrant store for further search / retrieval");
     EmbeddingStore<TextSegment> qdrantEmbeddingStore = QdrantEmbeddingStore.builder()
         // Ensure the collection is configured with the appropriate dimensions of the embedding model.
-        .collectionName("{collection_name}")
+        .collectionName("rag-workshop-collection")
         .host("localhost")
         // GRPC port of the Qdrant server
         .port(6333)
