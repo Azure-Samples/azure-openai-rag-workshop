@@ -5,6 +5,7 @@ services:
       - "6333:6333"
       - "6334:6334"
 
+# open http://localhost:6333/dashboard
 # curl http://localhost:6333/collections
 # curl http://localhost:6333/collections/rag-workshop-collection
 # curl -X PUT 'http://localhost:6333/collections/rag-workshop-collection' \

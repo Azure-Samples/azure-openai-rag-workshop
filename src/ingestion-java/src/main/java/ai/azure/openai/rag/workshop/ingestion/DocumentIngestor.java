@@ -62,7 +62,7 @@ public class DocumentIngestor {
         .collectionName("rag-workshop-collection")
         .host("localhost")
         // GRPC port of the Qdrant server
-        .port(6333)
+        .port(6334)
         .build();
 
     qdrantEmbeddingStore.addAll(embeddings, segments);
