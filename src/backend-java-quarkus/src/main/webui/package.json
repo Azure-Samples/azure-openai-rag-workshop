@@ -1,0 +1,18 @@
+{
+  "name": "quinoa-bowl",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "theaterjs": "3.2.0"
+  },
+  "devDependencies": {
+    "express": "4.18.2",
+    "vite": "4.3.9"
+  }
+}

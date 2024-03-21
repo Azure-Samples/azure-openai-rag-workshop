@@ -1,0 +1,10 @@
+body { font-family: monospace; line-height: 1.2; color: #222; background-color: #ededed; }
+h1 { color: #4695EB; font-size: 6vw; }
+h1 b { color: #be9100; }
+img { margin-left: 10px; }
+.scene { padding: 6rem 2rem; max-width: 800px; margin: 0 auto; }
+.actor { font-size: 1.5rem; display: flex; margin-bottom: 2rem; }
+.actor:last-of-type { margin-bottom: 6rem; }
+.actor-content { flex-grow: 1; }
+.actor-content--typing::after { content: "|"; animation: blink 500ms infinite; }
+@keyframes blink { from { opacity: 0;  }  to { opacity: 1; } }

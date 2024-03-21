@@ -41,3 +41,12 @@ nb-configuration.xml
 
 # Plugin directory
 /.quarkus/cli/plugins/
+
+
+# Quinoa
+node_modules/
+build/
+dist/
+.quinoa/
+dist-ssr
+*.local
