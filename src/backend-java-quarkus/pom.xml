@@ -16,6 +16,7 @@
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>3.8.3</quarkus.platform.version>
+    <quarkiverse.langchain4j.version>0.9.1</quarkiverse.langchain4j.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
   </properties>
@@ -34,12 +35,12 @@
     <dependency>
       <groupId>io.quarkiverse.langchain4j</groupId>
       <artifactId>quarkus-langchain4j-pgvector</artifactId>
-      <version>0.7.1</version>
+      <version>${quarkiverse.langchain4j.version}</version>
     </dependency>
     <dependency>
       <groupId>io.quarkiverse.langchain4j</groupId>
       <artifactId>quarkus-langchain4j-core</artifactId>
-      <version>0.8.0</version>
+      <version>${quarkiverse.langchain4j.version}</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
