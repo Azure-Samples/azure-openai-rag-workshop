@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Create your own ChatGPT with Retrieval-Augmented-Generation",
   "private": true,
+  "type": "module",
   "directories": {
     "doc": "docs"
   },
