@@ -1,4 +1,4 @@
-package ai.azure.openai.rag.workshop;
+package ai.azure.openai.rag.workshop.backend;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;

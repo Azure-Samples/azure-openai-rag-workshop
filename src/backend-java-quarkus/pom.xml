@@ -33,11 +33,11 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
-    <dependency>
-      <groupId>io.quarkiverse.langchain4j</groupId>
-      <artifactId>quarkus-langchain4j-pgvector</artifactId>
-      <version>${quarkiverse.langchain4j.version}</version>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>io.quarkiverse.langchain4j</groupId>-->
+<!--      <artifactId>quarkus-langchain4j-pgvector</artifactId>-->
+<!--      <version>${quarkiverse.langchain4j.version}</version>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>io.quarkiverse.langchain4j</groupId>
       <artifactId>quarkus-langchain4j-core</artifactId>
@@ -46,6 +46,10 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-reactive</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-reactive-jsonb</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkiverse.langchain4j</groupId>
