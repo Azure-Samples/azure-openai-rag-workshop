@@ -26,3 +26,4 @@ lerna-debug.log*
 # Misc
 .DS_Store
 .current
+*dummy*
