@@ -27,7 +27,7 @@ public class ChatResource {
       .logResponses(true)
       .build();
 
-    String response = model.generate("Can you say hello in French?");
+    String response = model.generate(chatRequest.messages.get(0).content);
 
     return Response.ok().entity(response).build();
 
