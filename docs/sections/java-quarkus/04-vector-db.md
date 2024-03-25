@@ -31,13 +31,20 @@ For this workshop, we'll use Qdrant as our vector database as it works well with
 
 ### Running Qdrant locally
 
-To start Qdrant locally, you can use the following command:
+To start Qdrant locally we have setup a Docker Compose file. You can use the following command from the root of the project:
 
 ```bash
-docker run -p 6333:6333 -v $(pwd)/.qdrant:/qdrant/storage:z qdrant/qdrant:v1.7.3
+docker compose -f infra/docker-compose/qdrant.yml up
 ```
 
-This will pull the Docker image, start Qdrant on port `6333` and mount a volume to store the data in the `.qdrant` folder.
+This will pull the Docker image, start Qdrant on port `6333` and mount a volume to store the data in the `.qdrant` folder. You should see logs that look like:
+
+```text
+qdrant-1  | INFO qdrant::actix: Qdrant HTTP listening on 6333    
+qdrant-1  | INFO actix_server::builder: Starting 9 workers
+qdrant-1  | INFO qdrant::tonic: Qdrant gRPC listening on
+qdrant-1  | INFO actix_server::server: Actix runtime found; starting in Actix runtime
+```
 
 You can test that Qdrant is running by opening the following URL in your browser: [http://localhost:6333/dashboard](http://localhost:6333/dashboard).
 
@@ -48,4 +55,8 @@ You can test that Qdrant is running by opening the following URL in your browser
 
 </div>
 
-Once you tested that Qdrant is running correctly, you can stop it by pressing `CTRL+C` in your terminal.
+Once you tested that Qdrant is running correctly, you can stop it by pressing `CTRL+C` in your terminal or executing the following command from the root directory of the project:
+
+```bash
+docker compose -f infra/docker-compose/qdrant.yml down
+```

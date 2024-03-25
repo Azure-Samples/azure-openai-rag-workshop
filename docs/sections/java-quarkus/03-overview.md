@@ -5,7 +5,7 @@ The project template you've forked is a monorepo, which means it's a single repo
 ```sh
 .devcontainer/             # Configuration for the development container
 data/                      # Sample PDFs to serve as custom data
-infra/                     # Templates and scripts for Azure infrastructure
+infra/                     # Templates and scripts for Docker and Azure infrastructure
 scripts/                   # Utility scripts for document ingestion
 src/                       # Source code for the application's services
 ├── backend-java-quarkus/  # The Chat API developed with Quarkus
