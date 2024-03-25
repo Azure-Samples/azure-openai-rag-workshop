@@ -16,68 +16,212 @@ PDFs files, which are stored in the `data` folder, will be read by the `Document
 
 </div>
 
-#### Reading the PDF files content
+Create the `DocumentIngestor` under the `src/main/java` directory, inside the `ai.azure.openai.rag.workshop.ingestion` package. The `main` method of the `DocumentIngestor` class looks like the following:
 
-The content the PDFs files will be used as part of the *Retriever* component of the RAG architecture, to generate answers to your questions using the GPT model.
+```java
+public class DocumentIngestor {
 
-Text from the PDF files is extracted in the `DocumentIngestor` using LangChain4j. You can have a look at code of the `extractTextFromPdf()` method if you're curious about how it works.
+  private static final Logger log = LoggerFactory.getLogger(DocumentIngestor.class);
 
-#### Computing the embeddings
-
-After the text is extracted, it's then transformed into embeddings using the [OpenAI JavaScript library](https://github.com/openai/openai-node):
-
-```ts
-async createEmbedding(text: string): Promise<number[]> {
-  const embeddingsClient = await this.openai.getEmbeddings();
-  const result = await embeddingsClient.create({ input: text, model: this.embeddingModelName });
-  return result.data[0].embedding;
+  public static void main(String[] args) {
+    
+    // Setup Qdrant store for embeddings storage and retrieval
+    // Load all the PDFs, compute embeddings and store them in Qdrant store
+    
+    System.exit(0);
+  }
 }
 ```
 
-#### Adding the documents to the vector database
+LangChain4j uses [TinyLog](https://tinylog.org) as a logging framework. Create the `src/ingestion-java/src/main/resources/tinylog.properties` and set the log level to `info` (you can also set it to `debug` if you want more logs):
 
-The embeddings along with the original texts are then added to the vector database using the [Qdrant JavaScript client library](https://www.npmjs.com/package/@qdrant/qdrant-js). This process is done in batches, to improve performance and limit the number of requests:
+```properties
+writer.level = info
+```
 
-```ts
-const points = sections.map((section) => ({
-  // ID must be either a 64-bit integer or a UUID
-  id: getUuid(section.id, 5),
-  vector: section.embedding!,
-  payload: {
-    id: section.id,
-    content: section.content,
-    category: section.category,
-    sourcepage: section.sourcepage,
-    sourcefile: section.sourcefile,
-  },
-}));
+#### Setup the Qadrant client
 
-await this.qdrantClient.upsert(indexName, { points });
+Now that we have the `DocumentIngestor` class, we need to setup the Qdrant client to interact with the vector database. We'll use the `QdrantEmbeddingStore` class from LangChain4j to interact with Qdrant. Notice the name of the collection (`rag-workshop-collection`), the port (`localhost` as Qdrant is running locally) and th GRPC port (`6334`):
+
+```java
+public class DocumentIngestor {
+
+  public static void main(String[] args) {
+
+    // Setup Qdrant store for embeddings storage and retrieval
+    log.info("### Setup Qdrant store for embeddings storage and retrieval");
+    EmbeddingStore<TextSegment> qdrantEmbeddingStore = QdrantEmbeddingStore.builder()
+      .collectionName("rag-workshop-collection")
+      .host("localhost")
+      .port(6334)
+      .build();
+
+    // Load all the PDFs, compute embeddings and store them in Qdrant store
+
+    System.exit(0);
+  }
+}
+```
+
+#### Reading the PDF files content
+
+The content of the PDFs files will be used as part of the *Retriever* component of the RAG architecture, to generate answers to your questions using the GPT model. To read these files we need to iterate through the PDF files located under the classpath. We'll use the `findPdfFiles()` method to get the list of PDF files and then load them with the `FileSystemDocumentLoader` from LangChain4j:
+
+```java
+public class DocumentIngestor {
+
+  public static void main(String[] args) {
+
+    // Setup Qdrant store for embeddings storage and retrieval
+
+    // Load all the PDFs, compute embeddings and store them in Qdrant store
+    log.info("### Read all the PDFs");
+    List<Path> pdfFiles = findPdfFiles();
+    for (Path pdfFile : pdfFiles) {
+
+      log.info("### Load PDF: {}", pdfFile.toAbsolutePath());
+      Document document = FileSystemDocumentLoader.loadDocument(pdfFile, new ApachePdfBoxDocumentParser());
+
+      // ...
+    }
+
+    System.exit(0);
+  }
+
+  public static List<Path> findPdfFiles() {
+    try {
+      return Files.walk(Paths.get("./"))
+        .filter(path -> path.toString().endsWith(".pdf"))
+        .collect(Collectors.toList());
+    } catch (IOException e) {
+      throw new RuntimeException("Error reading files from directory", e);
+    }
+  }
+}
+```
+
+#### Split the document into segments
+
+Now that the PDF files are loaded, we need to split each PDF file (thanks to `DocumentSplitter`) into smaller chunks, called `TextSegment`:
+
+
+```java
+public class DocumentIngestor {
+
+  public static void main(String[] args) {
+
+    // Setup Qdrant store for embeddings storage and retrieval
+
+    // Load all the PDFs, compute embeddings and store them in Qdrant store
+    for (Path pdfFile : pdfFiles) {
+
+      // ...
+      log.info("### Split document into segments 100 tokens each");
+      DocumentSplitter splitter = DocumentSplitters.recursive(100, 0, new OpenAiTokenizer(GPT_3_5_TURBO));
+      List<TextSegment> segments = splitter.split(document);
+
+      // ...
+    }
+
+    System.exit(0);
+  }
+}
+```
+
+#### Computing the embeddings
+
+After the text is extracted into segments, they are then transformed into embeddings using the [AllMiniLmL6V2EmbeddingModel](https://github.com/langchain4j/langchain4j-embeddings) from LangChain4j. This model runs locally in memory (no need to connect to a remote LLM) and generates embeddings for each segment:
+
+```java
+public class DocumentIngestor {
+
+  public static void main(String[] args) {
+
+    // Setup Qdrant store for embeddings storage and retrieval
+
+    // Load all the PDFs, compute embeddings and store them in Qdrant store
+    for (Path pdfFile : pdfFiles) {
+
+      // ...
+
+      log.info("### Embed segments (convert them into vectors that represent the meaning) using embedding model");
+      EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
+      List<Embedding> embeddings = embeddingModel.embedAll(segments).content();
+
+      // ...
+    }
+  }
+}
+```
+
+#### Adding the embeddings to the vector database
+
+The embeddings along with the original texts are then added to the vector database using the `QdrantEmbeddingStore` API:
+
+```java
+public class DocumentIngestor {
+
+  public static void main(String[] args) {
+
+    // Setup Qdrant store for embeddings storage and retrieval
+
+    // Load all the PDFs, compute embeddings and store them in Qdrant store
+    for (Path pdfFile : pdfFiles) {
+
+      // ...
+
+      log.info("### Store embeddings into Qdrant store for further search / retrieval");
+      qdrantEmbeddingStore.addAll(embeddings, segments);
+    }
+  }
+}
 ```
 
 ### Running the ingestion process
 
-Let's now execute this process. First, you need to make sure you have Qdrant and the indexer service running locally. We'll use Docker Compose to run both services at the same time. Run the following command in a terminal (**make sure you stopped the Qdrant container before!**):
+Let's now execute this process. First, you need to make sure you have Qdrant running locally and all setup. Run the following command in a terminal to start up Qdrant (**make sure you stopped the Qdrant container before!**):
 
 ```bash
-docker compose up
+docker compose -f infra/docker-compose/qdrant.yml up
 ```
 
-This will start both Qdrant and the indexer service locally. This may takes a few minutes the first time, as Docker needs to download the images.
+This will start Qdrant locally. Make sure you can access the Qdrant dashboard at the URL http://localhost:6333/dashboard. Then, create a new collection named `rag-workshop-collection` with the following cUrl command:
+
+```bash
+curl -X PUT 'http://localhost:6333/collections/rag-workshop-collection' \
+     -H 'Content-Type: application/json' \
+     --data-raw '{
+       "vectors": {
+         "size": 384,
+         "distance": "Dot"
+       }
+     }'
+```
+
+You should see the collection in the dashabord:
+
+![Collection listed in the Qdrant dashboard](./assets/qdrant-dashboard-collection.png)
+
+You can also use a few cUrl commands to visualize the collection:
+
+```bash
+curl http://localhost:6333/collections
+curl http://localhost:6333/collections/rag-workshop-collection | jq
+```
+
+Once Qdrant is started and the collection is created, you can run the ingestion process by opening a new terminal and running the following Maven command under the `src/ingestion-java` folder. This will compile the code and run the ingestion process by running `DocumentIngestor`:
+
+```bash
+mvn clean compile exec:java
+```
 
 <div class="tip" data-title="tip">
 
-> You can look at the `docker-compose.yml` file at the root of the project to see how the services are configured. Docker Compose automatically loads the `.env` file, so we can use the environment variables exposed there. To learn more about Docker Compose, check out the [official documentation](https://docs.docker.com/compose/).
+> If you want to increase the logs you can set the level to debug instead of info in the src/main/resources/tinylog.properties file.
+
+> writer.level = debug
 
 </div>
-
-Once all services are started, you can run the ingestion process by opening a new terminal and running the `./scripts/index-data.sh` script on Linux or macOS, or `./scripts/index-data.ps1` on Windows:
-
-```bash
-./scripts/index-data.sh
-```
-
-![Screenshot of the indexer CLI](./assets/indexer-cli.png)
 
 Once this process is executed, a new collection will be available in your database, where you can see the documents that were ingested.
 
@@ -91,7 +235,7 @@ Open the Qdrant dashboard again by opening the following URL in your browser: [h
 
 </div>
 
-You should see the collection named `kbindex` in the list:
+You should see the collection named `rag-workshop-collection` in the list:
 
 ![Screenshot of the Qdrant dashboard](./assets/qdrant-dashboard.png)
 

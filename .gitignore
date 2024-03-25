@@ -17,7 +17,7 @@ lerna-debug.log*
 *.iml
 
 # Deployment
-*.env
+*.env*
 .azure
 
 # DB Storage
