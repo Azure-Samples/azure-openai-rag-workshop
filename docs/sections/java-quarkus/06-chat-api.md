@@ -6,165 +6,28 @@ We'll start the code by creating the Chat API. This API will implement the [Chat
 
 We'll be using [Quarkus](https://quarkus.io) to create our Chat API. Quarkus is a Kubernetes Native Java stack tailored for OpenJDK HotSpot and GraalVM, crafted from the best of breed Java libraries and standards. It's a great choice for microservices, and it's very fast and lightweight.
 
-### Setting up the chat plugin
-
-We'll start by creating a plugin for Fastify that will implement our chat service. A plugin is a way to encapsulate a piece of functionality in Fastify, and it's a good way to organize your code.
-
-Open the file `src/backend/src/plugins/chat.ts`. At the bottom you should see the following code:
-
-```ts
-export default fp(
-  async (fastify, options) => {
-    const config = fastify.config;
-
-    // TODO: initialize clients here
-
-    const chatService = new ChatService(
-      /*
-      config,
-      qdrantClient,
-      chatClient,
-      embeddingsClient,
-      config.azureOpenAiChatGptModel,
-      config.azureOpenAiEmbeddingModel,
-      config.kbFieldsSourcePage,
-      config.kbFieldsContent,
-      */
-    );
-
-    fastify.decorate('chat', chatService);
-  },
-  {
-    name: 'chat',
-    dependencies: ['config'],
-  },
-);
-```
-
-We have the starting point to implement our chat service. Let's have a look at the pieces we have here:
-
-1. First we retrieve the configuration needed by our service with `const config = fastify.config;` It's initialized from environment variables in the `src/backend/src/plugins/config.ts` file.
-2. Then we will create the different clients we need to call the Aure services. We'll see how to do that in the next section.
-3. After that we create the `ChatService` instance that will be used by our API to generate answers. We'll pass the different clients we created as parameters to the constructor.
-4. Finally we decorate the Fastify instance with our `ChatService` instance, so we can access it from our routes using `fastify.chat`.
-
-### Initializing the SDK clients
-
-We'll now replace the `// TODO: initialize clients here` with the actual code to set up our clients.
-
-#### Qdrant client
-
-Next we'll create the Qdrant client. Add this import at the top of the file:
-
-```ts
-import { QdrantClient } from '@qdrant/js-client-rest';
-```
-
-Then add this code below the `const config = fastify.config;` line:
-
-```ts
-// Set up Qdrant client
-const qdrantClient = new QdrantClient({
-  url: config.qdrantUrl,
-  // Port needs to be set explicitly if it's not the default,
-  // see https://github.com/qdrant/qdrant-js/issues/59
-  port: Number(config.qdrantUrl.split(':')[2])
-});
-```
-
-We just need to provide the URL of our Qdrant service.
-
-<div class="info" data-title="note">
-
-> You can optionally define an [authentication key](https://qdrant.tech/documentation/guides/security/#authentication) to secure your Qdrant service. If you do that, you'll need to pass it to the `QdrantClient` constructor using the `apiKey` property.
-
-</div>
-
-#### Managing Azure credentials
-
-Before we can create the clients, we need to retrieve the credentials to access our Azure services. We'll use the [Azure Identity SDK](https://learn.microsoft.com/javascript/api/overview/azure/identity-readme?view=azure-node-latest) to do that.
-
-Add this import at the top of the file:
-
-```ts
-import { DefaultAzureCredential } from '@azure/identity';
-```
-
-Then add this code to retrieve the credentials below the Qdrant client initialization:
-
-```ts
-// Automatic Azure identity is not supported in the local dev environment, so we use a dummy key.
-let openAIApiKey = '__dummy';
-try {
-  // Use the current user identity to authenticate with Azure OpenAI.
-  // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
-  const credential = new DefaultAzureCredential();
-  const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
-  openAIApiKey = openAiToken.token;
-} catch {
-  fastify.log.warn('Failed to get Azure OpenAI token, using dummy key');
-}
-```
-
-This will use the current user identity to authenticate with Azure OpenAI. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
-
-<div class="info" data-title="note">
-
-> When run locally inside a container, the Azure Identity SDK will will not be able to retrieve the current user identity from the Azure CLI. For simplicity, we'll use a dummy key in this case but it only works if you use the OpenAI proxy we provide if you attend this workshop in-person.
-> If need to properly authenticate locally, you should either run the app outside of a container with `npm run dev`, or create a [Service Principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal), assign it the needed permissions and pass the environment variables to the container.
-
-</div>
-
-#### LangChain clients
-
-Finally, it's time to create the LangChain clients. Add this code below the below the credentials retrieval:
-
-```ts
-// Show the OpenAI URL used in the logs
-fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);
-
-// Set common options for the clients
-const commonOptions = {
-  openAIApiKey,
-  azureOpenAIApiVersion: '2023-05-15',
-  azureOpenAIApiKey: openAIApiKey,
-  azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,
-};
-
-// Create a getter for the OpenAI chat client
-const chatClient = (options?: Partial<OpenAIChatInput>) =>
-  new ChatOpenAI({
-    ...options,
-    ...commonOptions,
-    azureOpenAIApiDeploymentName: config.azureOpenAiChatGptDeployment,
-  });
-
-// Create a getter for the OpenAI embeddings client
-const embeddingsClient = (options?: Partial<OpenAIEmbeddingsParams>) =>
-  new OpenAIEmbeddings({
-    ...options,
-    ...commonOptions,
-    azureOpenAIApiDeploymentName: config.azureOpenAiEmbeddingDeployment,
-  });
-```
-
-We first have to set up a few common options for the clients. Then instead of directly creating the clients, we create getter functions that will return the clients. We do it this way so we can pass additional options to change the behavior of the clients when needed.
-
-### Creating the ChatService
+### Creating the ChatResource
 
 Now that we have created all the clients, it's time to properly initialize the `ChatService` instance. Uncomment the parameters in the `ChatService` constructor call like this:
 
-```ts
-const chatService = new ChatService(
-  config,
-  qdrantClient,
-  chatClient,
-  embeddingsClient,
-  config.azureOpenAiChatGptModel,
-  config.azureOpenAiEmbeddingModel,
-  config.kbFieldsSourcePage,
-  config.kbFieldsContent,
-);
+```java
+@Path("/chat")
+public class ChatResource {
+
+  private static final Logger log = LoggerFactory.getLogger(ChatResource.class);
+
+  @POST
+  @Consumes({"application/json"})
+  @Produces({"application/json"})
+  public String chat(ChatRequest chatRequest) {
+
+    // Embed the question (convert the user's question into vectors that represent the meaning)
+    // Find relevant embeddings from Qdrant based on the user's question
+    // Builds chat history using the relevant embeddings
+    // Invoke the LLM
+    // Return the response
+  }
+}
 ```
 
 We feed the `ChatService` instance with the different clients we created, and the a few configuration options that we need:
@@ -350,34 +213,6 @@ The result of the completion is in the `completion.content` property. We also ad
 
 Feeeeew, that was a lot of code! But we're done with the implementation of the RAG pattern.
 
-### Creating the API route
-
-Now that we have our `ChatService` instance, we need to create the API route that will call it. Open the file `src/backend/src/routes/root.ts`. There's a comment that gives us a hint on what to do next: `// TODO: create /chat endpoint`
-
-So let's create the `/chat` endpoint:
-
-```ts
-fastify.post('/chat', async function (request, reply) {
-  const { messages } = request.body as any;
-  try {
-    return await fastify.chat.run(messages);
-  } catch (_error: unknown) {
-    const error = _error as Error;
-    fastify.log.error(error);
-    return reply.internalServerError(error.message);
-  }
-});
-```
-
-Using `fastify.post('/chat', ...)` we create a POST endpoint at the `/chat` route.
-We retrieve the `messages` property from the request body, and call the `run` method of the `ChatService` instance we created earlier.
-We also catch any errors that may happen, log them, and return an internal server error (HTTP status 500) to the client.
-
-<div class="info" data-title="note">
-
-> Here we bypassed the validation of the request body to keep things simple, hence the need to cast it to `any` (boo!). In a real-world application, you should always validate the request body to ensure it matches the expected format. Fastify allows you to do that by providing a [JSON schema to validate the body](https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/#validation). By doing that, you'll be able to remove the `as any` cast, and get better error messages when the request body is invalid.
-
-</div>
 
 Our API is now ready to be tested!
 
