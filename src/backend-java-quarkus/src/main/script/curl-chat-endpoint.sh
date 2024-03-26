@@ -11,7 +11,7 @@ curl -X 'POST' \
 -d '{
   "messages": [
     {
-      "content": "Can you say hello in French",
+      "content": "What is the information that is collected automatically?",
       "role": "SYSTEM"
     }
   ],

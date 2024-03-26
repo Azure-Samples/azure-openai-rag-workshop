@@ -6,11 +6,11 @@ import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.model.azure.AzureOpenAiChatModel;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.model.openai.OpenAiChatModel;
-import dev.langchain4j.model.openai.OpenAiModelName;
+import dev.langchain4j.model.output.Response;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
@@ -18,7 +18,6 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import dev.langchain4j.model.output.Response;
 import static java.time.Duration.ofSeconds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +30,21 @@ public class ChatResource {
 
   private static final Logger log = LoggerFactory.getLogger(ChatResource.class);
 
+  private static final String SYSTEM_MESSAGE_PROMPT = """
+  Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests.
+  Be brief in your answers.
+  Answer ONLY with the facts listed in the list of sources below.
+  If there isn't enough information below, say you don't know.
+  Do not generate answers that don't use the sources below.
+  If asking a clarifying question to the user would help, ask the question.
+  For tabular information return it as an html table.
+  Do not return markdown format.
+  If the question is not in English, answer in the language used in the question.
+  Each source has a name followed by colon and the actual information, always include the source name for each fact you use in the response.
+  Use square brackets to reference the source, for example: [info1.txt].
+  Don't combine sources, list each source separately, for example: [info1.txt][info2.pdf].
+  """;
+
   @POST
   @Consumes({"application/json"})
   @Produces({"application/json"})
@@ -38,11 +52,13 @@ public class ChatResource {
 
     String question = chatRequest.messages.get(0).content;
 
+    // Embed the question (convert the user's question into vectors that represent the meaning)
     log.info("### Embed the question (convert the question into vectors that represent the meaning) using embeddedQuestion model");
     EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
     Embedding embeddedQuestion = embeddingModel.embed(question).content();
-    log.debug("Vector length: {}", embeddedQuestion.vector().length);
+    log.debug("# Vector length: {}", embeddedQuestion.vector().length);
 
+    // Find relevant embeddings from Qdrant based on the user's question
     log.info("### Find relevant embeddings from Qdrant based on the question");
     EmbeddingStore<TextSegment> qdrantEmbeddingStore = QdrantEmbeddingStore.builder()
       .collectionName("rag-workshop-collection")
@@ -52,26 +68,30 @@ public class ChatResource {
 
     List<EmbeddingMatch<TextSegment>> relevant = qdrantEmbeddingStore.findRelevant(embeddedQuestion, 3);
 
+    // Builds chat history using the relevant embeddings
     log.info("### Builds chat history using the relevant embeddings");
     List<ChatMessage> chatMessages = new ArrayList<>();
     for (int i = 0; i < relevant.size(); i++) {
       EmbeddingMatch<TextSegment> textSegmentEmbeddingMatch = relevant.get(i);
       chatMessages.add(SystemMessage.from(textSegmentEmbeddingMatch.embedded().text()));
-      log.debug("Relevant segment {}: {}", i, textSegmentEmbeddingMatch.embedded().text());
+      log.debug("# Relevant segment {}: {}", i, textSegmentEmbeddingMatch.embedded().text());
     }
 
+    // Invoke the LLM
     log.info("### Invoke the LLM");
+    chatMessages.add(SystemMessage.from(SYSTEM_MESSAGE_PROMPT));
     chatMessages.add(UserMessage.from(question));
 
-    ChatLanguageModel model = OpenAiChatModel.builder()
-      .apiKey(System.getenv("OPENAI_API_KEY"))
-      .modelName(OpenAiModelName.GPT_3_5_TURBO)
+    ChatLanguageModel model = AzureOpenAiChatModel.builder()
+      .apiKey(System.getenv("AZURE_OPENAI_KEY"))
+      .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))
+      .deploymentName(System.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"))
       .temperature(0.3)
       .timeout(ofSeconds(60))
-      .logRequests(true)
-      .logResponses(true)
+      .logRequestsAndResponses(true)
       .build();
 
+    // Return the response
     Response<AiMessage> response = model.generate(chatMessages);
 
     return response.content().text();
