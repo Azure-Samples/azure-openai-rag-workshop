@@ -30,27 +30,7 @@ include::sections/java-quarkus/06-chat-api.md[]
 
 ---
 
-include::sections/java-quarkus/07-dockerfile.md[]
-
----
-
-include::sections/java-quarkus/08-website.md[]
-
----
-
 include::sections/java-quarkus/09-azure.md[]
-
----
-
-include::sections/java-quarkus/10-deployment.md[]
-
----
-
-include::sections/java-quarkus/10.1-ci-cd.md[]
-
----
-
-include::sections/java-quarkus/11-improvements.md[]
 
 ---
 
