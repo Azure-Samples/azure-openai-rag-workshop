@@ -4,7 +4,7 @@ We are going to ingest the content of PDF documents in the vector database. We'l
 
 The code of this is already written for you, but let's have a look at how it works.
 
-### The ingestion process
+### Creating the ingestion process
 
 The `src/ingestion-java/src/ingestion-java/src/main/java/ai/azure/openai/rag/workshop/ingestion/DocumentIngestor.java` Java class contains the code that is used to ingest the data in the vector database. It has a `public static void main` so it can be executed locally.
 

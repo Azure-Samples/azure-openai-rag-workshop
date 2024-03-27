@@ -6,9 +6,9 @@ We'll start the code by creating the Chat API. This API will implement the [Chat
 
 We'll be using [Quarkus](https://quarkus.io) to create our Chat API. Quarkus is a Kubernetes Native Java stack tailored for OpenJDK HotSpot and GraalVM, crafted from the best of breed Java libraries and standards. It's a great choice for microservices, and it's very fast and lightweight.
 
-### Creating the ChatResource
+### Creating the Chat API
 
-Now that we have created all the clients, it's time to properly initialize the `ChatService` instance. Uncomment the parameters in the `ChatService` constructor call like this:
+Now that we have created the document ingestor, it's time to interact with our vector database and an LLM thanks to a REST API. Create the `ChatResource` under the `src/main/java` directory, inside the `ai.azure.openai.rag.workshop.backend` package. The `chat` method of the `ChatResource` class looks like the following:
 
 ```java
 @Path("/chat")
@@ -30,11 +30,69 @@ public class ChatResource {
 }
 ```
 
-We feed the `ChatService` instance with the different clients we created, and the a few configuration options that we need:
-- The name of the GPT model to use (`gpt-35-turbo`)
-- The name of the embedding model to use (`text-embedding-ada-002`)
-- The name of the field in the search index that contains the page number of the document (`sourcepage`)
-- The name of the field in the search index that contains the content of the document (`content`)
+Notice that the `chat` method takes a `ChatRequest` parameter. This is the object that will be sent by the UI to the API, containing the messagess of the conversation (`ChatRequestMessage`).
+
+```java
+public class ChatRequest {
+
+  public List<ChatRequestMessage> messages = new ArrayList();
+  public String model;
+  public float temperature = 1f;
+  public float topP = 1f;
+  public String user;
+}
+```
+
+```java
+public class ChatRequestMessage {
+
+  public String content;
+  public RoleEnum role;
+
+  public static enum RoleEnum {
+
+    SYSTEM(String.valueOf("system")),
+    USER(String.valueOf("user")),
+    ASSISTANT(String.valueOf("assistant")),
+    FUNCTION(String.valueOf("function"));
+
+    private String value;
+
+    private RoleEnum(String v) {
+      this.value = v;
+    }
+
+    public String value() {
+      return this.value;
+    }
+
+  }
+}
+```
+
+Create the `ChatRequest` and `ChatRequestMessage` under the `src/main/java` directory, inside the `ai.azure.openai.rag.workshop.backend` package.
+
+#### Embed the question
+
+The first step is to embed the question. First, we get the question from the `ChatRequest`, and then we use the `AllMiniLmL6V2EmbeddingModel` to embed it. Notice that we use the exact same model in the ingestor and the Chat API. This is important to ensure that the embeddings are consistent across the system.
+
+```java
+@Path("/chat")
+public class ChatResource {
+
+  public String chat(ChatRequest chatRequest) {
+
+    String question = chatRequest.messages.get(0).content;
+
+    log.info("### Embed the question (convert the question into vectors that represent the meaning) using embeddedQuestion model");
+    EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
+    Embedding embeddedQuestion = embeddingModel.embed(question).content();
+
+    // ...
+  }
+}
+```
+
 
 #### Retrieving the documents
 
@@ -42,13 +100,28 @@ It's time to start implementing the RAG pattern! The first step is to retrieve t
 
 Before retrieving the documents, we need to convert the question into a vector:
 
-```ts
-// Get the content of the last message (the question)
-const query = messages[messages.length - 1].content;
+```java
+@Path("/chat")
+public class ChatResource {
 
-// Compute an embedding for the query
-const embeddingsClient = this.embeddingsClient({ modelName: this.embeddingModel });
-const queryVector = await embeddingsClient.embedQuery(query);
+  public String chat(ChatRequest chatRequest) {
+
+    // Embed the question (convert the user's question into vectors that represent the meaning)
+    // ...
+    
+    // Find relevant embeddings from Qdrant based on the user's question
+    log.info("### Find relevant embeddings from Qdrant based on the question");
+    EmbeddingStore<TextSegment> qdrantEmbeddingStore = QdrantEmbeddingStore.builder()
+      .collectionName("rag-workshop-collection")
+      .host("localhost")
+      .port(6334)
+      .build();
+
+    List<EmbeddingMatch<TextSegment>> relevant = qdrantEmbeddingStore.findRelevant(embeddedQuestion, 3);
+
+    // ...
+  }
+}
 ```
 
 To compute the embedding, we first use the embeddings client we created earlier, and call the `embedQuery` method. This method will convert the query into a vector, using the embedding model we specified.
@@ -97,12 +170,32 @@ Finally we join all the results into a single string, and separate each document
 
 Now that we have the content of the documents, we'll craft the base prompt that will be sent to the GPT model. Add this code at the top of the file below the imports:
 
-```ts
-const SYSTEM_MESSAGE_PROMPT = `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
-Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
-For tabular information return it as an html table. Do not return markdown format. If the question is not in English, answer in the language used in the question.
-Each source has a name followed by colon and the actual information, always include the source name for each fact you use in the response. Use square brackets to reference the source, for example: [info1.txt]. Don't combine sources, list each source separately, for example: [info1.txt][info2.pdf].
-`;
+```java
+@Path("/chat")
+public class ChatResource {
+
+  private static final Logger log = LoggerFactory.getLogger(ChatResource.class);
+
+  private static final String SYSTEM_MESSAGE_PROMPT = """
+    Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests.
+    Be brief in your answers.
+    Answer ONLY with the facts listed in the list of sources below.
+    If there isn't enough information below, say you don't know.
+    Do not generate answers that don't use the sources below.
+    If asking a clarifying question to the user would help, ask the question.
+    For tabular information return it as an html table.
+    Do not return markdown format.
+    If the question is not in English, answer in the language used in the question.
+    Each source has a name followed by colon and the actual information, always include the source name for each fact you use in the response.
+    Use square brackets to reference the source, for example: [info1.txt].
+    Don't combine sources, list each source separately, for example: [info1.txt][info2.pdf].
+    """;
+
+  public String chat(ChatRequest chatRequest) {
+
+    // ...
+  }
+}
 ```
 
 We make it a constant so it's easier to tweak the prompt later without having to dive into the code.
@@ -127,22 +220,41 @@ Let's decompose the prompt to better understand what's going on. When creating a
 
 #### Creating the augmented prompt
 
+We feed the `ChatService` instance with the different clients we created, and the a few configuration options that we need:
+- The name of the GPT model to use (`gpt-35-turbo`)
+- The name of the embedding model to use (`text-embedding-ada-002`)
+- The name of the field in the search index that contains the page number of the document (`sourcepage`)
+- The name of the field in the search index that contains the content of the document (`content`)
+
+
+
 Note that in the previous prompt, we did not add the source content. This is because the model does not handle lengthy system messages well, so instead we'll inject the sources into the latest user message.
 
 What the model expect as an input is an array of messages, with the latest message being the user message. Each message have a role, which can be `system` (which sets the context), `user` (the user questions), or `assistant` (which is the AI-generated answers).
 
 To build this array of messages, we'll use a helper class named `MessageBuilder` that we created in the `src/backend/src/lib/message-builder.ts` file. Let's continue our implementation of the RAG pattern with this code:
 
-```ts
-// Set the context with the system message
-const systemMessage = SYSTEM_MESSAGE_PROMPT;
+```java
+@Path("/chat")
+public class ChatResource {
 
-// Get the latest user message (the question), and inject the sources into it
-const userMessage = `${messages[messages.length - 1].content}\n\nSources:\n${content}`;
+  public String chat(ChatRequest chatRequest) {
 
-// Create the messages prompt
-const messageBuilder = new MessageBuilder(systemMessage, this.chatGptModel);
-messageBuilder.appendMessage('user', userMessage);
+    // Embed the question (convert the user's question into vectors that represent the meaning)
+    // Find relevant embeddings from Qdrant based on the user's question
+    // ...
+
+    // Builds chat history using the relevant embeddings
+    log.info("### Builds chat history using the relevant embeddings");
+    List<ChatMessage> chatMessages = new ArrayList<>();
+    for (int i = 0; i < relevant.size(); i++) {
+      EmbeddingMatch<TextSegment> textSegmentEmbeddingMatch = relevant.get(i);
+      chatMessages.add(SystemMessage.from(textSegmentEmbeddingMatch.embedded().text()));
+    }
+
+    // ...
+  }
+}
 ```
 
 Because the previous messages in the conversation may also help the model, we'll add them to the prompt as well. But here we need to be careful, as GPT models have a limit in the number of tokens they can process. So we'll only add messages until we reach the token limit we set.
@@ -168,17 +280,41 @@ const thoughts = `Search query:\n${query}\n\nConversation:\n${conversation}`.rep
 
 Here we create a `thoughts` string that we'll return along the answer, that contains the search query and the messages that were sent to the model.
 
-#### Generating the response
+#### Invoking the LLM and generating the response
 
 We're now ready to generate the response from the model. Add this code below the previous one:
 
-```ts
-const chatClient = this.chatClient({
-  temperature: 0.7,
-  maxTokens: 1024,
-  n: 1,
-});
-const completion = await chatClient.invoke(messageBuilder.getMessages());
+```java
+@Path("/chat")
+public class ChatResource {
+
+  public String chat(ChatRequest chatRequest) {
+
+    // Embed the question (convert the user's question into vectors that represent the meaning)
+    // Find relevant embeddings from Qdrant based on the user's question
+    // Builds chat history using the relevant embeddings
+    // ...
+
+    // Invoke the LLM
+    log.info("### Invoke the LLM");
+    chatMessages.add(SystemMessage.from(SYSTEM_MESSAGE_PROMPT));
+    chatMessages.add(UserMessage.from(question));
+
+    ChatLanguageModel model = AzureOpenAiChatModel.builder()
+      .apiKey(System.getenv("AZURE_OPENAI_KEY"))
+      .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))
+      .deploymentName(System.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"))
+      .temperature(0.3)
+      .timeout(ofSeconds(60))
+      .logRequestsAndResponses(true)
+      .build();
+
+    // Return the response
+    Response<AiMessage> response = model.generate(chatMessages);
+
+    return response.content().text();
+  }
+}
 ```
 
 First we create the LangChain chat client and pass a few options to control the behavior of the model:
