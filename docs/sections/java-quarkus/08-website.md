@@ -17,7 +17,13 @@ We'll use [Vite](https://vitejs.dev/) as a frontend build tool, and [Lit](https:
 
 This frontend will be built as a Single Page Application (SPA), which will be similar to the well-known ChatGPT website. The main difference is that it will get its data from the Chat API that we described in the previous section.
 
-The project is available in the `src/frontend` folder. From the project directory, you can run this command to start the development server:
+The project is available in the `src/frontend` folder. From this directory, you can run this command to install the necessary dependancies:
+
+```bash
+npm install
+```
+
+And then this command to start the development server:
 
 ```bash
 npm run dev
