@@ -48,7 +48,7 @@ public class ChatResource {
   @POST
   @Consumes({"application/json"})
   @Produces({"application/json"})
-  public String chat(ChatRequest chatRequest) {
+  public ChatResponse chat(ChatRequest chatRequest) {
 
     String question = chatRequest.messages.get(0).content;
 
@@ -85,7 +85,8 @@ public class ChatResource {
       .apiKey(System.getenv("AZURE_OPENAI_KEY"))
       .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))
       .deploymentName(System.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"))
-      .temperature(0.3)
+      .temperature(chatRequest.temperature)
+      .topP(chatRequest.topP)
       .timeout(ofSeconds(60))
       .logRequestsAndResponses(true)
       .build();
@@ -93,6 +94,13 @@ public class ChatResource {
     // Return the response
     Response<AiMessage> response = model.generate(chatMessages);
 
-    return response.content().text();
+    ChatResponse chatResponse = new ChatResponse();
+    ChatResponse.Choice choice = new ChatResponse.Choice();
+    choice.index = 0;
+    choice.message = new ai.azure.openai.rag.workshop.backend.ChatMessage();
+    choice.message.content = response.content().text();
+
+    chatResponse.choices.add(choice);
+    return chatResponse;
   }
 }

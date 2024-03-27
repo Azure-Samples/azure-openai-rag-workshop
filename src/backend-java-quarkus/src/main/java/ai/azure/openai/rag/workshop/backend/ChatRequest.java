@@ -5,9 +5,8 @@ import java.util.List;
 
 public class ChatRequest {
 
-  public List<ChatRequestMessage> messages = new ArrayList();
-  public String model;
-  public float temperature = 1f;
-  public float topP = 1f;
+  public List<ChatMessage> messages = new ArrayList<>();
+  public double temperature = 1f;
+  public double topP = 1f;
   public String user;
 }
