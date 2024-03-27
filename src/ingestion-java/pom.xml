@@ -12,7 +12,7 @@
     <compiler-plugin.version>3.12.1</compiler-plugin.version>
     <resources-plugin.version>3.3.1</resources-plugin.version>
     <exec-plugin.version>3.1.1</exec-plugin.version>
-    <langchain4j.version>0.28.0</langchain4j.version>
+    <langchain4j.version>0.29.0</langchain4j.version>
     <tinylog.version>2.6.2</tinylog.version>
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
