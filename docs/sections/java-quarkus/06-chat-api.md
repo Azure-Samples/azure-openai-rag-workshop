@@ -93,12 +93,9 @@ public class ChatResource {
 }
 ```
 
-
 #### Retrieving the documents
 
-It's time to start implementing the RAG pattern! The first step is to retrieve the documents from the vector database. In the `ChatService` class, there's a method named `run` that is currently empty with a `// TODO: implement Retrieval Augmented Generation (RAG) here`. This is where we'll implement the RAG pattern.
-
-Before retrieving the documents, we need to convert the question into a vector:
+It's time to start implementing the RAG pattern! Now that we have a vectorized version of the question asked by the user, time to retrieve the documents from the vector database. In the `ChatResource` class, we use the `QdrantEmbeddingStore` to connect to the Qdrant server and then, retrieve the relevant documents thanks to the `findRelevant` method. This method finds the most relevant (closest in space) embeddings to the provided reference embedding and returns only 3 text segments:
 
 ```java
 @Path("/chat")
@@ -124,51 +121,9 @@ public class ChatResource {
 }
 ```
 
-To compute the embedding, we first use the embeddings client we created earlier, and call the `embedQuery` method. This method will convert the query into a vector, using the embedding model we specified.
-
-Now that we have the query vector, we can call the Qdrant client to retrieve the documents:
-
-```ts
-// Performs a vector search
-const searchResults = await this.qdrantClient.search(this.config.indexName, {
-  vector: queryVector,
-  limit: 3,
-  params: {
-    hnsw_ef: 128,
-    exact: false,
-  },
-});
-```
-
-We pass a few options to the `search` method:
-- The name of the index (collection) to search in
-- `limit` is the number of documents we want to retrieve
-- The parameters for the vector search.
-  * The `hnsw_ef` parameter controls the number of neighbors to visit during search. The higher the value, the more accurate and slower the search will be.
-  * The `exact` parameter allows to perform an exact search, which will be slower, but more accurate. You can use it to compare results of the search with different `hnsw_ef` values versus the ground truth.
-
-Let's process the search results to extract the documents' content:
-
-```ts
-const results: string[] = searchResults.map((result) => {
-  const document = result.payload!;
-  const sourcePage = document[this.sourcePageField] as string;
-  let content = document[this.contentField] as string;
-  content = content.replaceAll(/[\n\r]+/g, ' ');
-  return `${sourcePage}: ${content}`;
-});
-
-const content = results.join('\n');
-```
-
-The object `searchResults.results` contains the search results. For each result, we extract the page information and the content of the document, and create a string from it.
-For the content, we use a regular expression to replace all the new lines with spaces, so it's easier to feed it to the GPT model later.
-
-Finally we join all the results into a single string, and separate each document with a new line. We'll use this content to generate the augmented prompt.
-
 #### Creating the system prompt
 
-Now that we have the content of the documents, we'll craft the base prompt that will be sent to the GPT model. Add this code at the top of the file below the imports:
+Now that we have the content of the documents, we'll craft the base prompt that will be sent to the GPT model. Add the `SYSTEM_MESSAGE_PROMPT` variable at the top of the class, below the logger:
 
 ```java
 @Path("/chat")
@@ -198,8 +153,6 @@ public class ChatResource {
 }
 ```
 
-We make it a constant so it's easier to tweak the prompt later without having to dive into the code.
-
 Let's decompose the prompt to better understand what's going on. When creating a prompt, there are a few things to keep in mind to get the best results:
 
 - Be explicit about the domain of the prompt. In our case, we're setting the context with this phrase: `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests.`. This relates to the set of documents provided by default, so feel free to change it if you're using your own documents.
@@ -220,19 +173,7 @@ Let's decompose the prompt to better understand what's going on. When creating a
 
 #### Creating the augmented prompt
 
-We feed the `ChatService` instance with the different clients we created, and the a few configuration options that we need:
-- The name of the GPT model to use (`gpt-35-turbo`)
-- The name of the embedding model to use (`text-embedding-ada-002`)
-- The name of the field in the search index that contains the page number of the document (`sourcepage`)
-- The name of the field in the search index that contains the content of the document (`content`)
-
-
-
-Note that in the previous prompt, we did not add the source content. This is because the model does not handle lengthy system messages well, so instead we'll inject the sources into the latest user message.
-
-What the model expect as an input is an array of messages, with the latest message being the user message. Each message have a role, which can be `system` (which sets the context), `user` (the user questions), or `assistant` (which is the AI-generated answers).
-
-To build this array of messages, we'll use a helper class named `MessageBuilder` that we created in the `src/backend/src/lib/message-builder.ts` file. Let's continue our implementation of the RAG pattern with this code:
+Now that we have the `SYSTEM_MESSAGE_PROMPT` and the relevant documents, we can create the augmented prompt. The augmented prompt is the combination of the system prompt, the relevant documents as well as the question asked by the user. We use the `ChatMessage` class from LangChain4j to represent the messages in the conversation. This class contains the content of the message and the role of the message: `system` (which sets the context), `user` (the user questions), or `assistant` (which is the AI-generated answers).
 
 ```java
 @Path("/chat")
@@ -247,42 +188,21 @@ public class ChatResource {
     // Builds chat history using the relevant embeddings
     log.info("### Builds chat history using the relevant embeddings");
     List<ChatMessage> chatMessages = new ArrayList<>();
+    chatMessages.add(SystemMessage.from(SYSTEM_MESSAGE_PROMPT));
     for (int i = 0; i < relevant.size(); i++) {
       EmbeddingMatch<TextSegment> textSegmentEmbeddingMatch = relevant.get(i);
       chatMessages.add(SystemMessage.from(textSegmentEmbeddingMatch.embedded().text()));
     }
+    chatMessages.add(UserMessage.from(question));
 
     // ...
   }
 }
 ```
 
-Because the previous messages in the conversation may also help the model, we'll add them to the prompt as well. But here we need to be careful, as GPT models have a limit in the number of tokens they can process. So we'll only add messages until we reach the token limit we set.
-
-```ts
-// Add the previous messages to the prompt, as long as we don't exceed the token limit
-for (const historyMessage of messages.slice(0, -1).reverse()) {
-  if (messageBuilder.tokens > this.tokenLimit) {
-    messageBuilder.popMessage();
-    break;
-  };
-  messageBuilder.appendMessage(historyMessage.role, historyMessage.content);
-}
-```
-
-As a final touch, it can be useful to create some debug information to help us understand what the model is doing.
-
-```ts
-// Processing details, for debugging purposes
-const conversation = messageBuilder.messages.map((m) => `${m.role}: ${m.content}`).join('\n\n');
-const thoughts = `Search query:\n${query}\n\nConversation:\n${conversation}`.replaceAll('\n', '<br>');
-```
-
-Here we create a `thoughts` string that we'll return along the answer, that contains the search query and the messages that were sent to the model.
-
 #### Invoking the LLM and generating the response
 
-We're now ready to generate the response from the model. Add this code below the previous one:
+Now that we have our prompt setup, time to invoke the model. For that, we use the `AzureOpenAiChatModel` passing the API key, the endpoint and the deployment name. We also set the `temperature` to control the randomness of the model. Then, it's just a matter of invoking the `generate` method of the model and so it invokes the model and returns the response:
 
 ```java
 @Path("/chat")
@@ -297,9 +217,6 @@ public class ChatResource {
 
     // Invoke the LLM
     log.info("### Invoke the LLM");
-    chatMessages.add(SystemMessage.from(SYSTEM_MESSAGE_PROMPT));
-    chatMessages.add(UserMessage.from(question));
-
     ChatLanguageModel model = AzureOpenAiChatModel.builder()
       .apiKey(System.getenv("AZURE_OPENAI_KEY"))
       .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))
@@ -317,39 +234,6 @@ public class ChatResource {
 }
 ```
 
-First we create the LangChain chat client and pass a few options to control the behavior of the model:
-- `temperature` controls the randomness of the model. A value of 0 will make the model deterministic, and a value of 1 will make it generate the most random answers.
-- `maxTokens` is the maximum number of tokens the model will generate. If you set it too low, the model will not be able to generate long answers. If you set it too high, the model may generate answers that are too long.
-- `n` is the number of answers the model will generate. In our case we only want one answer, so we set it to 1.
-
-Then we call the `invoke` method to generate the response. We pass the messages we created earlier as input.
-
-The final step is to return the result in the Chat specification format:
-
-```ts
-// Return the response in the Chat specification format
-return {
-  choices: [
-    {
-      index: 0,
-      message: {
-        content: completion.content as string,
-        role: 'assistant',
-        context: {
-          data_points: results,
-          thoughts: thoughts,
-        },
-      },
-    },
-  ],
-};
-```
-
-The result of the completion is in the `completion.content` property. We also add the `data_points` containing the search document results and `thoughts` properties to the `context` object, so they can be used by the website to display the debug information.
-
-Feeeeew, that was a lot of code! But we're done with the implementation of the RAG pattern.
-
-
 Our API is now ready to be tested!
 
 ### Testing our API
@@ -357,41 +241,31 @@ Our API is now ready to be tested!
 Open a terminal and run the following commands to start the API:
 
 ```bash
-cd src/backend
-npm run dev
+cd src/backend-java-quarkus
+./mvnw clean quarkus:dev
 ```
 
 This will start the API in development mode, which means it will automatically restart if you make changes to the code.
 
-To test this API, you can either use the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) extension for VS Code, or a cURL request.
-
-#### Option 1: Using the REST Client extension
-
-Open the file `src/backend/test.http` file. Go to the "Chat with the bot" comment and hit the **Send Request** button below to test the API.
-
-You can play a bit and change the question to see how the model behaves.
-
-When you're done with the testing, stop the server by pressing `Ctrl+C` in each of the terminals.
-
-After you checked that everything works as expected, don't forget to commit your changes to the repository, to keep track of your progress.
-
-#### Option 2: using cURL
-
-Open up a new terminal in VS Code, and run the following commands:
+To test this API, you can either use the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) extension for VS Code, or a cURL request. Open up a new terminal in and run the following commands:
 
 ```bash
-curl -X POST "http://localhost:3000/chat" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "messages": [{
-      "content": "How to search and book rentals?",
-      "role": "user"
-    }]
-  }'
+curl -X 'POST' \
+'http://localhost:8080/chat' \
+-H 'accept: */*' \
+-H 'Content-Type: application/json' \
+-d '{
+  "messages": [
+    {
+      "content": "What is the information that is collected automatically?",
+      "role": "USER"
+    }
+  ]
+}'
 ```
 
 You can play a bit and change the question to see how the model behaves.
 
-When you're done with the testing, stop the server by pressing `Ctrl+C` in each of the terminals.
+When you're done with the testing, stop the Quarkus by pressing `Ctrl+C` in each of the terminals.
 
 After you checked that everything works as expected, don't forget to commit your changes to the repository, to keep track of your progress.

@@ -12,7 +12,7 @@ curl -X 'POST' \
   "messages": [
     {
       "content": "What is the information that is collected automatically?",
-      "role": "SYSTEM"
+      "role": "USER"
     }
   ],
   "model": "gpt-3.5-turbo",

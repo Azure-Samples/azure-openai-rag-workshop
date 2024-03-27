@@ -71,17 +71,16 @@ public class ChatResource {
     // Builds chat history using the relevant embeddings
     log.info("### Builds chat history using the relevant embeddings");
     List<ChatMessage> chatMessages = new ArrayList<>();
+    chatMessages.add(SystemMessage.from(SYSTEM_MESSAGE_PROMPT));
     for (int i = 0; i < relevant.size(); i++) {
       EmbeddingMatch<TextSegment> textSegmentEmbeddingMatch = relevant.get(i);
       chatMessages.add(SystemMessage.from(textSegmentEmbeddingMatch.embedded().text()));
       log.debug("# Relevant segment {}: {}", i, textSegmentEmbeddingMatch.embedded().text());
     }
+    chatMessages.add(UserMessage.from(question));
 
     // Invoke the LLM
     log.info("### Invoke the LLM");
-    chatMessages.add(SystemMessage.from(SYSTEM_MESSAGE_PROMPT));
-    chatMessages.add(UserMessage.from(question));
-
     ChatLanguageModel model = AzureOpenAiChatModel.builder()
       .apiKey(System.getenv("AZURE_OPENAI_KEY"))
       .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))
