@@ -68,8 +68,8 @@ public class DocumentIngestor {
   }
 
   public static List<Path> findPdfFiles() {
-    try {
-      return Files.walk(Paths.get("./"))
+    try (var files = Files.walk(Paths.get("./"))) {
+      return files
         .filter(path -> path.toString().endsWith(".pdf"))
         .collect(Collectors.toList());
     } catch (IOException e) {
