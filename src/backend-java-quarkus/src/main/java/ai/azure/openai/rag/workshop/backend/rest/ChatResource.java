@@ -1,4 +1,4 @@
-package ai.azure.openai.rag.workshop.backend;
+package ai.azure.openai.rag.workshop.backend.rest;
 
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.message.AiMessage;
@@ -14,6 +14,7 @@ import dev.langchain4j.model.output.Response;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -45,6 +46,15 @@ public class ChatResource {
     Don't combine sources, list each source separately, for example: [info1.txt][info2.pdf].
     """;
 
+  @Inject
+  EmbeddingModel embeddingModel;
+
+  @Inject
+  EmbeddingStore<TextSegment> embeddingStore;
+
+  @Inject
+  ChatLanguageModel chatLanguageModel;
+
   @POST
   @Consumes({"application/json"})
   @Produces({"application/json"})
@@ -54,19 +64,12 @@ public class ChatResource {
 
     // Embed the question (convert the user's question into vectors that represent the meaning)
     log.info("### Embed the question (convert the question into vectors that represent the meaning) using embeddedQuestion model");
-    EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
     Embedding embeddedQuestion = embeddingModel.embed(question).content();
     log.debug("# Vector length: {}", embeddedQuestion.vector().length);
 
     // Find relevant embeddings from Qdrant based on the user's question
     log.info("### Find relevant embeddings from Qdrant based on the question");
-    EmbeddingStore<TextSegment> qdrantEmbeddingStore = QdrantEmbeddingStore.builder()
-      .collectionName("rag-workshop-collection")
-      .host("localhost")
-      .port(6334)
-      .build();
-
-    List<EmbeddingMatch<TextSegment>> relevant = qdrantEmbeddingStore.findRelevant(embeddedQuestion, 3);
+    List<EmbeddingMatch<TextSegment>> relevant = embeddingStore.findRelevant(embeddedQuestion, 3);
 
     // Builds chat history using the relevant embeddings
     log.info("### Builds chat history using the relevant embeddings");
@@ -81,25 +84,14 @@ public class ChatResource {
 
     // Invoke the LLM
     log.info("### Invoke the LLM");
-    ChatLanguageModel model = AzureOpenAiChatModel.builder()
-      .apiKey(System.getenv("AZURE_OPENAI_KEY"))
-      .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))
-      .deploymentName(System.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"))
-      .temperature(chatRequest.temperature)
-      .topP(chatRequest.topP)
-      .timeout(ofSeconds(60))
-      .logRequestsAndResponses(true)
-      .build();
+    Response<AiMessage> response = chatLanguageModel.generate(chatMessages);
 
     // Return the response
-    Response<AiMessage> response = model.generate(chatMessages);
-
     ChatResponse chatResponse = new ChatResponse();
     ChatResponse.Choice choice = new ChatResponse.Choice();
     choice.index = 0;
-    choice.message = new ai.azure.openai.rag.workshop.backend.ChatMessage();
+    choice.message = new ai.azure.openai.rag.workshop.backend.rest.ChatMessage();
     choice.message.content = response.content().text();
-
     chatResponse.choices.add(choice);
     return chatResponse;
   }

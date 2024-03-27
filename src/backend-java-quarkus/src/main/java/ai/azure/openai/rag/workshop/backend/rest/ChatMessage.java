@@ -1,4 +1,4 @@
-package ai.azure.openai.rag.workshop.backend;
+package ai.azure.openai.rag.workshop.backend.rest;
 
 public class ChatMessage {
 

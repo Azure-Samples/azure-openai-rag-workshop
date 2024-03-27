@@ -1,4 +1,4 @@
-package ai.azure.openai.rag.workshop.backend;
+package ai.azure.openai.rag.workshop.backend.rest;
 
 import java.util.ArrayList;
 import java.util.List;
