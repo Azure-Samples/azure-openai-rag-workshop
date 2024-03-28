@@ -8,7 +8,11 @@ We'll be using [Quarkus](https://quarkus.io) to create our Chat API. Quarkus is 
 
 ### Creating the Chat API
 
-Now that we have created the document ingestor, it's time to interact with our vector database and an LLM thanks to a REST API. Create the `ChatResource` under the `src/main/java` directory, inside the `ai.azure.openai.rag.workshop.backend` package. The `chat` method of the `ChatResource` class looks like the following:
+Now that we have created the document ingestor, it's time to interact with our vector database and an LLM thanks to a REST API. 
+
+![ChatResource and dependencies](./assets/class-diagram-rest.png)
+
+Create the `ChatResource` under the `src/main/java` directory, inside the `ai.azure.openai.rag.workshop.backend` package. The `chat` method of the `ChatResource` class looks like the following:
 
 ```java
 @Path("/chat")
@@ -29,6 +33,8 @@ public class ChatResource {
   }
 }
 ```
+
+![Model](./assets/class-diagram-model.png)
 
 Notice that the `chat` method takes a `ChatRequest` parameter. This is the object that will be sent by the UI to the API, containing the messagess of the conversation (`ChatRequestMessage`).
 
