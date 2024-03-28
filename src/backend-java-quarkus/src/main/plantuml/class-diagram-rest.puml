@@ -1,0 +1,18 @@
+@startuml
+skinparam dpi 600
+
+allow_mixing
+hide empty members
+'left to right direction
+
+'Image
+class ChatResource {
+  +ChatResponse chat(ChatRequest)
+}
+class ChatLanguageModelProducer
+class EmbeddingModelProducer
+class EmbeddingStoreProducer
+ChatResource <.. ChatLanguageModelProducer: @Inject
+ChatResource <.. EmbeddingModelProducer: @Inject
+ChatResource <.. EmbeddingStoreProducer: @Inject
+@enduml
