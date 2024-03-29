@@ -60,7 +60,7 @@ public class ChatResource {
   @Produces({"application/json"})
   public ChatResponse chat(ChatRequest chatRequest) {
 
-    String question = chatRequest.messages.get(0).content;
+    String question = chatRequest.messages.get(chatRequest.messages.size() - 1).content;
 
     // Embed the question (convert the user's question into vectors that represent the meaning)
     log.info("### Embed the question (convert the question into vectors that represent the meaning) using embeddedQuestion model");
