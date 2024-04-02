@@ -1,12 +1,12 @@
 ## Data ingestion
 
-We are going to ingest the content of PDF documents in the vector database. We'll use the service located under the `src/ingestion-java` folder of the project. This service will extract the text from the PDF files, and send it to the vector database.
+We are going to ingest the content of PDF documents in the vector database. We'll use the service located under the `src/ingestion` folder of the project. This service will extract the text from the PDF files, and send it to the vector database.
 
 The code of this is already written for you, but let's have a look at how it works.
 
 ### Creating the ingestion process
 
-The `src/ingestion-java/src/ingestion-java/src/main/java/ai/azure/openai/rag/workshop/ingestion/DocumentIngestor.java` Java class contains the code that is used to ingest the data in the vector database. It has a `public static void main` so it can be executed locally.
+The `src/ingestion/src/main/java/ai/azure/openai/rag/workshop/ingestion/DocumentIngestor.java` Java class contains the code that is used to ingest the data in the vector database. It has a `public static void main` so it can be executed locally.
 
 PDFs files, which are stored in the `data` folder, will be read by the `DocumentIngestor` using the command line. The PDF files provided here are for demo purpose only, and suggested prompts we'll use later in the workshop are based on those files.
 
@@ -33,7 +33,7 @@ public class DocumentIngestor {
 }
 ```
 
-LangChain4j uses [TinyLog](https://tinylog.org) as a logging framework. Create the `src/ingestion-java/src/main/resources/tinylog.properties` and set the log level to `info` (you can also set it to `debug` if you want more logs):
+LangChain4j uses [TinyLog](https://tinylog.org) as a logging framework. Create the `src/ingestion/src/main/resources/tinylog.properties` and set the log level to `info` (you can also set it to `debug` if you want more logs):
 
 ```properties
 writer.level = info
@@ -41,7 +41,7 @@ writer.level = info
 
 #### Setup the Qadrant client
 
-Now that we have the `DocumentIngestor` class, we need to setup the Qdrant client to interact with the vector database. We'll use the `QdrantEmbeddingStore` class from LangChain4j to interact with Qdrant. Notice the name of the collection (`rag-workshop-collection`), the port (`localhost` as Qdrant is running locally) and th GRPC port (`6334`):
+Now that we have the `DocumentIngestor` class, we need to setup the Qdrant client to interact with the vector database. We'll use the `QdrantEmbeddingStore` class from LangChain4j to interact with Qdrant. Notice the name of the collection (`rag-workshop-collection`), the port (`localhost` as Qdrant is running locally) and the GRPC port (`6334`):
 
 ```java
 public class DocumentIngestor {
