@@ -4,7 +4,7 @@ We'll start the code by creating the Chat API. This API will implement the [Chat
 
 ### Introducing Quarkus
 
-We'll be using [Quarkus](https://quarkus.io) to create our Chat API. Quarkus is a Kubernetes Native Java stack tailored for OpenJDK HotSpot and GraalVM, crafted from the best of breed Java libraries and standards. It's a great choice for microservices, and it's very fast and lightweight.
+We'll be using [Quarkus](https://quarkus.io) to create our Chat API.
 
 ### Creating the model producers
 
