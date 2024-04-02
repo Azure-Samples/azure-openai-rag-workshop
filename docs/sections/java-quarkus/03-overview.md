@@ -3,15 +3,15 @@
 The project template you've forked is a monorepo, which means it's a single repository that houses multiple projects. Here's how it's organized, focusing on the key files and directories:
 
 ```sh
-.devcontainer/             # Configuration for the development container
-data/                      # Sample PDFs to serve as custom data
-infra/                     # Templates and scripts for Docker and Azure infrastructure
-scripts/                   # Utility scripts for document ingestion
-src/                       # Source code for the application's services
-├── backend-java-quarkus/  # The Chat API developed with Quarkus
-├── frontend/              # The Chat website
-├── ingestion-java/        # Service for document ingestion
-pom.xml                    # Main Maven parent POM
+.devcontainer/  # Configuration for the development container
+data/           # Sample PDFs to serve as custom data
+infra/          # Templates and scripts for Docker and Azure infrastructure
+scripts/        # Utility scripts for document ingestion
+src/            # Source code for the application's services
+├── backend/    # The Chat API developed with Quarkus
+├── frontend/   # The Chat website
+├── ingestion/  # Service for document ingestion
+pom.xml         # Main Maven parent POM
 ```
 
 We're using Java and Quarkus for our APIs and website, and have set up a Maven parent POM to manage dependencies across all projects from a single place. Running `mvn install` at the root installs dependencies for all projects, simplifying monorepo management.
@@ -43,7 +43,6 @@ A chat request is sent in JSON format, and must contain at least the user's mess
   "session_state": null
 }
 ```
-
 
 #### The chat response
 
