@@ -1,10 +1,26 @@
 # Tasks
 
+## Devoxx Paris
+
+- [x] generate the template
+
+- [ ] check the ports for ingestion/chat services
+- [ ] dockerfiles in /backend and /ingestion
+- [ ] build&copy the frontend in java build
+- [ ] update index-data scripts for java
+
+
+- [ ] citations format
+- [ ] generate aka.ms link
+- [ ] update slides (new version?)
+
+## For later
+
+- [ ] rename ingestion to ingestion-node
+
 - [ ] /!\ Update Azure OpenAI version
 - [ ] Add troubleshooting for npm run dev backend if it fails (restart) timeout (node-qdrant)
   * try to reproduce!
-
-## For later
 
 - [ ] add notes if using OPENAI_TOKEN instead of AZURE OAI + KEY
 - [ ] add docker and troubleshooting section (full rebuild container) / codespaces
@@ -26,4 +42,4 @@
   * [ ] get started docs on how to setup the workshop and the proxy
   * [ ] allow to configure how many OpenAI deployments you want, with region and capacity
 
-- [ ] indexer issue with large PDFs? (needs testing)
+- [ ] ingestion issue with large PDFs? (needs testing)
