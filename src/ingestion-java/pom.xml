@@ -4,22 +4,33 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>ai.azure.openai.rag.workshop</groupId>
-  <artifactId>ingestion-java</artifactId>
+  <artifactId>ingestion-java-quarkus</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>Azure OpenAI RAG Workshop :: Data Ingestion</name>
+  <name>Azure OpenAI RAG Workshop :: Quarkus Ingestion</name>
 
   <properties>
     <compiler-plugin.version>3.12.1</compiler-plugin.version>
-    <resources-plugin.version>3.3.1</resources-plugin.version>
-    <exec-plugin.version>3.1.1</exec-plugin.version>
-    <langchain4j.version>0.29.1</langchain4j.version>
-    <tinylog.version>2.6.2</tinylog.version>
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+    <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+    <quarkus.platform.version>3.8.3</quarkus.platform.version>
+    <quarkiverse.langchain4j.version>0.9.1</quarkiverse.langchain4j.version>
+    <quarkiverse.quinoa.version>2.3.5</quarkiverse.quinoa.version>
+    <skipITs>true</skipITs>
+    <surefire-plugin.version>3.2.5</surefire-plugin.version>
+    <langchain4j.version>0.29.1</langchain4j.version>
   </properties>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>${quarkus.platform.group-id}</groupId>
+        <artifactId>${quarkus.platform.artifact-id}</artifactId>
+        <version>${quarkus.platform.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>dev.langchain4j</groupId>
         <artifactId>langchain4j-bom</artifactId>
@@ -31,12 +42,28 @@
   </dependencyManagement>
   <dependencies>
     <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-reactive</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-reactive-jsonb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-openapi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-arc</artifactId>
+    </dependency>
+    <dependency>
       <groupId>dev.langchain4j</groupId>
       <artifactId>langchain4j</artifactId>
     </dependency>
     <dependency>
       <groupId>dev.langchain4j</groupId>
-      <artifactId>langchain4j-open-ai</artifactId>
+      <artifactId>langchain4j-document-parser-apache-pdfbox</artifactId>
     </dependency>
     <dependency>
       <groupId>dev.langchain4j</groupId>
@@ -44,7 +71,7 @@
     </dependency>
     <dependency>
       <groupId>dev.langchain4j</groupId>
-      <artifactId>langchain4j-document-parser-apache-pdfbox</artifactId>
+      <artifactId>langchain4j-azure-open-ai</artifactId>
     </dependency>
     <dependency>
       <groupId>dev.langchain4j</groupId>
@@ -54,51 +81,93 @@
     <dependency>
       <groupId>org.tinylog</groupId>
       <artifactId>tinylog-impl</artifactId>
-      <version>${tinylog.version}</version>
+      <version>2.6.2</version>
     </dependency>
     <dependency>
       <groupId>org.tinylog</groupId>
       <artifactId>slf4j-tinylog</artifactId>
-      <version>${tinylog.version}</version>
+      <version>2.6.2</version>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-junit5</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>${resources-plugin.version}</version>
+        <groupId>${quarkus.platform.group-id}</groupId>
+        <artifactId>quarkus-maven-plugin</artifactId>
+        <version>${quarkus.platform.version}</version>
+        <extensions>true</extensions>
         <executions>
           <execution>
-            <id>copy-pdfs-to-resources</id>
-            <phase>generate-sources</phase>
             <goals>
-              <goal>copy-resources</goal>
+              <goal>build</goal>
+              <goal>generate-code</goal>
+              <goal>generate-code-tests</goal>
             </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/classes</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${basedir}/../../data</directory>
-                  <includes>
-                    <include>*.pdf</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
           </execution>
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>${exec-plugin.version}</version>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${compiler-plugin.version}</version>
         <configuration>
-          <mainClass>ai.azure.openai.rag.workshop.ingestion.DocumentIngestor</mainClass>
+          <compilerArgs>
+            <arg>-parameters</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${surefire-plugin.version}</version>
+        <configuration>
+          <systemPropertyVariables>
+            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+            <maven.home>${maven.home}</maven.home>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${surefire-plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <systemPropertyVariables>
+            <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+            <maven.home>${maven.home}</maven.home>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>
   </build>
-
+  <profiles>
+    <profile>
+      <id>native</id>
+      <activation>
+        <property>
+          <name>native</name>
+        </property>
+      </activation>
+      <properties>
+        <skipITs>false</skipITs>
+        <quarkus.package.type>native</quarkus.package.type>
+      </properties>
+    </profile>
+  </profiles>
 </project>

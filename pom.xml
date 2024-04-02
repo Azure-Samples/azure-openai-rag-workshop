@@ -10,7 +10,7 @@
   <name>Azure OpenAI RAG Workshop</name>
 
   <modules>
-    <module>src/backend</module>
-    <module>src/ingestion</module>
+    <module>src/backend-java-quarkus</module>
+    <module>src/ingestion-java</module>
   </modules>
 </project>
