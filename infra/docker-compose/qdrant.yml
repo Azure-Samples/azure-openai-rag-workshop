@@ -3,7 +3,7 @@ services:
     image: "qdrant/qdrant:v1.8.2"
     ports:
       - "6333:6333"
-      - "6334:6334"
+      - "6333:6333"
 
 # open http://localhost:6333/dashboard
 # curl http://localhost:6333/collections

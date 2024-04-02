@@ -12,7 +12,7 @@ public class EmbeddingStoreProducer {
     return QdrantEmbeddingStore.builder()
       .collectionName("rag-workshop-collection")
       .host("localhost")
-      .port(6334)
+      .port(6333)
       .build();
   }
 }

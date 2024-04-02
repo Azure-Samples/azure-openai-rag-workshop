@@ -35,7 +35,7 @@ public class DocumentIngestor {
     EmbeddingStore<TextSegment> qdrantEmbeddingStore = QdrantEmbeddingStore.builder()
       .collectionName("rag-workshop-collection")
       .host("localhost")
-      .port(6334)
+      .port(6333)
       .build();
 
     // Load all the PDFs, compute embeddings and store them in Qdrant store
