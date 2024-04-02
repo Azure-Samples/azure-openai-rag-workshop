@@ -230,7 +230,7 @@ scripts/        # Utility scripts for document ingestion
 src/            # Source code for the application's services
 |- backend/     # The Chat API
 |- frontend/    # The Chat website
-|- ingestion/     # Service for document ingestion
+|- ingestion/   # Service for document ingestion
 package.json    # Configuration for NPM workspace
 ```
 
@@ -640,7 +640,6 @@ In the **Search management** section on the left, select the **Indexes** tab. Yo
 You can select that index and browse it. For example, in the **Search explorer** tab, if you ingested the original PDF files that were about the *Contoso Real Estate* company, you can search for `rentals` and see the results:
 
 ![Screenshot of the search results in the index](./assets/azure-ai-search-results.png)
-
 
 ---
 
