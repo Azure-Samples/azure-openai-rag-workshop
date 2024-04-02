@@ -39,7 +39,7 @@ For this workshop, we'll use Qdrant as our vector database as it works well with
 To start Qdrant locally we have setup a Docker Compose file. You can use the following command from the root of the project:
 
 ```bash
-docker compose -f infra/docker-compose/qdrant.yml up
+docker compose up qdrant
 ```
 
 This will pull the Docker image, start Qdrant on port `6333` and mount a volume to store the data in the `.qdrant` folder. You should see logs that look like:
@@ -63,5 +63,5 @@ You can test that Qdrant is running by opening the following URL in your browser
 Once you tested that Qdrant is running correctly, you can stop it by pressing `CTRL+C` in your terminal or executing the following command from the root directory of the project:
 
 ```bash
-docker compose -f infra/docker-compose/qdrant.yml down
+docker compose down qdrant
 ```
