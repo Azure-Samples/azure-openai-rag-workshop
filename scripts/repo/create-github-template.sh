@@ -258,59 +258,7 @@ declare module 'fastify' {
 ##############################################################################
 # Quarkus + Qdrant
 ##############################################################################
-
-echo -e "package ai.azure.openai.rag.workshop.backend.rest;
-
-import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.message.AiMessage;
-import dev.langchain4j.data.message.ChatMessage;
-import dev.langchain4j.data.message.SystemMessage;
-import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.model.azure.AzureOpenAiChatModel;
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel;
-import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.model.output.Response;
-import dev.langchain4j.store.embedding.EmbeddingMatch;
-import dev.langchain4j.store.embedding.EmbeddingStore;
-import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import static java.time.Duration.ofSeconds;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-
-@Path("/chat")
-public class ChatResource {
-
-  private static final Logger log = LoggerFactory.getLogger(ChatResource.class);
-
-  @Inject
-  EmbeddingModel embeddingModel;
-
-  @Inject
-  EmbeddingStore<TextSegment> embeddingStore;
-
-  @Inject
-  ChatLanguageModel chatLanguageModel;
-
-  @POST
-  @Consumes({"application/json"})
-  @Produces({"application/json"})
-  public ChatResponse chat(ChatRequest chatRequest) {
-
-    // TODO: implement Retrieval Augmented Generation (RAG) here
-
-  }
-}
-" > src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/rest/ChatResource.java
+rm -rf src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/rest/ChatResource.java
 
 echo -e "package ai.azure.openai.rag.workshop.backend.configuration;
 
