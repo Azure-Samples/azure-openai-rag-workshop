@@ -1,13 +1,13 @@
 ## Data ingestion
 
 We are going to ingest the content of PDF documents in the vector database. We'll use a
-tool located in the `src/indexer` folder of the project. This tool will extract the text from the PDF files, and send it to the vector database.
+tool located in the `src/ingestion` folder of the project. This tool will extract the text from the PDF files, and send it to the vector database.
 
 The code of this is already written for you, but let's have a look at how it works.
 
 ### The ingestion process
 
-The `src/indexer/src/lib/indexer.ts` file contains the code that is used to ingest the data in the vector database. This runs inside a Node.js application, and deployed to Azure Container Apps.
+The `src/ingestion/src/lib/indexer.ts` file contains the code that is used to ingest the data in the vector database. This runs inside a Node.js application, and deployed to Azure Container Apps.
 
 PDFs files, which are stored in the `data` folder, will be sent to this Node.js application using the command line. The files provided here are for demo purpose only, and suggested prompts we'll use later in the workshop are based on those files.
 
@@ -21,7 +21,7 @@ PDFs files, which are stored in the `data` folder, will be sent to this Node.js 
 
 The content the PDFs files will be used as part of the *Retriever* component of the RAG architecture, to generate answers to your questions using the GPT model.
 
-Text from the PDF files is extracted in the `src/indexer/src/lib/document-processor.ts` file, using the [pdf.js library](https://mozilla.github.io/pdf.js/). You can have a look at code of the `extractTextFromPdf()` function if you're curious about how it works.
+Text from the PDF files is extracted in the `src/ingestion/src/lib/document-processor.ts` file, using the [pdf.js library](https://mozilla.github.io/pdf.js/). You can have a look at code of the `extractTextFromPdf()` function if you're curious about how it works.
 
 #### Computing the embeddings
 
@@ -58,13 +58,13 @@ await this.qdrantClient.upsert(indexName, { points });
 
 ### Running the ingestion process
 
-Let's now execute this process. First, you need to make sure you have Qdrant and the indexer service running locally. We'll use Docker Compose to run both services at the same time. Run the following command in a terminal (**make sure you stopped the Qdrant container before!**):
+Let's now execute this process. First, you need to make sure you have Qdrant and the ingestion service running locally. We'll use Docker Compose to run both services at the same time. Run the following command in a terminal (**make sure you stopped the Qdrant container before!**):
 
 ```bash
 docker compose up
 ```
 
-This will start both Qdrant and the indexer service locally. This may takes a few minutes the first time, as Docker needs to download the images.
+This will start both Qdrant and the ingestion service locally. This may takes a few minutes the first time, as Docker needs to download the images.
 
 <div class="tip" data-title="tip">
 
@@ -78,7 +78,7 @@ Once all services are started, you can run the ingestion process by opening a ne
 ./scripts/index-data.sh
 ```
 
-![Screenshot of the indexer CLI](./assets/indexer-cli.png)
+![Screenshot of the ingestion CLI](./assets/ingestion-cli.png)
 
 Once this process is executed, a new collection will be available in your database, where you can see the documents that were ingested.
 

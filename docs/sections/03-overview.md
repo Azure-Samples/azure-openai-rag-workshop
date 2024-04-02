@@ -10,7 +10,7 @@ scripts/        # Utility scripts for document ingestion
 src/            # Source code for the application's services
 |- backend/     # The Chat API
 |- frontend/    # The Chat website
-|- indexer/     # Service for document ingestion
+|- ingestion/   # Service for document ingestion
 package.json    # Configuration for NPM workspace
 ```
 

@@ -13,8 +13,8 @@ param resourceGroupName string = ''
 param frontendName string = 'frontend'
 param backendApiName string = 'backend'
 param backendApiImageName string = ''
-param indexerApiName string = 'indexer'
-param indexerApiImageName string = ''
+param ingestionApiName string = 'ingestion'
+param ingestionApiImageName string = ''
 param qdrantName string = 'qdrant'
 param qdrantImageName string = 'docker.io/qdrant/qdrant:v1.7.3'
 param indexName string // Set in main.parameters.json
@@ -178,14 +178,14 @@ module backendApi './core/host/container-app.bicep' = {
   }
 }
 
-// The indexer API
-module indexerApi './core/host/container-app.bicep' = {
-  name: 'indexer-api'
+// The ingestion API
+module ingestionApi './core/host/container-app.bicep' = {
+  name: 'ingestion-api'
   scope: resourceGroup
   params: {
-    name: !empty(indexerApiName) ? indexerApiName : '${abbrs.appContainerApps}indexer-${resourceToken}'
+    name: !empty(ingestionApiName) ? ingestionApiName : '${abbrs.appContainerApps}ingestion-${resourceToken}'
     location: location
-    tags: union(tags, { 'azd-service-name': indexerApiName })
+    tags: union(tags, { 'azd-service-name': ingestionApiName })
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
     managedIdentity: true
@@ -234,7 +234,7 @@ module indexerApi './core/host/container-app.bicep' = {
       name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
       secretRef: 'appinsights-cs'
     }] : [])
-    imageName: !empty(indexerApiImageName) ? indexerApiImageName : 'nginx:latest'
+    imageName: !empty(ingestionApiImageName) ? ingestionApiImageName : 'nginx:latest'
     targetPort: 3001
   }
 }
@@ -380,33 +380,33 @@ module searchRoleBackendApi 'core/security/role.bicep' = if (useAzureAISearch) {
   }
 }
 
-module openAiRoleIndexerApi 'core/security/role.bicep' = if (empty(openAiUrl)) {
+module openAiRoleIngestionApi 'core/security/role.bicep' = if (empty(openAiUrl)) {
   scope: resourceGroup
-  name: 'openai-role-indexer'
+  name: 'openai-role-ingestion'
   params: {
-    principalId: indexerApi.outputs.identityPrincipalId
+    principalId: ingestionApi.outputs.identityPrincipalId
     // Cognitive Services OpenAI User
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
     principalType: 'ServicePrincipal'
   }
 }
 
-module searchContribRoleIndexerApi 'core/security/role.bicep' = if (useAzureAISearch) {
+module searchContribRoleIngestionApi 'core/security/role.bicep' = if (useAzureAISearch) {
   scope: resourceGroup
-  name: 'search-contrib-role-indexer'
+  name: 'search-contrib-role-ingestion'
   params: {
-    principalId: indexerApi.outputs.identityPrincipalId
+    principalId: ingestionApi.outputs.identityPrincipalId
     // Search Index Data Contributor
     roleDefinitionId: '8ebe5a00-799e-43f5-93ac-243d3dce84a7'
     principalType: 'ServicePrincipal'
   }
 }
 
-module searchSvcContribRoleIndexerApi 'core/security/role.bicep' = if (useAzureAISearch) {
+module searchSvcContribRoleIngestionApi 'core/security/role.bicep' = if (useAzureAISearch) {
   scope: resourceGroup
-  name: 'search-svccontrib-role-indexer'
+  name: 'search-svccontrib-role-ingestion'
   params: {
-    principalId: indexerApi.outputs.identityPrincipalId
+    principalId: ingestionApi.outputs.identityPrincipalId
     // Search Service Contributor
     roleDefinitionId: '7ca78c08-252a-4471-8644-bb5ff32d4ba0'
     principalType: 'ServicePrincipal'
@@ -432,4 +432,4 @@ output QDRANT_URL string = qdrantUrl
 output INDEX_NAME string =  indexName
 output FRONTEND_URI string = frontend.outputs.uri
 output BACKEND_API_URI string = backendApi.outputs.uri
-output INDEXER_API_URI string = indexerApi.outputs.uri
+output INGESTION_API_URI string = ingestionApi.outputs.uri

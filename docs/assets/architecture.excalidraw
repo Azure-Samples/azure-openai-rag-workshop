@@ -429,11 +429,11 @@
       "locked": false,
       "fontSize": 20,
       "fontFamily": 1,
-      "text": "Data Ingestion\n(indexer)",
+      "text": "Data Ingestion\n(ingestion)",
       "textAlign": "center",
       "verticalAlign": "middle",
       "containerId": "iqwGdepLnpyRiN-yfSBHh",
-      "originalText": "Data Ingestion\n(indexer)",
+      "originalText": "Data Ingestion\n(ingestion)",
       "lineHeight": 1.25,
       "baseline": 43
     },

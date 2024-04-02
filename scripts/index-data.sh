@@ -8,11 +8,11 @@ fi
 
 echo 'Installing dependencies and building CLI'
 npm install
-npm run build --workspace=indexer
+npm run build --workspace=ingestion
 
 echo 'Running "index-files" CLI tool'
 npx index-files \
   --wait \
-  --indexer-url "${INDEXER_API_URI:-http://localhost:3001}" \
+  --indexer-url "${INGESTION_API_URI:-http://localhost:3001}" \
   --index-name "${INDEX_NAME:-kbindex}" \
   ./data/*.pdf

@@ -30,8 +30,8 @@ services:
     docker:
       context: ../..
 
-  indexer:
-    project: ./src/indexer
+  ingestion:
+    project: ./src/ingestion
     language: ts
     host: containerapp
     docker:

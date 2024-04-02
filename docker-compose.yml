@@ -10,9 +10,9 @@ services:
     ports:
       - 3000:3000
 
-  indexer:
+  ingestion:
     build:
-      dockerfile: ./src/indexer/Dockerfile
+      dockerfile: ./src/ingestion/Dockerfile
     environment:
       - AZURE_OPENAI_URL=${AZURE_OPENAI_URL}
       - QDRANT_URL=http://qdrant:6333

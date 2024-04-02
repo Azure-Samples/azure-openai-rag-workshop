@@ -30,7 +30,7 @@
   "author": "Microsoft",
   "license": "MIT",
   "workspaces": [
-    "src/indexer",
+    "src/ingestion",
     "src/backend",
     "src/frontend"
   ],

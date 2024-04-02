@@ -5,9 +5,9 @@
 FROM node:20-alpine as build
 WORKDIR /app
 COPY ./package*.json ./
-COPY ./src/indexer ./src/indexer
+COPY ./src/ingestion ./src/ingestion
 RUN npm ci --cache /tmp/empty-cache
-RUN npm run build --workspace=indexer
+RUN npm run build --workspace=ingestion
 
 # Run Node.js app
 # ------------------------------------
@@ -16,8 +16,8 @@ ENV NODE_ENV=production
 
 WORKDIR /app
 COPY ./package*.json ./
-COPY ./src/indexer/package.json ./src/indexer/
-RUN npm ci --omit=dev --workspace=indexer --cache /tmp/empty-cache
-COPY --from=build app/src/indexer/dist src/indexer/dist
+COPY ./src/ingestion/package.json ./src/ingestion/
+RUN npm ci --omit=dev --workspace=ingestion --cache /tmp/empty-cache
+COPY --from=build app/src/ingestion/dist src/ingestion/dist
 EXPOSE 3001
-CMD [ "npm", "start", "--workspace=indexer" ]
+CMD [ "npm", "start", "--workspace=ingestion" ]

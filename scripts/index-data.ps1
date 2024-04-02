@@ -14,8 +14,8 @@ foreach ($line in $output) {
   [Environment]::SetEnvironmentVariable($name, $value)
 }
 
-if ([string]::IsNullOrEmpty($env:INDEXER_API_URI)) {
-  [Environment]::SetEnvironmentVariable('INDEXER_API_URI', 'http://localhost:3001')
+if ([string]::IsNullOrEmpty($env:INGESTION_API_URI)) {
+  [Environment]::SetEnvironmentVariable('INGESTION_API_URI', 'http://localhost:3001')
 }
 
 if ([string]::IsNullOrEmpty($env:INDEX_NAME)) {
@@ -24,8 +24,8 @@ if ([string]::IsNullOrEmpty($env:INDEX_NAME)) {
 
 Write-Host 'Installing dependencies and building CLI'
 npm install
-npm run build --workspace=indexer
+npm run build --workspace=ingestion
 
 Write-Host 'Running "index-files" CLI tool'
 $files = Get-Item "data/*.pdf"
-npx index-files --wait --indexer-url "$env:INDEXER_API_URI" --index-name "$env:INDEX_NAME" $files
+npx index-files --wait --indexer-url "$env:INGESTION_API_URI" --index-name "$env:INDEX_NAME" $files
