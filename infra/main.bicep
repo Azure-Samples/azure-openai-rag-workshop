@@ -48,7 +48,7 @@ param frontendLocation string = 'eastus2'
 param chatGptDeploymentName string // Set in main.parameters.json
 param chatGptDeploymentCapacity int = 30
 param chatGptModelName string = 'gpt-35-turbo'
-param chatGptModelVersion string = '0613'
+param chatGptModelVersion string = '0301'
 param embeddingDeploymentName string = 'embedding'
 param embeddingDeploymentCapacity int = 30
 param embeddingModelName string = 'text-embedding-ada-002'
