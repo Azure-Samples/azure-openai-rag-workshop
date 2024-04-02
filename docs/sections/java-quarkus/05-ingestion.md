@@ -149,10 +149,10 @@ curl http://localhost:6333/collections
 curl http://localhost:6333/collections/rag-workshop-collection | jq
 ```
 
-Once Qdrant is started and the collection is created, you can run the ingestion process by opening a new terminal and running the following Maven command under the `src/ingestion-java` folder. This will compile the code and run the ingestion process by running `DocumentIngestor`:
+Once Qdrant is started and the collection is created, you can run the ingestion process by opening a new terminal and running the following Maven command under the `src/ingestion-java` folder. This will compile the code and run the Quarkus service in development mode, which will listen for incoming requests on port 3001:
 
 ```bash
-mvn clean compile exec:java
+./mvnw clean compile quarkus:dev
 ```
 
 <div class="tip" data-title="tip">
