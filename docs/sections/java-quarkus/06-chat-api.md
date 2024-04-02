@@ -48,7 +48,7 @@ And let's finish with configuring the `EmbeddingStoreProducer`, using the Qdrant
     return QdrantEmbeddingStore.builder()
       .collectionName("rag-workshop-collection")
       .host("localhost")
-      .port(6333)
+      .port(6334)
       .build();
   }
 ```

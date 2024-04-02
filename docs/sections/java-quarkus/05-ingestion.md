@@ -41,7 +41,7 @@ writer.level = info
 
 #### Setup the Qadrant client
 
-Now that we have the `DocumentIngestor` class, we need to setup the Qdrant client to interact with the vector database. We'll use the `QdrantEmbeddingStore` class from LangChain4j to interact with Qdrant. Notice the name of the collection (`rag-workshop-collection`), the port (`localhost` as Qdrant is running locally) and th GRPC port (`6333`):
+Now that we have the `DocumentIngestor` class, we need to setup the Qdrant client to interact with the vector database. We'll use the `QdrantEmbeddingStore` class from LangChain4j to interact with Qdrant. Notice the name of the collection (`rag-workshop-collection`), the port (`localhost` as Qdrant is running locally) and th GRPC port (`6334`):
 
 ```java
 public class DocumentIngestor {
@@ -53,7 +53,7 @@ public class DocumentIngestor {
     EmbeddingStore<TextSegment> qdrantEmbeddingStore = QdrantEmbeddingStore.builder()
       .collectionName("rag-workshop-collection")
       .host("localhost")
-      .port(6333)
+      .port(6334)
       .build();
 
     // Load all the PDFs, compute embeddings and store them in Qdrant store
