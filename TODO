@@ -1,14 +1,13 @@
 # Tasks
 
 ## Devoxx Paris
-
 - [x] generate the template
 
+- [ ] simplify ingestion: just run the script and explain parts of the code
 - [ ] check the ports for ingestion/chat services
 - [ ] dockerfiles in /backend and /ingestion
-- [ ] build&copy the frontend in java build
 - [ ] update index-data scripts for java
-
+- [ ] build&copy the frontend in java build
 
 - [ ] citations format
 - [ ] generate aka.ms link
