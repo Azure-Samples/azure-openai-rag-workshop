@@ -71,7 +71,6 @@ If you want to work locally without using a dev container, you need to clone the
 | Azure CLI     | [Get Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli#install) |
 | GitHub CLI    | [Get GitHub CLI](https://cli.github.com/manual/installation) |
 | Azure Developer CLI | [Get Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd) |
-| GitHub CLI    | [Get GitHub CLI](https://cli.github.com/manual/installation) |
 | Bash v3+      | [Get bash](https://www.gnu.org/software/bash/) (Windows users can use **Git bash** that comes with Git) |
 | A code editor | [Get VS Code](https://aka.ms/get-vscode) |
 

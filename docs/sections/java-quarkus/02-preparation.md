@@ -59,3 +59,28 @@ Once the container is ready, you will see "Dev Container: OpenAI Workshop" in th
 ![Dev Container status in VS Code](./assets/vscode-dev-container-status.png)
 
 
+#### [optional] Working locally without the dev container
+
+If you want to work locally without using a dev container, you need to clone the project and install the following tools:
+
+| | |
+|---------------|--------------------------------|
+| Git           | [Get Git](https://git-scm.com) |
+| Docker v20+   | [Get Docker](https://docs.docker.com/get-docker) |
+| Java v17+     | [Get Java](https://www.java.com/download/) |
+| GitHub CLI    | [Get GitHub CLI](https://cli.github.com/manual/installation) |
+| Azure Developer CLI | [Get Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd) |
+| Bash v3+      | [Get bash](https://www.gnu.org/software/bash/) (Windows users can use **Git bash** that comes with Git) |
+| A code editor | [Get VS Code](https://aka.ms/get-vscode) |
+
+You can test your setup by opening a terminal and typing:
+
+```sh
+git --version
+docker --version
+java --version
+gh --version
+bash --version
+gh --version
+azd version
+```
