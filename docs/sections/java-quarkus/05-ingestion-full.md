@@ -182,7 +182,7 @@ public class DocumentIngestor {
 Let's now execute this process. First, you need to make sure you have Qdrant running locally and all setup. Run the following command in a terminal to start up Qdrant (**make sure you stopped the Qdrant container before!**):
 
 ```bash
-docker compose -f infra/docker-compose/qdrant.yml up
+docker compose up qdrant
 ```
 
 This will start Qdrant locally. Make sure you can access the Qdrant dashboard at the URL http://localhost:6333/dashboard. Then, create a new collection named `rag-workshop-collection` with the following cUrl command:
