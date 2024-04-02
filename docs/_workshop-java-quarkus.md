@@ -30,7 +30,11 @@ include::sections/java-quarkus/06-chat-api.md[]
 
 ---
 
-include::sections/java-quarkus/09-azure.md[]
+include::sections/09-azure.md[]
+
+---
+
+include::sections/10-deployment.md[]
 
 ---
 
