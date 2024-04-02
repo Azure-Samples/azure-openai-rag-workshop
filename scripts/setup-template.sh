@@ -41,7 +41,7 @@ services:
       - 3001:3001
 
   qdrant:
-    image: docker.io/qdrant/qdrant:v1.7.3
+    image: docker.io/qdrant/qdrant:v1.8.2
     ports:
       - 6333:6333
     volumes:

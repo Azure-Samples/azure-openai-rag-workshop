@@ -16,7 +16,7 @@ param backendApiImageName string = ''
 param ingestionApiName string = 'ingestion'
 param ingestionApiImageName string = ''
 param qdrantName string = 'qdrant'
-param qdrantImageName string = 'docker.io/qdrant/qdrant:v1.7.3'
+param qdrantImageName string = 'docker.io/qdrant/qdrant:v1.8.2'
 param indexName string // Set in main.parameters.json
 
 // The free tier does not support managed identity (required) or semantic search (optional)
