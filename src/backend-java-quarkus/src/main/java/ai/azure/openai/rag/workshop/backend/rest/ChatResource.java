@@ -87,12 +87,6 @@ public class ChatResource {
     Response<AiMessage> response = chatLanguageModel.generate(chatMessages);
 
     // Return the response
-    ChatResponse chatResponse = new ChatResponse();
-    ChatResponse.Choice choice = new ChatResponse.Choice();
-    choice.index = 0;
-    choice.message = new ai.azure.openai.rag.workshop.backend.rest.ChatMessage();
-    choice.message.content = response.content().text();
-    chatResponse.choices.add(choice);
-    return chatResponse;
+    return ChatResponse.fromMessage(response.content().text());
   }
 }
