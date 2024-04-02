@@ -44,6 +44,7 @@ services:
     image: docker.io/qdrant/qdrant:v1.8.2
     ports:
       - 6333:6333
+      - 6334:6334
     volumes:
       - .qdrant:/qdrant/storage:z
 " > docker-compose.yml
