@@ -6,20 +6,13 @@ import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.model.azure.AzureOpenAiChatModel;
 import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.output.Response;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingStore;
-import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import static java.time.Duration.ofSeconds;
+import jakarta.ws.rs.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,5 +81,10 @@ public class ChatResource {
 
     // Return the response
     return ChatResponse.fromMessage(response.content().text());
+  }
+
+  @GET
+  public String hello() {
+    return "Hello from ChatResource!";
   }
 }
