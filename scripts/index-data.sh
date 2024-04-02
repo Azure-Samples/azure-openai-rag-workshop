@@ -13,6 +13,6 @@ npm run build --workspace=ingestion
 echo 'Running "index-files" CLI tool'
 npx index-files \
   --wait \
-  --indexer-url "${INGESTION_API_URI:-http://localhost:3001}" \
+  --ingestion-url "${INGESTION_API_URI:-http://localhost:3001}" \
   --index-name "${INDEX_NAME:-kbindex}" \
   ./data/*.pdf

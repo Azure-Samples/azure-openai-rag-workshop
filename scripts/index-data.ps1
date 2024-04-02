@@ -28,4 +28,4 @@ npm run build --workspace=ingestion
 
 Write-Host 'Running "index-files" CLI tool'
 $files = Get-Item "data/*.pdf"
-npx index-files --wait --indexer-url "$env:INGESTION_API_URI" --index-name "$env:INDEX_NAME" $files
+npx index-files --wait --ingestion-url "$env:INGESTION_API_URI" --index-name "$env:INDEX_NAME" $files

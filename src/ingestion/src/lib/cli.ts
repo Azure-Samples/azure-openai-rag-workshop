@@ -7,7 +7,7 @@ import * as dotenv from 'dotenv';
 import mime from 'mime';
 
 export interface IndexFilesOptions {
-  indexerUrl: string;
+  ingestionUrl: string;
   indexName?: string;
   category?: string;
   wait: boolean;
@@ -25,16 +25,16 @@ export async function run(arguments_: string[] = process.argv) {
     .name('index-files')
     .arguments('<files...>')
     .description('CLI utility to send files to an ingestion service instance')
-    .option('-u, --indexer-url <url>', 'The ingestion service URL', 'http://localhost:3001')
+    .option('-u, --ingestion-url <url>', 'The ingestion service URL', 'http://localhost:3001')
     .option('-i, --index-name <name>', 'The name of the target index', process.env.INDEX_NAME || 'kbindex')
     .option('-c, --category <name>', 'Set document category')
     .option('-w, --wait', 'Wait for the ingestion to finish processing the files', false)
     .version(packageJson.version, '-v, --version', 'Show the current version')
     .showHelpAfterError()
     .action(async (files: string[], options: OptionValues) => {
-      const { indexerUrl, indexName, wait } = options;
+      const { ingestionUrl, indexName, wait } = options;
       await indexFiles(files, {
-        indexerUrl,
+        ingestionUrl,
         indexName,
         wait,
       });
@@ -63,8 +63,8 @@ export async function indexFiles(files: string[], options: IndexFilesOptions) {
 }
 
 async function ensureSearchIndex(options: IndexFilesOptions) {
-  const { indexerUrl, indexName } = options;
-  const response = await fetch(`${indexerUrl}/indexes`, {
+  const { ingestionUrl, indexName } = options;
+  const response = await fetch(`${ingestionUrl}/indexes`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ async function ensureSearchIndex(options: IndexFilesOptions) {
 
 async function indexFile(file: string, options: IndexFilesOptions) {
   console.log(`Indexing file "${file}"...`);
-  const { indexerUrl, indexName, category, wait } = options;
+  const { ingestionUrl, indexName, category, wait } = options;
   const formData = new FormData();
   const fileIndexOptions = {
     category,
@@ -91,7 +91,7 @@ async function indexFile(file: string, options: IndexFilesOptions) {
   const fileData = await fs.readFile(file);
   formData.append('file', new Blob([fileData], { type }), file);
   formData.append('options', JSON.stringify(fileIndexOptions));
-  const response = await fetch(`${indexerUrl}/indexes/${indexName}/files`, {
+  const response = await fetch(`${ingestionUrl}/indexes/${indexName}/files`, {
     method: 'POST',
     body: formData,
   });
