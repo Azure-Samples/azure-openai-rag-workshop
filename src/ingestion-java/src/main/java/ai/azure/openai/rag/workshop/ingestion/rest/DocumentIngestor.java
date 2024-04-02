@@ -47,6 +47,10 @@ public class DocumentIngestor {
           log.info("### Split document into segments 100 tokens each");
           DocumentSplitter splitter = DocumentSplitters.recursive(2000, 200);
           List<TextSegment> segments = splitter.split(document);
+          for (TextSegment segment : segments) {
+            log.debug("# Segment size: {}", segment.text().length());
+            segment.metadata().add("filename", fv.getFileName());
+          }
           log.debug("# Number of segments: {}", segments.size());
 
           log.info("### Embed segments (convert them into vectors that represent the meaning) using embedding model");
