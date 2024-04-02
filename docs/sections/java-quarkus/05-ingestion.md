@@ -4,11 +4,11 @@ We are going to ingest the content of PDF documents in the vector database. We'l
 
 The code of this is already written for you, but let's have a look at how it works.
 
-### Creating the ingestion process
+### The ingestion process
 
-The `src/ingestion/src/main/java/ai/azure/openai/rag/workshop/ingestion/DocumentIngestor.java` Java class contains the code that is used to ingest the data in the vector database. It has a `public static void main` so it can be executed locally.
+The `src/ingestion/src/main/java/ai/azure/openai/rag/workshop/ingestion/rest/DocumentIngestor.java` Java class contains the code that is used to ingest the data in the vector database. It creates the `/ingest` endpoint that will be used to trigger the ingestion process.
 
-PDFs files, which are stored in the `data` folder, will be read by the `DocumentIngestor` using the command line. The PDF files provided here are for demo purpose only, and suggested prompts we'll use later in the workshop are based on those files.
+PDFs files, which are stored in the `data` folder, will be sent to this endpoint using the command line. The PDF files provided here are for demo purpose only, and suggested prompts we'll use later in the workshop are based on those files.
 
 <div class="tip" data-title="tip">
 
@@ -16,163 +16,51 @@ PDFs files, which are stored in the `data` folder, will be read by the `Document
 
 </div>
 
-Create the `DocumentIngestor` under the `src/main/java` directory, inside the `ai.azure.openai.rag.workshop.ingestion` package. The `main` method of the `DocumentIngestor` class looks like the following:
+The ingestion process is built with the following code:
 
 ```java
-public class DocumentIngestor {
+// Extract the text from the PDF files
+ApachePdfBoxDocumentParser pdfParser = new ApachePdfBoxDocumentParser();
+Document document = pdfParser.parse(fv.getFileItem().getInputStream());
 
-  private static final Logger log = LoggerFactory.getLogger(DocumentIngestor.class);
-
-  public static void main(String[] args) {
-    
-    // Setup Qdrant store for embeddings storage and retrieval
-    // Load all the PDFs, compute embeddings and store them in Qdrant store
-    
-    System.exit(0);
-  }
+// Split the document into smaller segments
+DocumentSplitter splitter = DocumentSplitters.recursive(2000, 200);
+List<TextSegment> segments = splitter.split(document);
+for (TextSegment segment : segments) {
+  segment.metadata().add("filename", fv.getFileName());
 }
-```
 
-LangChain4j uses [TinyLog](https://tinylog.org) as a logging framework. Create the `src/ingestion/src/main/resources/tinylog.properties` and set the log level to `info` (you can also set it to `debug` if you want more logs):
+// Compute the embeddings
+List<Embedding> embeddings = embeddingModel.embedAll(segments).content();
 
-```properties
-writer.level = info
-```
-
-#### Setup the Qadrant client
-
-Now that we have the `DocumentIngestor` class, we need to setup the Qdrant client to interact with the vector database. We'll use the `QdrantEmbeddingStore` class from LangChain4j to interact with Qdrant. Notice the name of the collection (`rag-workshop-collection`), the port (`localhost` as Qdrant is running locally) and the GRPC port (`6334`):
-
-```java
-public class DocumentIngestor {
-
-  public static void main(String[] args) {
-
-    // Setup Qdrant store for embeddings storage and retrieval
-    log.info("### Setup Qdrant store for embeddings storage and retrieval");
-    EmbeddingStore<TextSegment> qdrantEmbeddingStore = QdrantEmbeddingStore.builder()
-      .collectionName("rag-workshop-collection")
-      .host("localhost")
-      .port(6334)
-      .build();
-
-    // Load all the PDFs, compute embeddings and store them in Qdrant store
-
-    System.exit(0);
-  }
-}
+// Store the embeddings in Qdrant
+embeddingStore.addAll(embeddings, segments);
 ```
 
 #### Reading the PDF files content
 
-The content of the PDFs files will be used as part of the *Retriever* component of the RAG architecture, to generate answers to your questions using the GPT model. To read these files we need to iterate through the PDF files located under the classpath. We'll use the `findPdfFiles()` method to get the list of PDF files and then load them with the `FileSystemDocumentLoader` from LangChain4j:
+The content the PDFs files will be used as part of the *Retriever* component of the RAG architecture, to generate answers to your questions using the GPT model.
 
-```java
-public class DocumentIngestor {
-
-  public static void main(String[] args) {
-
-    // Setup Qdrant store for embeddings storage and retrieval
-
-    // Load all the PDFs, compute embeddings and store them in Qdrant store
-    log.info("### Read all the PDFs");
-    List<Path> pdfFiles = findPdfFiles();
-    for (Path pdfFile : pdfFiles) {
-
-      log.info("### Load PDF: {}", pdfFile.toAbsolutePath());
-      Document document = FileSystemDocumentLoader.loadDocument(pdfFile, new ApachePdfBoxDocumentParser());
-
-      // ...
-    }
-
-    System.exit(0);
-  }
-
-  public static List<Path> findPdfFiles() {
-    try (var files = Files.walk(Paths.get("./"))) {
-      return files
-        .filter(path -> path.toString().endsWith(".pdf"))
-        .collect(Collectors.toList());
-    } catch (IOException e) {
-      throw new RuntimeException("Error reading files from directory", e);
-    }
-  }
-}
-```
-
-#### Split the document into segments
-
-Now that the PDF files are loaded, we need to split each PDF file (thanks to `DocumentSplitter`) into smaller chunks, called `TextSegment`:
-
-
-```java
-public class DocumentIngestor {
-
-  public static void main(String[] args) {
-
-    // Setup Qdrant store for embeddings storage and retrieval
-
-    // Load all the PDFs, compute embeddings and store them in Qdrant store
-    for (Path pdfFile : pdfFiles) {
-
-      // ...
-      log.info("### Split document into segments 100 tokens each");
-      DocumentSplitter splitter = DocumentSplitters.recursive(100, 0, new OpenAiTokenizer(GPT_3_5_TURBO));
-      List<TextSegment> segments = splitter.split(document);
-
-      // ...
-    }
-
-    System.exit(0);
-  }
-}
-```
+Text from the PDF files is extracted in the `ingest()` method of the `DocumentIngestor` class, using the [Apache PDFBox library](https://pdfbox.apache.org/). This text is then split into smaller segments to improve the search results.
 
 #### Computing the embeddings
 
-After the text is extracted into segments, they are then transformed into embeddings using the [AllMiniLmL6V2EmbeddingModel](https://github.com/langchain4j/langchain4j-embeddings) from LangChain4j. This model runs locally in memory (no need to connect to a remote LLM) and generates embeddings for each segment:
-
-```java
-public class DocumentIngestor {
-
-  public static void main(String[] args) {
-
-    // Setup Qdrant store for embeddings storage and retrieval
-
-    // Load all the PDFs, compute embeddings and store them in Qdrant store
-    for (Path pdfFile : pdfFiles) {
-
-      // ...
-
-      log.info("### Embed segments (convert them into vectors that represent the meaning) using embedding model");
-      EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
-      List<Embedding> embeddings = embeddingModel.embedAll(segments).content();
-
-      // ...
-    }
-  }
-}
-```
+After the text is extracted into segments, they are then transformed into embeddings using the [AllMiniLmL6V2EmbeddingModel](https://github.com/langchain4j/langchain4j-embeddings) from LangChain4j. This model runs locally in memory (no need to connect to a remote LLM) and generates embeddings for each segment
 
 #### Adding the embeddings to the vector database
 
-The embeddings along with the original texts are then added to the vector database using the `QdrantEmbeddingStore` API:
+The embeddings along with the original texts are then added to the vector database using the `QdrantEmbeddingStore` API. We set up Qdrant as our embedding store in the file `src/main/java/ai/azure/openai/rag/workshop/ingestion/configuration/EmbeddingStoreProducer.java`.
 
 ```java
-public class DocumentIngestor {
+public class EmbeddingStoreProducer {
 
-  public static void main(String[] args) {
-
-    // Setup Qdrant store for embeddings storage and retrieval
-
-    // Load all the PDFs, compute embeddings and store them in Qdrant store
-    for (Path pdfFile : pdfFiles) {
-
-      // ...
-
-      log.info("### Store embeddings into Qdrant store for further search / retrieval");
-      qdrantEmbeddingStore.addAll(embeddings, segments);
-    }
+  @Produces
+  public EmbeddingStore<TextSegment> embeddingStore() {
+    return QdrantEmbeddingStore.builder()
+      .collectionName("rag-workshop-collection")
+      .host("localhost")
+      .port(6334)
+      .build();
   }
 }
 ```
@@ -206,24 +94,23 @@ You can also use a few cUrl commands to visualize the collection:
 
 ```bash
 curl http://localhost:6333/collections
-curl http://localhost:6333/collections/rag-workshop-collection | jq
+curl http://localhost:6333/collections/rag-workshop-collection
 ```
 
-Once Qdrant is started and the collection is created, you can run the ingestion process by opening a new terminal and running the following Maven command under the `src/ingestion-java` folder. This will compile the code and run the ingestion process by running `DocumentIngestor`:
+Once Qdrant is started and the collection is created, you can run the ingestion process by opening a new terminal and running the following Maven command under the `src/ingestion` folder. This will compile the code and run the ingestion server:
 
 ```bash
 mvn clean compile exec:java
 ```
 
-<div class="tip" data-title="tip">
+Once the server is started, in another terminal you can send the PDF files to the ingestion service using the following cUrl command:
 
-> If you want to increase the logs you can set the level to debug instead of info in the src/main/resources/tinylog.properties file.
-
-> writer.level = debug
-
-</div>
-
-Once this process is executed, a new collection will be available in your database, where you can see the documents that were ingested.
+```bash
+curl -F "file=@./data/privacy-policy.pdf" \
+  -F "file=@./data/support.pdf" \
+  -F "file=@./data/terms-of-service.pdf" \
+  http://localhost:3001/ingest
+```
 
 ### Test the vector database
 
