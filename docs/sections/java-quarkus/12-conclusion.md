@@ -5,7 +5,7 @@ This is the end of the workshop. We hope you enjoyed it, learned something new a
 If you missed any of the steps or would like to check your final code, you can run this command in the terminal at the root of the project to get the completed solution (be sure to commit your code first!):
 
 ```bash
-curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/solution-qdrant.tar.gz | tar -xvz
+curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/solution-java-quarkus.tar.gz | tar -xvz
 ```
 
 <div class="warning" data-title="had issues?">
@@ -41,7 +41,7 @@ If you want to go further with more advanced use-cases, authentication, history 
 
 ### References
 
-- This workshop URL: [aka.ms/ws/openai-rag-qdrant](https://aka.ms/ws/openai-rag-qdrant)
+- This workshop URL: [aka.ms/ws/openai-rag-quarkus](https://aka.ms/ws/openai-rag-quarkus)
 - The source repository for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop/tree/base)
 - The base template for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop)
 - If something does not work: [Report an issue](https://github.com/Azure-Samples/azure-openai-rag-workshop/issues)
