@@ -280,7 +280,7 @@ curl -X 'POST' \
   "messages": [
     {
       "content": "What is the information that is collected automatically?",
-      "role": "USER"
+      "role": "user"
     }
   ]
 }'
