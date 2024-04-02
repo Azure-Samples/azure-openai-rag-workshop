@@ -37,6 +37,8 @@ In this workshop, we'll explore the fundamentals of custom ChatGPT experiences b
 
 ## Prerequisites
 
+<div class="info" data-title="note" data-hidden="$$proxy$$">
+
 | | |
 |----------------------|------------------------------------------------------|
 | GitHub account       | [Get a free GitHub account](https://github.com/join) |
@@ -45,11 +47,23 @@ In this workshop, we'll explore the fundamentals of custom ChatGPT experiences b
 | A Web browser        | [Get Microsoft Edge](https://www.microsoft.com/edge) |
 | JavaScript knowledge | [JavaScript tutorial on MDN documentation](https://developer.mozilla.org/docs/Web/JavaScript)<br>[JavaScript for Beginners on YouTube](https://www.youtube.com/playlist?list=PLlrxD0HtieHhW0NCG7M536uHGOtJ95Ut2) |
 
+</div>
+
+<div class="info" data-title="note" data-visible="$$proxy$$">
+
+| | |
+|----------------------|------------------------------------------------------|
+| GitHub account       | [Get a free GitHub account](https://github.com/join) |
+| A Web browser        | [Get Microsoft Edge](https://www.microsoft.com/edge) |
+| JavaScript knowledge | [JavaScript tutorial on MDN documentation](https://developer.mozilla.org/docs/Web/JavaScript)<br>[JavaScript for Beginners on YouTube](https://www.youtube.com/playlist?list=PLlrxD0HtieHhW0NCG7M536uHGOtJ95Ut2) |
+
+</div>
+
 We'll use [GitHub Codespaces](https://github.com/features/codespaces) to have an instant dev environment already prepared for this workshop.
 
 If you prefer to work locally, we'll also provide instructions to setup a local dev environment using either VS Code with a [dev container](https://aka.ms/vscode/ext/devcontainer) or a manual install of the needed tools.
 
-<div class="info" data-title="note">
+<div class="info" data-title="note" data-hidden="$$proxy$$">
 
 > Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner). Your account also needs `Microsoft.Resources/deployments/write` permissions at a subscription level to allow deployment of Azure resources.
 >
