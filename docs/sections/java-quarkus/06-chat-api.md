@@ -6,9 +6,56 @@ We'll start the code by creating the Chat API. This API will implement the [Chat
 
 We'll be using [Quarkus](https://quarkus.io) to create our Chat API. Quarkus is a Kubernetes Native Java stack tailored for OpenJDK HotSpot and GraalVM, crafted from the best of breed Java libraries and standards. It's a great choice for microservices, and it's very fast and lightweight.
 
+### Creating the model producers
+
+We're going to use [Quarkus' Context And Dependency Injection (CDI) mechanism](https://quarkus.io/guides/cdi) to manage our AI services:
+
+- The `ai.azure.openai.rag.workshop.backend.configuration.ChatLanguageModelProducer` will be responsible for configuring the OpenAI chat language model API.
+- The `ai.azure.openai.rag.workshop.backend.configuration.EmbeddingModelProducer` will be responsible for configuring the embedding model.
+- The `ai.azure.openai.rag.workshop.backend.configuration.EmbeddingStoreProducer` will be responsible for configuring the Qdrant embedding store.
+
+As those producers are configured in separate files, and use the LangChain4J API, they can later be switched easily to use other implementations: this will be useful for example to use a more powerful language or embedding model, or for running tests locally.
+
+Let's start by configuring `ChatLanguageModelProducer`, using the Azure OpenAI API:
+
+```java
+  @Produces
+  public ChatLanguageModel chatLanguageModel() {
+    return AzureOpenAiChatModel.builder()
+      .apiKey(System.getenv("AZURE_OPENAI_KEY"))
+      .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))
+      .deploymentName(System.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"))
+      .timeout(ofSeconds(60))
+      .logRequestsAndResponses(true)
+      .build();
+  }
+```
+
+Now let's configure the `EmbeddingModelProducer`, using a local embedding model (less performant than using Azure OpenAI, but runs locally and for free):
+
+```java
+  @Produces
+  public EmbeddingModel embeddingModel() {
+    return new AllMiniLmL6V2EmbeddingModel();
+  }
+```
+
+And let's finish with configuring the `EmbeddingStoreProducer`, using the Qdrant vector store:
+
+```java
+  @Produces
+  public EmbeddingStore<TextSegment> embeddingStore() {
+    return QdrantEmbeddingStore.builder()
+      .collectionName("rag-workshop-collection")
+      .host("localhost")
+      .port(6334)
+      .build();
+  }
+```
+
 ### Creating the Chat API
 
-Now that we have created the document ingestor, it's time to interact with our vector database and an LLM thanks to a REST API. 
+Now that our data has been ingested, and that our services are configured in Quarkus, it's time to interact with our vector database and an LLM using LangChain4J. 
 
 ![ChatResource and dependencies](./assets/class-diagram-rest.png)
 
@@ -36,47 +83,19 @@ public class ChatResource {
 
 ![Model](./assets/class-diagram-model.png)
 
-Notice that the `chat` method takes a `ChatRequest` parameter. This is the object that will be sent by the UI to the API, containing the messagess of the conversation (`ChatRequestMessage`).
+Notice that the `chat` method takes a `ChatRequest` parameter. This is the object that will be sent by the UI to the API, containing the messages of the conversation (`ChatRequestMessage`).
 
 ```java
 public class ChatRequest {
 
-  public List<ChatRequestMessage> messages = new ArrayList();
-  public String model;
-  public float temperature = 1f;
-  public float topP = 1f;
+  public List<ChatMessage> messages = new ArrayList<>();
+  public double temperature = 1f;
+  public double topP = 1f;
   public String user;
 }
 ```
 
-```java
-public class ChatRequestMessage {
-
-  public String content;
-  public RoleEnum role;
-
-  public static enum RoleEnum {
-
-    SYSTEM(String.valueOf("system")),
-    USER(String.valueOf("user")),
-    ASSISTANT(String.valueOf("assistant")),
-    FUNCTION(String.valueOf("function"));
-
-    private String value;
-
-    private RoleEnum(String v) {
-      this.value = v;
-    }
-
-    public String value() {
-      return this.value;
-    }
-
-  }
-}
-```
-
-Create the `ChatRequest` and `ChatRequestMessage` under the `src/main/java` directory, inside the `ai.azure.openai.rag.workshop.backend` package.
+Create the `ChatRequest` class under the `src/main/java` directory, inside the `ai.azure.openai.rag.workshop.backend` package.
 
 #### Embed the question
 
@@ -86,13 +105,16 @@ The first step is to embed the question. First, we get the question from the `Ch
 @Path("/chat")
 public class ChatResource {
 
+  @POST
+  @Consumes({"application/json"})
+  @Produces({"application/json"})
   public String chat(ChatRequest chatRequest) {
 
-    String question = chatRequest.messages.get(0).content;
+    String question = chatRequest.messages.get(chatRequest.messages.size() - 1).content;
 
     log.info("### Embed the question (convert the question into vectors that represent the meaning) using embeddedQuestion model");
-    EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
     Embedding embeddedQuestion = embeddingModel.embed(question).content();
+    log.debug("# Vector length: {}", embeddedQuestion.vector().length);
 
     // ...
   }
@@ -107,6 +129,9 @@ It's time to start implementing the RAG pattern! Now that we have a vectorized v
 @Path("/chat")
 public class ChatResource {
 
+  @POST
+  @Consumes({"application/json"})
+  @Produces({"application/json"})
   public String chat(ChatRequest chatRequest) {
 
     // Embed the question (convert the user's question into vectors that represent the meaning)
@@ -114,13 +139,7 @@ public class ChatResource {
     
     // Find relevant embeddings from Qdrant based on the user's question
     log.info("### Find relevant embeddings from Qdrant based on the question");
-    EmbeddingStore<TextSegment> qdrantEmbeddingStore = QdrantEmbeddingStore.builder()
-      .collectionName("rag-workshop-collection")
-      .host("localhost")
-      .port(6334)
-      .build();
-
-    List<EmbeddingMatch<TextSegment>> relevant = qdrantEmbeddingStore.findRelevant(embeddedQuestion, 3);
+    List<EmbeddingMatch<TextSegment>> relevant = embeddingStore.findRelevant(embeddedQuestion, 3);
 
     // ...
   }
@@ -185,6 +204,9 @@ Now that we have the `SYSTEM_MESSAGE_PROMPT` and the relevant documents, we can 
 @Path("/chat")
 public class ChatResource {
 
+  @POST
+  @Consumes({"application/json"})
+  @Produces({"application/json"})
   public String chat(ChatRequest chatRequest) {
 
     // Embed the question (convert the user's question into vectors that represent the meaning)
@@ -198,6 +220,7 @@ public class ChatResource {
     for (int i = 0; i < relevant.size(); i++) {
       EmbeddingMatch<TextSegment> textSegmentEmbeddingMatch = relevant.get(i);
       chatMessages.add(SystemMessage.from(textSegmentEmbeddingMatch.embedded().text()));
+      log.debug("# Relevant segment {}: {}", i, textSegmentEmbeddingMatch.embedded().text());
     }
     chatMessages.add(UserMessage.from(question));
 
@@ -214,6 +237,9 @@ Now that we have our prompt setup, time to invoke the model. For that, we use th
 @Path("/chat")
 public class ChatResource {
 
+  @POST
+  @Consumes({"application/json"})
+  @Produces({"application/json"})
   public String chat(ChatRequest chatRequest) {
 
     // Embed the question (convert the user's question into vectors that represent the meaning)
@@ -223,19 +249,9 @@ public class ChatResource {
 
     // Invoke the LLM
     log.info("### Invoke the LLM");
-    ChatLanguageModel model = AzureOpenAiChatModel.builder()
-      .apiKey(System.getenv("AZURE_OPENAI_KEY"))
-      .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))
-      .deploymentName(System.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"))
-      .temperature(0.3)
-      .timeout(ofSeconds(60))
-      .logRequestsAndResponses(true)
-      .build();
+    Response<AiMessage> response = chatLanguageModel.generate(chatMessages);
 
-    // Return the response
-    Response<AiMessage> response = model.generate(chatMessages);
-
-    return response.content().text();
+    return ChatResponse.fromMessage(response.content().text());
   }
 }
 ```
