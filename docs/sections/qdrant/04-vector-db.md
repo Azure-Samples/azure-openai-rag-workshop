@@ -21,6 +21,11 @@ Some of the popular ones are:
 - [pgvector](https://github.com/pgvector/pgvector)
 - [Redis](https://redis.io)
 
+On Azure, you can run the vector databases listed above, or use specific Azure services that also provide this functionality, such as:
+
+- [Azure AI Search](https://azure.microsoft.com/services/search/)
+- [Azure Cosmos DB for MongoDB vCore](https://learn.microsoft.com/azure/cosmos-db/mongodb/vcore/)
+
 ### Introducing Qdrant
 
 ![Qdrant Logo](./assets/qdrant-logo.png)

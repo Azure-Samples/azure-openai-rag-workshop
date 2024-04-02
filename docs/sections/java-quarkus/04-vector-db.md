@@ -23,8 +23,8 @@ Some of the popular ones are:
 
 On Azure, you can run the vector databases listed above, or use specific Azure services that also provide this functionality, such as:
 
-- [Azure AI Search](https://azure.microsoft.com/en-us/services/search/)
-- [Azure Cosmos DB for MongoDB vCore](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/vcore/)
+- [Azure AI Search](https://azure.microsoft.com/services/search/)
+- [Azure Cosmos DB for MongoDB vCore](https://learn.microsoft.com/azure/cosmos-db/mongodb/vcore/)
 
 ### Introducing Qdrant
 
