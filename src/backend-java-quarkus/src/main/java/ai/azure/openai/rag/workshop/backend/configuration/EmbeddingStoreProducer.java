@@ -6,16 +6,20 @@ import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
 import jakarta.enterprise.inject.Produces;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 public class EmbeddingStoreProducer {
 
-  @ConfigProperty(name = "AZURE_SEARCH_INDEX_NAME", defaultValue = "rag-workshop-collection")
+  @ConfigProperty(name = "AZURE_SEARCH_INDEX", defaultValue = "rag-workshop-collection")
   String azureSearchIndexName;
 
-  @ConfigProperty(name = "QDRANT_HOSTNAME", defaultValue = "localhost")
-  String qdrantHostname;
+  @ConfigProperty(name = "QDRANT_URL", defaultValue = "http://localhost:6334")
+  String qdrantUrl;
 
   @Produces
-  public EmbeddingStore<TextSegment> embeddingStore() {
+  public EmbeddingStore<TextSegment> embeddingStore() throws URISyntaxException {
+    String qdrantHostname = new URI(qdrantUrl).getHost();
     return QdrantEmbeddingStore.builder()
       .collectionName(azureSearchIndexName)
       .host(qdrantHostname)

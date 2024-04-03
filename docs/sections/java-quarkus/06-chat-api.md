@@ -43,14 +43,15 @@ Now let's configure the `EmbeddingModelProducer`, using a local embedding model 
 And let's finish with configuring the `EmbeddingStoreProducer`, using the Qdrant vector store:
 
 ```java
-  @Produces
-  public EmbeddingStore<TextSegment> embeddingStore() {
-    return QdrantEmbeddingStore.builder()
-      .collectionName("rag-workshop-collection")
-      .host("localhost")
-      .port(6334)
-      .build();
-  }
+@Produces
+public EmbeddingStore<TextSegment> embeddingStore() throws URISyntaxException {
+  String qdrantHostname = new URI(qdrantUrl).getHost();
+  return QdrantEmbeddingStore.builder()
+    .collectionName(azureSearchIndexName)
+    .host(qdrantHostname)
+    .port(6334)
+    .build();
+}
 ```
 
 ### Creating the Chat API

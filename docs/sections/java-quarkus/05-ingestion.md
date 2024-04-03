@@ -15,14 +15,15 @@ Qdrant is configured as a Quarkus producer in the `src/main/java/ai/azure/openai
 ```java
 public class EmbeddingStoreProducer {
 
-  @ConfigProperty(name = "AZURE_SEARCH_INDEX_NAME", defaultValue = "rag-workshop-collection")
+  @ConfigProperty(name = "AZURE_SEARCH_INDEX", defaultValue = "rag-workshop-collection")
   String azureSearchIndexName;
 
-  @ConfigProperty(name = "QDRANT_HOSTNAME", defaultValue = "localhost")
-  String qdrantHostname;
+  @ConfigProperty(name = "QDRANT_URL", defaultValue = "http://localhost:6334")
+  String qdrantUrl;
 
   @Produces
-  public EmbeddingStore<TextSegment> embeddingStore() {
+  public EmbeddingStore<TextSegment> embeddingStore() throws URISyntaxException {
+    String qdrantHostname = new URI(qdrantUrl).getHost();
     return QdrantEmbeddingStore.builder()
       .collectionName(azureSearchIndexName)
       .host(qdrantHostname)
