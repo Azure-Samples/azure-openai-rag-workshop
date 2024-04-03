@@ -93,6 +93,9 @@ services:
     volumes:
       - .qdrant:/qdrant/storage:z
 " > docker-compose.yml
+
+  perl -pi -e 's/api_mode=false/api_mode=true/g' scripts/ingest-data.sh
+  perl -pi -e 's/$api_mode = false/$api_mode = true/g' scripts/ingest-data.ps1  
 else
   echo "Invalid template name. Please use 'aisearch', 'qdrant' or 'quarkus' as the template name."
   echo "Usage: setup-template.sh [aisearch|qdrant|quarkus]"
