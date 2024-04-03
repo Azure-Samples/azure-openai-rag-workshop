@@ -11,7 +11,7 @@ import java.net.URISyntaxException;
 
 public class EmbeddingStoreProducer {
 
-  @ConfigProperty(name = "AZURE_SEARCH_INDEX", defaultValue = "rag-workshop-collection")
+  @ConfigProperty(name = "AZURE_SEARCH_INDEX", defaultValue = "kbindex")
   String azureSearchIndexName;
 
   @ConfigProperty(name = "QDRANT_URL", defaultValue = "http://localhost:6334")

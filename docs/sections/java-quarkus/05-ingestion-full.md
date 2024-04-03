@@ -41,7 +41,7 @@ writer.level = info
 
 #### Setup the Qadrant client
 
-Now that we have the `DocumentIngestor` class, we need to setup the Qdrant client to interact with the vector database. We'll use the `QdrantEmbeddingStore` class from LangChain4j to interact with Qdrant. Notice the name of the collection (`rag-workshop-collection`), the port (`localhost` as Qdrant is running locally) and the GRPC port (`6334`):
+Now that we have the `DocumentIngestor` class, we need to setup the Qdrant client to interact with the vector database. We'll use the `QdrantEmbeddingStore` class from LangChain4j to interact with Qdrant. Notice the name of the collection (`kbindex`), the port (`localhost` as Qdrant is running locally) and the GRPC port (`6334`):
 
 ```java
 public class DocumentIngestor {
@@ -51,7 +51,7 @@ public class DocumentIngestor {
     // Setup Qdrant store for embeddings storage and retrieval
     log.info("### Setup Qdrant store for embeddings storage and retrieval");
     EmbeddingStore<TextSegment> qdrantEmbeddingStore = QdrantEmbeddingStore.builder()
-      .collectionName("rag-workshop-collection")
+      .collectionName("kbindex")
       .host("localhost")
       .port(6334)
       .build();
@@ -185,10 +185,10 @@ Let's now execute this process. First, you need to make sure you have Qdrant run
 docker compose up qdrant
 ```
 
-This will start Qdrant locally. Make sure you can access the Qdrant dashboard at the URL http://localhost:6333/dashboard. Then, create a new collection named `rag-workshop-collection` with the following cUrl command:
+This will start Qdrant locally. Make sure you can access the Qdrant dashboard at the URL http://localhost:6333/dashboard. Then, create a new collection named `kbindex` with the following cUrl command:
 
 ```bash
-curl -X PUT 'http://localhost:6333/collections/rag-workshop-collection' \
+curl -X PUT 'http://localhost:6333/collections/kbindex' \
      -H 'Content-Type: application/json' \
      --data-raw '{
        "vectors": {
@@ -206,7 +206,7 @@ You can also use a few cUrl commands to visualize the collection:
 
 ```bash
 curl http://localhost:6333/collections
-curl http://localhost:6333/collections/rag-workshop-collection | jq
+curl http://localhost:6333/collections/kbindex | jq
 ```
 
 Once Qdrant is started and the collection is created, you can run the ingestion process by opening a new terminal and running the following Maven command under the `src/ingestion-java` folder. This will compile the code and run the ingestion process by running `DocumentIngestor`:
@@ -235,7 +235,7 @@ Open the Qdrant dashboard again by opening the following URL in your browser: [h
 
 </div>
 
-You should see the collection named `rag-workshop-collection` in the list:
+You should see the collection named `kbindex` in the list:
 
 ![Screenshot of the Qdrant dashboard](./assets/qdrant-dashboard.png)
 

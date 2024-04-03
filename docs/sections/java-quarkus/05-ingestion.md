@@ -15,7 +15,7 @@ Qdrant is configured as a Quarkus producer in the `src/main/java/ai/azure/openai
 ```java
 public class EmbeddingStoreProducer {
 
-  @ConfigProperty(name = "AZURE_SEARCH_INDEX", defaultValue = "rag-workshop-collection")
+  @ConfigProperty(name = "AZURE_SEARCH_INDEX", defaultValue = "kbindex")
   String azureSearchIndexName;
 
   @ConfigProperty(name = "QDRANT_URL", defaultValue = "http://localhost:6334")
@@ -127,10 +127,10 @@ Let's now execute this process. First, you need to make sure you have Qdrant run
 docker compose -f infra/docker-compose/qdrant.yml up
 ```
 
-This will start Qdrant locally. Make sure you can access the Qdrant dashboard at the URL http://localhost:6333/dashboard. Then, create a new collection named `rag-workshop-collection` with the following cUrl command:
+This will start Qdrant locally. Make sure you can access the Qdrant dashboard at the URL http://localhost:6333/dashboard. Then, create a new collection named `kbindex` with the following cUrl command:
 
 ```bash
-curl -X PUT 'http://localhost:6333/collections/rag-workshop-collection' \
+curl -X PUT 'http://localhost:6333/collections/kbindex' \
      -H 'Content-Type: application/json' \
      --data-raw '{
        "vectors": {
@@ -148,7 +148,7 @@ You can also use a few cUrl commands to visualize the collection:
 
 ```bash
 curl http://localhost:6333/collections
-curl http://localhost:6333/collections/rag-workshop-collection | jq
+curl http://localhost:6333/collections/kbindex | jq
 ```
 
 Once Qdrant is started and the collection is created, you can run the ingestion process by opening a new terminal and running the following Maven command under the `src/ingestion-java` folder. This will compile the code and run the Quarkus service in development mode, which will listen for incoming requests on port 3001:
@@ -178,7 +178,7 @@ Open the Qdrant dashboard again by opening the following URL in your browser: [h
 
 </div>
 
-You should see the collection named `rag-workshop-collection` in the list:
+You should see the collection named `kbindex` in the list:
 
 ![Screenshot of the Qdrant dashboard](./assets/qdrant-dashboard.png)
 
