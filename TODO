@@ -10,22 +10,25 @@
 - [x] use env vars for Qdrant host / collection name!
 - [x] rename collection to use env variable / kbindex by default
 - [x] check/fix citations format
+- [x] 6334 for Qdrant in infra
+- [x] update ingest-data scripts for java
 
-- [ ] .env at root project => antonio
-- [ ] 6334 for Qdrant in infra
-
-- [ ] YO: update index-data scripts for java
-
+- [ ] .env at root project => antonio?
 - [ ] SA: dockerfiles in /backend and /ingestion
 - [ ] SA: build&copy the frontend in java build
 
-- [ ] Missing message history in chat
-- [ ] Add optional follow-up questions
+- [ ] feature: missing message history in chat
 
 - [ ] generate aka.ms link: aka.ms/ws/openai-rag-quarkus
   + link w/ proxy in the slides
   + azpasses?
-- [ ] update slides (new version?)
+  
+- [ ] update slides (new version?) => java code
+
+### Maybe
+
+- [ ] in improvements section: add follow-up questions
+- [ ] in improvements section: add streaming
 
 ## For later
 
