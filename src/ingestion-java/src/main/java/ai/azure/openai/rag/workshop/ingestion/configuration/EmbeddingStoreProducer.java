@@ -1,4 +1,4 @@
-package ai.azure.openai.rag.workshop.backend.configuration;
+package ai.azure.openai.rag.workshop.ingestion.configuration;
 
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;

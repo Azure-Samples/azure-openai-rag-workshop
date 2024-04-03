@@ -1,4 +1,4 @@
-package ai.azure.openai.rag.workshop.backend.configuration;
+package ai.azure.openai.rag.workshop.ingestion.configuration;
 
 import dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
