@@ -242,7 +242,7 @@ export default fp(
     const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
     const commonOptions = {
       openAIApiKey: openAiToken.token,
-      azureOpenAIApiVersion: '2023-05-15',
+      azureOpenAIApiVersion: '2024-02-01',
       azureOpenAIApiKey: openAiToken.token,
       azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,
     };

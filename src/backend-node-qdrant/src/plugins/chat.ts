@@ -240,7 +240,7 @@ export default fp(
 
     const commonOptions = {
       openAIApiKey,
-      azureOpenAIApiVersion: '2023-05-15',
+      azureOpenAIApiVersion: '2024-02-01',
       azureOpenAIApiKey: openAIApiKey,
       azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,
     };

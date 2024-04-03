@@ -753,7 +753,7 @@ const openAiToken = await credential.getToken('https://cognitiveservices.azure.c
 // Set common options for the clients
 const commonOptions = {
   openAIApiKey: openAiToken.token,
-  azureOpenAIApiVersion: '2023-05-15',
+  azureOpenAIApiVersion: '2024-02-01',
   azureOpenAIApiKey: openAiToken.token,
   azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,
 };
