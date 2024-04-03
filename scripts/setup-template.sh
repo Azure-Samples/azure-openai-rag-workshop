@@ -63,6 +63,36 @@ elif [ "$template_name" == "quarkus" ]; then
   mv src/ingestion-java src/ingestion
   rm -rf src/backend-*
   rm -rf src/ingestion-*
+
+  echo -e "version: '3.9'
+services:
+  # backend:
+  #   build:
+  #     dockerfile: ./src/backend/Dockerfile
+  #   environment:
+  #     - AZURE_OPENAI_URL=\${AZURE_OPENAI_URL}
+  #     - QDRANT_URL=http://qdrant:6334
+  #     - LOCAL=true
+  #   ports:
+  #     - 3000:3000
+
+  ingestion:
+    build:
+      dockerfile: ./src/ingestion/Dockerfile
+    environment:
+      - AZURE_OPENAI_URL=\${AZURE_OPENAI_URL}
+      - QDRANT_URL=http://qdrant:6334
+    ports:
+      - 3001:3001
+
+  qdrant:
+    image: docker.io/qdrant/qdrant:v1.8.2
+    ports:
+      - 6333:6333
+      - 6334:6334
+    volumes:
+      - .qdrant:/qdrant/storage:z
+" > docker-compose.yml
 else
   echo "Invalid template name. Please use 'aisearch', 'qdrant' or 'quarkus' as the template name."
   echo "Usage: setup-template.sh [aisearch|qdrant|quarkus]"
