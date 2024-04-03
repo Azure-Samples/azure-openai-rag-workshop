@@ -32,6 +32,9 @@
     "useQdrant": {
       "value": "${USE_QDRANT=false}"
     },
+    "qdrantPort": {
+      "value": "${QDRANT_PORT=6333}"
+    },
     "isContinuousDeployment": {
       "value": "${CI=false}"
     }

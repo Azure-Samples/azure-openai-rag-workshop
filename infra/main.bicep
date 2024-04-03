@@ -62,6 +62,9 @@ param useApplicationInsights bool = false
 @description('Use Qdrant as the vector DB')
 param useQdrant bool = false
 
+@description('Qdrant port')
+param qdrantPort int // Set in main.parameters.json
+
 // Differentiates between automated and manual deployments
 param isContinuousDeployment bool = false
 
@@ -318,7 +321,7 @@ module qdrant './core/host/container-app.bicep' = if (useQdrant) {
       secretRef: 'appinsights-cs'
     }] : [])
     imageName: !empty(qdrantImageName) ? qdrantImageName : 'docker.io/qdrant/qdrant'
-    targetPort: 6333
+    targetPort: qdrantPort
   }
 }
 
