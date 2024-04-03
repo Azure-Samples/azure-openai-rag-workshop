@@ -15,7 +15,7 @@ background-image: url(images/ai.jpg)
 .full-layer.who.text-right.small.middle.light-text.darkened[
   .ms.responsive[![](images/ms-full-logo.svg)]
   |
-  Sandra | Yohan | Julien
+  Sandra, Yohan, Julien
 ]
 
 ---
@@ -65,14 +65,23 @@ class: center
   <br><br>
 
   # LLM crash course
-  <!-- - Training -->
   - Model types
   - Tokens
   - Limits
   - Embeddings
   - Prompt engineering
-  <!-- - Agents -->
 ]
+
+<!--
+# LLM crash course
+- Training
+- Model types
+- Tokens
+- Limits
+- Embeddings
+- Prompt engineering
+- Agents
+-->
 
 ???
 - Who wants to do some maths? Great, me neither!
@@ -338,18 +347,17 @@ They provide an abstraction layer on top of the LLM APIs, and
 facilitate the assembly<br> (or "chain") of different components.
 
 .small[
-```python
-from langchain.prompts.chat import ChatPromptTemplate
+```java
+import dev.langchain4j.model.input.Prompt;
+import dev.langchain4j.model.input.PromptTemplate;
 
-system_template = "You are a helpful assistant that translates English to French."
-human_template = "{text}"
+PromptTemplate promptTemplate = PromptTemplate.from("Translate '{{text}}' in {{language}}.");
 
-chat_prompt = ChatPromptTemplate.from_messages([
-    ("system", system_template),
-    ("human", human_template),
-])
+Map<String, Object> variables = new HashMap<>();
+variables.put("text", "hi");
+variables.put("language", "French");
 
-chat_prompt.format_messages(text="I love programming.")
+Prompt prompt = promptTemplate.apply(variables);
 ```
 ]
 
@@ -372,6 +380,7 @@ OpenAI is an artificial intelligence research company.
 
 ---
 
+exclude: true
 # The OpenAI API
 
 - Provides several [models](https://platform.openai.com/docs/models) with different capabilities and price ([doc](https://platform.openai.com/docs/api-reference) and [examples](https://platform.openai.com/examples)).
