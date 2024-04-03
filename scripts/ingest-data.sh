@@ -19,8 +19,8 @@ else
   npm install
   npm run build --workspace=ingestion
 
-  echo 'Running "index-files" CLI tool'
-  npx index-files \
+  echo 'Running "ingest-files" CLI tool'
+  npx ingest-files \
     --wait \
     --ingestion-url "${INGESTION_API_URI:-http://localhost:3001}" \
     --index-name "${INDEX_NAME:-kbindex}" \

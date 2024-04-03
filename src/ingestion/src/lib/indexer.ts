@@ -46,7 +46,7 @@ export class Indexer {
 
   async indexFile(indexName: string, fileInfos: FileInfos, options: IndexFileOptions = {}) {
     const { filename } = fileInfos;
-    this.logger.debug(`Indexing file "${filename}" into search index "${indexName}..."`);
+    this.logger.debug(`Ingesting file "${filename}" into search index "${indexName}..."`);
 
     try {
       await this.vectorDB.addToIndex(indexName, fileInfos);
@@ -55,7 +55,7 @@ export class Indexer {
       if (options.throwErrors) {
         throw error;
       } else {
-        this.logger.error(`Error indexing file "${filename}": ${error.message}`);
+        this.logger.error(`Error ingesting file "${filename}": ${error.message}`);
       }
     }
   }

@@ -72,10 +72,10 @@ This will start both Qdrant and the ingestion service locally. This may takes a 
 
 </div>
 
-Once all services are started, you can run the ingestion process by opening a new terminal and running the `./scripts/index-data.sh` script on Linux or macOS, or `./scripts/index-data.ps1` on Windows:
+Once all services are started, you can run the ingestion process by opening a new terminal and running the `./scripts/ingest-data.sh` script on Linux or macOS, or `./scripts/ingest-data.ps1` on Windows:
 
 ```bash
-./scripts/index-data.sh
+./scripts/ingest-data.sh
 ```
 
 ![Screenshot of the ingestion CLI](./assets/ingestion-cli.png)

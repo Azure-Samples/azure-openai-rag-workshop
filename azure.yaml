@@ -41,11 +41,11 @@ hooks:
   postup:
     windows:
       shell: pwsh
-      run: ./scripts/index-data.ps1
+      run: ./scripts/ingest-data.ps1
       interactive: true
       continueOnError: false
     posix:
       shell: sh
-      run: ./scripts/index-data.sh
+      run: ./scripts/ingest-data.sh
       interactive: true
       continueOnError: false

@@ -619,10 +619,10 @@ azd deploy ingestion
 
 ![Screenshot of the ingestion deployement](./assets/ingestion-deployement.png)
 
-Once the ingestion is deployed, you can run the ingestion process by running the `./scripts/index-data.sh` script on Linux or macOS, or `./scripts/index-data.ps1` on Windows:
+Once the ingestion is deployed, you can run the ingestion process by running the `./scripts/ingest-data.sh` script on Linux or macOS, or `./scripts/ingest-data.ps1` on Windows:
 
 ```bash
-./scripts/index-data.sh
+./scripts/ingest-data.sh
 ```
 
 ![Screenshot of the ingestion CLI](./assets/ingestion-cli.png)

@@ -10,10 +10,10 @@ Run this command from the root of the project to build and deploy the applicatio
 azd deploy
 ```
 
-Once everything is deployed, run the ingestion process against your deployed ingestion service, using `./scripts/index-data.sh` script on Linux or macOS, or `./scripts/index-data.ps1` on Windows:
+Once everything is deployed, run the ingestion process against your deployed ingestion service, using `./scripts/ingest-data.sh` script on Linux or macOS, or `./scripts/ingest-data.ps1` on Windows:
 
 ```bash
-./scripts/index-data.sh
+./scripts/ingest-data.sh
 ```
 
 This process should take a few minutes. Once it's done, you should see the URL of the deployed frontend application in the output of the command.

@@ -9,7 +9,7 @@
     "test": "test"
   },
   "bin": {
-    "index-files": "./bin/index-files.js"
+    "ingest-files": "./bin/ingest-files.js"
   },
   "scripts": {
     "start": "fastify start -l info dist/app.js -p 3001",

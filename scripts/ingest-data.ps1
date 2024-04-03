@@ -26,6 +26,6 @@ Write-Host 'Installing dependencies and building CLI'
 npm install
 npm run build --workspace=ingestion
 
-Write-Host 'Running "index-files" CLI tool'
+Write-Host 'Running "ingest-files" CLI tool'
 $files = Get-Item "data/*.pdf"
-npx index-files --wait --ingestion-url "$env:INGESTION_API_URI" --index-name "$env:INDEX_NAME" $files
+npx ingest-files --wait --ingestion-url "$env:INGESTION_API_URI" --index-name "$env:INDEX_NAME" $files

@@ -77,7 +77,7 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (fastify, _options): Promis
 
   fastify.post('/:name/files', {
     schema: {
-      description: 'Upload a file for indexing',
+      description: 'Upload a file for ingestion',
       tags: ['indexes'],
       consumes: ['multipart/form-data'],
       params: {
@@ -100,11 +100,11 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (fastify, _options): Promis
       },
       response: {
         202: {
-          description: 'File indexing started',
+          description: 'File ingestion started',
           type: 'null',
         },
         204: {
-          description: 'File indexing completed',
+          description: 'File ingestion completed',
           type: 'null',
         },
         400: { $ref: 'httpError' },
@@ -123,7 +123,7 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (fastify, _options): Promis
       }
       try {
         const fileOptions = JSON.parse(options?.value ?? '{}') as IndexFileOptionsField;
-        fastify.log.info(`Received indexing options: ${JSON.stringify(fileOptions)}`);
+        fastify.log.info(`Received ingestion options: ${JSON.stringify(fileOptions)}`);
 
         const wait = Boolean(fileOptions?.wait);
         const filesInfos = {
@@ -133,7 +133,7 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (fastify, _options): Promis
           category: fileOptions?.category ?? 'default',
         };
         if (wait) {
-          fastify.log.info(`Indexing file "${filesInfos.filename}" synchronously`);
+          fastify.log.info(`Ingestion file "${filesInfos.filename}" synchronously`);
           await fastify.indexer.indexFile(request.params.name, filesInfos, {
             throwErrors: true,
           });

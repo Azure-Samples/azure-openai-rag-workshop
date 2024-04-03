@@ -22,7 +22,7 @@ export async function run(arguments_: string[] = process.argv) {
   const packageJson = JSON.parse(file) as Record<string, string>;
 
   program
-    .name('index-files')
+    .name('ingest-files')
     .arguments('<files...>')
     .description('CLI utility to send files to an ingestion service instance')
     .option('-u, --ingestion-url <url>', 'The ingestion service URL', 'http://localhost:3001')
@@ -33,7 +33,7 @@ export async function run(arguments_: string[] = process.argv) {
     .showHelpAfterError()
     .action(async (files: string[], options: OptionValues) => {
       const { ingestionUrl, indexName, wait } = options;
-      await indexFiles(files, {
+      await ingestFiles(files, {
         ingestionUrl,
         indexName,
         wait,
@@ -42,22 +42,22 @@ export async function run(arguments_: string[] = process.argv) {
   program.parse(arguments_);
 }
 
-export async function indexFiles(files: string[], options: IndexFilesOptions) {
+export async function ingestFiles(files: string[], options: IndexFilesOptions) {
   try {
     if (!options.indexName) {
       throw new Error('Index name is required');
     }
-    console.log(`Indexing ${files.length} file(s)...`);
+    console.log(`Ingesting ${files.length} file(s)...`);
     await ensureSearchIndex(options);
 
     for (const file of files) {
-      await indexFile(file, options);
+      await ingestFile(file, options);
     }
 
     console.log('Completed.');
   } catch (_error: unknown) {
     const error = _error as Error;
-    console.error(`Error indexing files: ${error.message}`);
+    console.error(`Error ingesting files: ${error.message}`);
     process.exitCode = 1;
   }
 }
@@ -79,8 +79,8 @@ async function ensureSearchIndex(options: IndexFilesOptions) {
   }
 }
 
-async function indexFile(file: string, options: IndexFilesOptions) {
-  console.log(`Indexing file "${file}"...`);
+async function ingestFile(file: string, options: IndexFilesOptions) {
+  console.log(`Ingesting file "${file}"...`);
   const { ingestionUrl, indexName, category, wait } = options;
   const formData = new FormData();
   const fileIndexOptions = {
@@ -97,7 +97,7 @@ async function indexFile(file: string, options: IndexFilesOptions) {
   });
   if (!response.ok) {
     const errorDetails = (await response.json()) as any;
-    throw new Error(`Error indexing file "${file}": ${errorDetails.message}`);
+    throw new Error(`Error ingesting file "${file}": ${errorDetails.message}`);
   }
   console.log(`File "${file}" indexed successfully`);
 }
