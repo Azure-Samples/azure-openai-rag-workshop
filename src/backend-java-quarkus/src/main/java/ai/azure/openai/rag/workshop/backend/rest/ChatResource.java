@@ -68,12 +68,11 @@ public class ChatResource {
     log.info("### Builds chat history using the relevant embeddings");
     List<ChatMessage> chatMessages = new ArrayList<>();
     chatMessages.add(SystemMessage.from(SYSTEM_MESSAGE_PROMPT));
-    for (int i = 0; i < relevant.size(); i++) {
-      EmbeddingMatch<TextSegment> textSegmentEmbeddingMatch = relevant.get(i);
-      chatMessages.add(SystemMessage.from(textSegmentEmbeddingMatch.embedded().text()));
-      log.debug("# Relevant segment {}: {}", i, textSegmentEmbeddingMatch.embedded().text());
+    String userMessage = question + "\n\nSources:\n";
+    for (EmbeddingMatch<TextSegment> textSegmentEmbeddingMatch : relevant) {
+      userMessage += textSegmentEmbeddingMatch.embedded().metadata("filename") + ": " + textSegmentEmbeddingMatch.embedded().text() + "\n";
     }
-    chatMessages.add(UserMessage.from(question));
+    chatMessages.add(UserMessage.from(userMessage));
 
     // Invoke the LLM
     log.info("### Invoke the LLM");
