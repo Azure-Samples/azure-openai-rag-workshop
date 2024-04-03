@@ -264,7 +264,7 @@ Our API is now ready to be tested!
 Open a terminal and run the following commands to start the API:
 
 ```bash
-cd src/backend-java-quarkus
+cd src/backend
 ./mvnw clean quarkus:dev
 ```
 
