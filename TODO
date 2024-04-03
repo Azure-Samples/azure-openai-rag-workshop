@@ -22,7 +22,7 @@
 - [ ] generate aka.ms link: aka.ms/ws/openai-rag-quarkus
   + link w/ proxy in the slides
   + azpasses?
-  
+
 - [ ] update slides (new version?) => java code
 
 ### Maybe
@@ -32,9 +32,12 @@
 
 ## For later
 
-- [ ] rename ingestion to ingestion-node
+- [x] /!\ Update Azure OpenAI version
 
-- [ ] /!\ Update Azure OpenAI version
+- [ ] rename ingestion to ingestion-node
+- [ ] rework ingestion-node to use langchainjs
+- [ ] use azure-openai sdk instead of openai
+
 - [ ] Add troubleshooting for npm run dev backend if it fails (restart) timeout (node-qdrant)
   * try to reproduce!
 
@@ -51,11 +54,10 @@
 
 - [ ] improve workshop
   * [ ] add section in improvements about tools usage with LangChain.js and Retrievers
-  * [ ] allow to use regular OpenAI API/token + LM Studio
+  * [ ] allow to use regular OpenAI API/token + Ollama
 
 - [ ] trainer infra
   * [ ] add event key to restrict access?
   * [ ] get started docs on how to setup the workshop and the proxy
   * [ ] allow to configure how many OpenAI deployments you want, with region and capacity
 
-- [ ] ingestion issue with large PDFs? (needs testing)
