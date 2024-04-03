@@ -12,6 +12,7 @@
 - [x] check/fix citations format
 - [x] 6334 for Qdrant in infra
 - [x] update ingest-data scripts for java
+- [x] update slides (new version?)
 
 - [ ] .env at root project => antonio?
 - [ ] SA: dockerfiles in /backend and /ingestion
@@ -23,7 +24,6 @@
   + link w/ proxy in the slides
   + azpasses?
 
-- [ ] update slides (new version?) => java code
 
 ### Maybe
 
