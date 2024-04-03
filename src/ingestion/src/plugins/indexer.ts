@@ -1,17 +1,17 @@
 import fp from 'fastify-plugin';
-import { Indexer } from '../lib/index.js';
+import { Ingestor } from '../lib/ingestor.js';
 
 export default fp(
   async (fastify, _options) => {
     const config = fastify.config;
 
     fastify.decorate(
-      'indexer',
-      new Indexer(fastify.log, fastify.config, fastify.azure, fastify.openai, config.azureOpenAiEmbeddingModel),
+      'ingestor',
+      new Ingestor(fastify.log, fastify.config, fastify.azure, fastify.openai, config.azureOpenAiEmbeddingModel),
     );
   },
   {
-    name: 'indexer',
+    name: 'ingestor',
     dependencies: ['config', 'azure', 'openai'],
   },
 );
@@ -19,6 +19,6 @@ export default fp(
 // When using .decorate you have to specify added properties for Typescript
 declare module 'fastify' {
   export interface FastifyInstance {
-    indexer: Indexer;
+    ingestor: Ingestor;
   }
 }

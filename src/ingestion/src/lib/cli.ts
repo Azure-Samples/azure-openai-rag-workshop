@@ -6,7 +6,7 @@ import { type OptionValues, program } from 'commander';
 import * as dotenv from 'dotenv';
 import mime from 'mime';
 
-export interface IndexFilesOptions {
+export interface IngestFilesOptions {
   ingestionUrl: string;
   indexName?: string;
   category?: string;
@@ -42,7 +42,7 @@ export async function run(arguments_: string[] = process.argv) {
   program.parse(arguments_);
 }
 
-export async function ingestFiles(files: string[], options: IndexFilesOptions) {
+export async function ingestFiles(files: string[], options: IngestFilesOptions) {
   try {
     if (!options.indexName) {
       throw new Error('Index name is required');
@@ -62,7 +62,7 @@ export async function ingestFiles(files: string[], options: IndexFilesOptions) {
   }
 }
 
-async function ensureSearchIndex(options: IndexFilesOptions) {
+async function ensureSearchIndex(options: IngestFilesOptions) {
   const { ingestionUrl, indexName } = options;
   const response = await fetch(`${ingestionUrl}/indexes`, {
     method: 'POST',
@@ -79,7 +79,7 @@ async function ensureSearchIndex(options: IndexFilesOptions) {
   }
 }
 
-async function ingestFile(file: string, options: IndexFilesOptions) {
+async function ingestFile(file: string, options: IngestFilesOptions) {
   console.log(`Ingesting file "${file}"...`);
   const { ingestionUrl, indexName, category, wait } = options;
   const formData = new FormData();
@@ -99,5 +99,5 @@ async function ingestFile(file: string, options: IndexFilesOptions) {
     const errorDetails = (await response.json()) as any;
     throw new Error(`Error ingesting file "${file}": ${errorDetails.message}`);
   }
-  console.log(`File "${file}" indexed successfully`);
+  console.log(`File "${file}" ingested successfully`);
 }

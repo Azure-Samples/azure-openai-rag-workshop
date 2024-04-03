@@ -6,11 +6,11 @@ import { type FileInfos } from './file.js';
 import { AzureAISearchVectorDB, QdrantVectorDB, type VectorDB } from './vector-db/index.js';
 import { EmbeddingModel } from './embedding-model.js';
 
-export interface IndexFileOptions {
+export interface IngestFileOptions {
   throwErrors?: boolean;
 }
 
-export class Indexer {
+export class Ingestor {
   private vectorDB: VectorDB;
   private embeddingModel: EmbeddingModel;
 
@@ -44,7 +44,7 @@ export class Indexer {
     await this.vectorDB.deleteFromIndex(indexName, filename);
   }
 
-  async indexFile(indexName: string, fileInfos: FileInfos, options: IndexFileOptions = {}) {
+  async ingestFile(indexName: string, fileInfos: FileInfos, options: IngestFileOptions = {}) {
     const { filename } = fileInfos;
     this.logger.debug(`Ingesting file "${filename}" into search index "${indexName}..."`);
 
