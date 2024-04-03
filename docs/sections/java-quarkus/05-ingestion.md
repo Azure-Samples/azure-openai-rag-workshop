@@ -61,11 +61,13 @@ public class EmbeddingStoreProducer {
   String qdrantUrl;
 
   @Produces
-  public EmbeddingStore<TextSegment> embeddingStore() {
+  public EmbeddingStore<TextSegment> embeddingStore() throws URISyntaxException {
+    String qdrantHostname = new URI(qdrantUrl).getHost();
+    int qdrantPort = new URI(qdrantUrl).getPort();
     return QdrantEmbeddingStore.builder()
-      .collectionName("kbindex")
-      .host("localhost")
-      .port(6334)
+      .collectionName(azureSearchIndexName)
+      .host(qdrantHostname)
+      .port(qdrantPort)
       .build();
   }
 }
