@@ -20,7 +20,7 @@ audience: students, devs
 level: intermediate
 tags: chatgpt, openai, langchain4j, retrieval-augmented-generation, azure, containers, docker, static web apps, java, quarkus, azure ai search, azure container apps, qdrant, vector database
 published: false
-wt_id: javaquarkus-0000-cxa
+wt_id: java-0000-cxa
 sections_title:
   - Welcome
 ---
@@ -67,7 +67,7 @@ In this workshop, we'll explore the fundamentals of custom ChatGPT experiences b
 
 </div>
 
-As for development, you can either use your local environment or [GitHub Codespaces](https://github.com/features/codespaces). Thanks to GitHub Codespaces you can have an instant dev environment already prepared for this workshop.
+We'll use [GitHub Codespaces](https://github.com/features/codespaces) to have an instant dev environment already prepared for this workshop.
 
 If you prefer to work locally, we'll also provide instructions to setup a local dev environment using either VS Code with a [dev container](https://aka.ms/vscode/ext/devcontainer) or a manual install of the needed tools with your favourite IDE (Intellij IDEA, VS Code, etc.).
 
