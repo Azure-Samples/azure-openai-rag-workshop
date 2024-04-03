@@ -1,16 +1,30 @@
 # Tasks
 
 ## Devoxx Paris
+
 - [x] generate the template
+- [x] check the ports for ingestion/chat services
+- [x] test ingestion
+- [x] generate solution package
+- [x] simplify ingestion: just run the script and explain parts of the code
+- [x] use env vars for Qdrant host / collection name!
+- [x] rename collection to use env variable / kbindex by default
+- [x] check/fix citations format
 
-- [ ] simplify ingestion: just run the script and explain parts of the code
-- [ ] check the ports for ingestion/chat services
-- [ ] dockerfiles in /backend and /ingestion
-- [ ] update index-data scripts for java
-- [ ] build&copy the frontend in java build
+- [ ] .env at root project => antonio
+- [ ] 6334 for Qdrant in infra
 
-- [ ] citations format
-- [ ] generate aka.ms link
+- [ ] YO: update index-data scripts for java
+
+- [ ] SA: dockerfiles in /backend and /ingestion
+- [ ] SA: build&copy the frontend in java build
+
+- [ ] Missing message history in chat
+- [ ] Add optional follow-up questions
+
+- [ ] generate aka.ms link: aka.ms/ws/openai-rag-quarkus
+  + link w/ proxy in the slides
+  + azpasses?
 - [ ] update slides (new version?)
 
 ## For later
