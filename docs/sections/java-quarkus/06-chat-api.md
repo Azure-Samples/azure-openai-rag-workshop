@@ -46,10 +46,11 @@ And let's finish with configuring the `EmbeddingStoreProducer`, using the Qdrant
 @Produces
 public EmbeddingStore<TextSegment> embeddingStore() throws URISyntaxException {
   String qdrantHostname = new URI(qdrantUrl).getHost();
+  int qdrantPort = new URI(qdrantUrl).getPort();
   return QdrantEmbeddingStore.builder()
     .collectionName(azureSearchIndexName)
     .host(qdrantHostname)
-    .port(6334)
+    .port(qdrantPort)
     .build();
 }
 ```
