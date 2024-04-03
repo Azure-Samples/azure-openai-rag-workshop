@@ -106,7 +106,7 @@ curl http://localhost:6333/collections/kbindex
 Once Qdrant is started and the collection is created, you can run the ingestion process by opening a new terminal and running the following Maven command under the `src/ingestion` folder. This will compile the code and run the ingestion server:
 
 ```bash
-mvn clean compile exec:java
+./mvnw clean quarkus:dev
 ```
 
 Once the server is started, in another terminal you can send the PDF files to the ingestion service using the following cUrl command:
