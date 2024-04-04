@@ -14,16 +14,15 @@
 - [x] update ingest-data scripts for java
 - [x] update slides (new version?)
 
-- [ ] .env at root project => antonio?
+- [ ] .env at root project
 - [ ] SA: dockerfiles in /backend and /ingestion
-- [ ] SA: build&copy the frontend in java build
-
-- [ ] feature: missing message history in chat
 
 - [ ] generate aka.ms link: aka.ms/ws/openai-rag-quarkus
   + link w/ proxy in the slides
   + azpasses?
 
+- [ ] SA: build&copy the frontend in java build
+- [ ] feature: missing message history in chat: use input message and feed it to LC4J Memory with a token window, see https://github.com/langchain4j/langchain4j-examples/blob/main/other-examples/src/main/java/ChatMemoryExamples.java
 
 ### Maybe
 
