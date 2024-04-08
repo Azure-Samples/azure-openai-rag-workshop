@@ -89,7 +89,7 @@ makeArchive . solution-qdrant solution-qdrant
 
 echo "Creating solution package (for Java + Quarkus)..."
 copyFolder . solution-java-quarkus
-mv "$target_folder/solution-java-quarkus/src/backend-node-qdrant" "$target_folder/solution-java-quarkus/src/backend"
+mv "$target_folder/solution-java-quarkus/src/backend-java-quarkus" "$target_folder/solution-java-quarkus/src/backend"
 rm -rf "$target_folder/solution-java-quarkus/src/ingestion"
 mv "$target_folder/solution-java-quarkus/src/ingestion-java" "$target_folder/solution-java-quarkus/src/ingestion"
 rm -rf "$target_folder/solution-java-quarkus/.azure"
@@ -108,6 +108,9 @@ rm -rf "$target_folder/solution-java-quarkus/CODE_OF_CONDUCT.md"
 rm -rf "$target_folder/solution-java-quarkus/SECURITY.md"
 rm -rf "$target_folder/solution-java-quarkus/scripts/setup-template.sh"
 perl -pi -e 's/stream: false/stream: true/g' "$target_folder/solution-java-quarkus/src/frontend/src/components/chat.ts"
+perl -pi -e 's/api_mode=false/api_mode=true/g' "$target_folder/solution-java-quarkus/scripts/ingest-data.sh"
+perl -pi -e 's/$api_mode = false/$api_mode = true/g' "$target_folder/solution-java-quarkus/scripts/ingest-data.ps1"
+perl -pi -e 's/qdrant:6333/qdrant:6334/g' "$target_folder/solution-java-quarkus/docker-compose.yml"
 makeArchive . solution-java-quarkus solution-java-quarkus
 
 ##############################################################################
