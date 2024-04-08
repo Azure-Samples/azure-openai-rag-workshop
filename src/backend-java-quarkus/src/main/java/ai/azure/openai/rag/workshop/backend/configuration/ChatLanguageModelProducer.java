@@ -9,13 +9,13 @@ import static java.time.Duration.ofSeconds;
 
 public class ChatLanguageModelProducer {
 
-  @ConfigProperty(name = "AZURE_OPENAI_KEY")
+  @ConfigProperty(name = "AZURE_OPENAI_KEY", defaultValue = "")
   String azureOpenAiKey;
 
   @ConfigProperty(name = "AZURE_OPENAI_ENDPOINT")
   String azureOpenAiEndpoint;
 
-  @ConfigProperty(name = "AZURE_OPENAI_DEPLOYMENT_NAME")
+  @ConfigProperty(name = "AZURE_OPENAI_DEPLOYMENT_NAME", defaultValue = "gpt-35-turbo")
   String azureOpenAiDeploymentName;
 
   @Produces
