@@ -19,12 +19,21 @@ As those producers are configured in separate files, and use the LangChain4J API
 Let's start by configuring `ChatLanguageModelProducer`, using the Azure OpenAI API:
 
 ```java
+  @ConfigProperty(name = "AZURE_OPENAI_KEY", defaultValue = "")
+  String azureOpenAiKey;
+
+  @ConfigProperty(name = "AZURE_OPENAI_ENDPOINT")
+  String azureOpenAiEndpoint;
+
+  @ConfigProperty(name = "AZURE_OPENAI_DEPLOYMENT_NAME", defaultValue = "gpt-35-turbo")
+  String azureOpenAiDeploymentName;
+
   @Produces
   public ChatLanguageModel chatLanguageModel() {
     return AzureOpenAiChatModel.builder()
-      .apiKey(System.getenv("AZURE_OPENAI_KEY"))
-      .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))
-      .deploymentName(System.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"))
+      .apiKey(azureOpenAiKey)
+      .endpoint(azureOpenAiEndpoint)
+      .deploymentName(azureOpenAiDeploymentName)
       .timeout(ofSeconds(60))
       .logRequestsAndResponses(true)
       .build();
@@ -43,15 +52,22 @@ Now let's configure the `EmbeddingModelProducer`, using a local embedding model 
 And let's finish with configuring the `EmbeddingStoreProducer`, using the Qdrant vector store:
 
 ```java
-@Produces
-public EmbeddingStore<TextSegment> embeddingStore() throws URISyntaxException {
-  String qdrantHostname = new URI(qdrantUrl).getHost();
-  int qdrantPort = new URI(qdrantUrl).getPort();
-  return QdrantEmbeddingStore.builder()
-    .collectionName(azureSearchIndexName)
-    .host(qdrantHostname)
-    .port(qdrantPort)
-    .build();
+  @ConfigProperty(name = "AZURE_SEARCH_INDEX", defaultValue = "kbindex")
+  String azureSearchIndexName;
+
+  @ConfigProperty(name = "QDRANT_URL", defaultValue = "http://localhost:6334")
+  String qdrantUrl;
+
+  @Produces
+  public EmbeddingStore<TextSegment> embeddingStore() throws URISyntaxException {
+    String qdrantHostname = new URI(qdrantUrl).getHost();
+    int qdrantPort = new URI(qdrantUrl).getPort();
+    return QdrantEmbeddingStore.builder()
+      .collectionName(azureSearchIndexName)
+      .host(qdrantHostname)
+      .port(qdrantPort)
+      .build();
+  }
 }
 ```
 
@@ -61,13 +77,43 @@ Now that our data has been ingested, and that our services are configured in Qua
 
 ![ChatResource and dependencies](./assets/class-diagram-rest.png)
 
-Create the `ChatResource` under the `src/main/java` directory, inside the `ai.azure.openai.rag.workshop.backend` package. The `chat` method of the `ChatResource` class looks like the following:
+Create the `ChatResource` under the `src/main/java` directory, inside the `ai.azure.openai.rag.workshop.backend.rest` package. The `chat` method of the `ChatResource` class looks like the following:
 
 ```java
+package ai.azure.openai.rag.workshop.backend.rest;
+
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.SystemMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.langchain4j.model.output.Response;
+import dev.langchain4j.store.embedding.EmbeddingMatch;
+import dev.langchain4j.store.embedding.EmbeddingStore;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @Path("/chat")
 public class ChatResource {
 
   private static final Logger log = LoggerFactory.getLogger(ChatResource.class);
+
+  @Inject
+  EmbeddingModel embeddingModel;
+
+  @Inject
+  EmbeddingStore<TextSegment> embeddingStore;
+
+  @Inject
+  ChatLanguageModel chatLanguageModel;
 
   @POST
   @Consumes({"application/json"})
@@ -88,6 +134,11 @@ public class ChatResource {
 Notice that the `chat` method takes a `ChatRequest` parameter. This is the object that will be sent by the UI to the API, containing the messages of the conversation (`ChatRequestMessage`).
 
 ```java
+package ai.azure.openai.rag.workshop.backend.rest;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChatRequest {
 
   public List<ChatMessage> messages = new ArrayList<>();
@@ -97,7 +148,7 @@ public class ChatRequest {
 }
 ```
 
-Create the `ChatRequest` class under the `src/main/java` directory, inside the `ai.azure.openai.rag.workshop.backend` package.
+Create the `ChatRequest` class under the `src/main/java` directory, inside the `ai.azure.openai.rag.workshop.backend.rest` package.
 
 #### Embed the question
 
