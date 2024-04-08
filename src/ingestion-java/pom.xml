@@ -21,6 +21,7 @@
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
     <langchain4j.version>0.29.1</langchain4j.version>
+    <resources-plugin.version>3.3.1</resources-plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -153,6 +154,31 @@
             <maven.home>${maven.home}</maven.home>
           </systemPropertyVariables>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>${resources-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>copy-pdfs-to-resources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/classes</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/../..</directory>
+                  <includes>
+                    <include>.env</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
