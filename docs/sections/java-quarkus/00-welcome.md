@@ -41,7 +41,7 @@ In this workshop, we'll explore the fundamentals of custom ChatGPT experiences b
 
 ## Prerequisites
 
-<div class="info" data-title="note" data-hidden="$$proxy$$">
+<div data-hidden="$$proxy$$">
 
 |                   |                                                                      |
 |-------------------|----------------------------------------------------------------------|
@@ -55,7 +55,7 @@ In this workshop, we'll explore the fundamentals of custom ChatGPT experiences b
 
 </div>
 
-<div class="info" data-title="note" data-visible="$$proxy$$">
+<div data-visible="$$proxy$$">
 
 |                   |                                                                      |
 |-------------------|----------------------------------------------------------------------|
