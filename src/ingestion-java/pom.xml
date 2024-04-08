@@ -161,7 +161,7 @@
         <version>${resources-plugin.version}</version>
         <executions>
           <execution>
-            <id>copy-pdfs-to-resources</id>
+            <id>copy-dotenv</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>copy-resources</goal>
