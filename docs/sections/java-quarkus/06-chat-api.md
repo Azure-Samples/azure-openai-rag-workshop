@@ -118,7 +118,7 @@ public class ChatResource {
   @POST
   @Consumes({"application/json"})
   @Produces({"application/json"})
-  public String chat(ChatRequest chatRequest) {
+  public ChatResponse chat(ChatRequest chatRequest) {
 
     // Embed the question (convert the user's question into vectors that represent the meaning)
     // Find relevant embeddings from Qdrant based on the user's question
@@ -324,18 +324,17 @@ This will start the API in development mode, which means it will automatically r
 To test this API, you can either use the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) extension for VS Code, or a cURL request. Open up a new terminal in and run the following commands:
 
 ```bash
-curl -X 'POST' \
-'http://localhost:8080/chat' \
--H 'accept: */*' \
--H 'Content-Type: application/json' \
--d '{
-  "messages": [
-    {
-      "content": "What is the information that is collected automatically?",
-      "role": "user"
-    }
-  ]
-}'
+curl -X 'POST' 'http://localhost:3000/chat' \
+  -H 'accept: */*' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "messages": [
+      {
+        "content": "What is the information that is collected automatically?",
+        "role": "user"
+      }
+    ]
+  }'
 ```
 
 You can play a bit and change the question to see how the model behaves.

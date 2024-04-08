@@ -5,14 +5,14 @@
 ##############################################################################
 
 curl -X 'POST' \
-'http://localhost:8080/chat' \
+'http://localhost:3000/chat' \
 -H 'accept: */*' \
 -H 'Content-Type: application/json' \
 -d '{
   "messages": [
     {
       "content": "What is the information that is collected automatically?",
-      "role": "USER"
+      "role": "user"
     }
   ],
   "model": "gpt-3.5-turbo",
