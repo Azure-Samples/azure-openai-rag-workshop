@@ -259,12 +259,14 @@ declare module 'fastify' {
 # Quarkus + Qdrant
 ##############################################################################
 rm -rf src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/rest/ChatResource.java
+rm -rf src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/rest/ChatRequest.java
 
 echo -e "package ai.azure.openai.rag.workshop.backend.configuration;
 
 import dev.langchain4j.model.azure.AzureOpenAiChatModel;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import jakarta.enterprise.inject.Produces;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import static java.time.Duration.ofSeconds;
 
@@ -282,6 +284,7 @@ echo -e "package ai.azure.openai.rag.workshop.backend.configuration;
 import dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import jakarta.enterprise.inject.Produces;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 public class EmbeddingModelProducer {
 
@@ -298,6 +301,10 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
 import jakarta.enterprise.inject.Produces;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class EmbeddingStoreProducer {
 
