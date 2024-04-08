@@ -81,9 +81,4 @@ public class ChatResource {
     // Return the response
     return ChatResponse.fromMessage(response.content().text());
   }
-
-  @GET
-  public String hello() {
-    return "Hello from ChatResource!";
-  }
 }
