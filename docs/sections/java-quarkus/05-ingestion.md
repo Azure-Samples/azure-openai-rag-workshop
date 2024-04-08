@@ -105,9 +105,10 @@ curl http://localhost:6333/collections
 curl http://localhost:6333/collections/kbindex
 ```
 
-Once Qdrant is started and the collection is created, you can run the ingestion process by opening a new terminal and running the following Maven command under the `src/ingestion` folder. This will compile the code and run the ingestion server:
+Once Qdrant is started and the collection is created, you can run the ingestion process by opening a new terminal and running the following commands. This will compile the code and run the ingestion server:
 
 ```bash
+cd src/ingestion
 ./mvnw clean quarkus:dev
 ```
 
