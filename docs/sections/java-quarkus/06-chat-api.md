@@ -161,7 +161,7 @@ public class ChatResource {
   @POST
   @Consumes({"application/json"})
   @Produces({"application/json"})
-  public String chat(ChatRequest chatRequest) {
+  public ChatResponse chat(ChatRequest chatRequest) {
 
     String question = chatRequest.messages.get(chatRequest.messages.size() - 1).content;
 
@@ -185,7 +185,7 @@ public class ChatResource {
   @POST
   @Consumes({"application/json"})
   @Produces({"application/json"})
-  public String chat(ChatRequest chatRequest) {
+  public ChatResponse chat(ChatRequest chatRequest) {
 
     // Embed the question (convert the user's question into vectors that represent the meaning)
     // ...
@@ -224,7 +224,7 @@ public class ChatResource {
     Don't combine sources, list each source separately, for example: [info1.txt][info2.pdf].
     """;
 
-  public String chat(ChatRequest chatRequest) {
+  public ChatResponse chat(ChatRequest chatRequest) {
 
     // ...
   }
@@ -260,7 +260,7 @@ public class ChatResource {
   @POST
   @Consumes({"application/json"})
   @Produces({"application/json"})
-  public String chat(ChatRequest chatRequest) {
+  public ChatResponse chat(ChatRequest chatRequest) {
 
     // Embed the question (convert the user's question into vectors that represent the meaning)
     // Find relevant embeddings from Qdrant based on the user's question
@@ -292,7 +292,7 @@ public class ChatResource {
   @POST
   @Consumes({"application/json"})
   @Produces({"application/json"})
-  public String chat(ChatRequest chatRequest) {
+  public ChatResponse chat(ChatRequest chatRequest) {
 
     // Embed the question (convert the user's question into vectors that represent the meaning)
     // Find relevant embeddings from Qdrant based on the user's question
