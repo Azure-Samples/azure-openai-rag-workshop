@@ -325,6 +325,11 @@ module qdrant './core/host/container-app.bicep' = if (useQdrant) {
     allowInsecure: (qdrantPort == 6334 ? true : false)
     // gRPC needs to be explicitly set for HTTP2
     transport: (qdrantPort == 6334 ? 'HTTP2' : 'auto')
+    additionalPortMappings: (qdrantPort == 6334 ? [{
+      // external: false
+      targetPort: 6333
+      exposedPort: 6333
+    }] : [])
   }
 }
 
