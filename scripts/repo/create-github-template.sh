@@ -275,6 +275,7 @@ public class ChatLanguageModelProducer {
   @Produces
   public ChatLanguageModel chatLanguageModel() {
     // TODO: initialize chat model here
+    return null;
   }
 }
 " > src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/configuration/ChatLanguageModelProducer.java
@@ -291,6 +292,7 @@ public class EmbeddingModelProducer {
   @Produces
   public EmbeddingModel embeddingModel() {
     // TODO: initialize embedding model here
+    return null;
   }
 }
 " > src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/configuration/EmbeddingModelProducer.java
@@ -311,6 +313,7 @@ public class EmbeddingStoreProducer {
   @Produces
   public EmbeddingStore<TextSegment> embeddingStore() {
     // TODO: initialize embedding store here
+    return null;
   }
 }
 " > src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/configuration/EmbeddingStoreProducer.java
