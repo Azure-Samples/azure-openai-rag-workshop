@@ -1184,6 +1184,7 @@ This frontend will be built as a Single Page Application (SPA), which will be si
 The project is available in the `src/frontend` folder. From the project directory, you can run this command to start the development server:
 
 ```bash
+cd src/frontend
 npm run dev
 ```
 
