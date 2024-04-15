@@ -19,10 +19,10 @@ As those producers are configured in separate files, and use the LangChain4J API
 Let's start by configuring `ChatLanguageModelProducer`, using the Azure OpenAI API:
 
 ```java
-  @ConfigProperty(name = "AZURE_OPENAI_KEY", defaultValue = "")
+  @ConfigProperty(name = "AZURE_OPENAI_KEY", defaultValue = "__dummy")
   String azureOpenAiKey;
 
-  @ConfigProperty(name = "AZURE_OPENAI_ENDPOINT")
+  @ConfigProperty(name = "AZURE_OPENAI_URL")
   String azureOpenAiEndpoint;
 
   @ConfigProperty(name = "AZURE_OPENAI_DEPLOYMENT_NAME", defaultValue = "gpt-35-turbo")

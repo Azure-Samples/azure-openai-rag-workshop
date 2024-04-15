@@ -12,7 +12,7 @@ public class ChatLanguageModelProducer {
   @ConfigProperty(name = "AZURE_OPENAI_KEY", defaultValue = "__dummy")
   String azureOpenAiKey;
 
-  @ConfigProperty(name = "AZURE_OPENAI_ENDPOINT")
+  @ConfigProperty(name = "AZURE_OPENAI_URL")
   String azureOpenAiEndpoint;
 
   @ConfigProperty(name = "AZURE_OPENAI_DEPLOYMENT_NAME", defaultValue = "gpt-35-turbo")

@@ -53,7 +53,7 @@ AZURE_OPENAI_KEY=$(
     --resource-group "$RESOURCE_GROUP" \
     | jq -r .key1
   )
-AZURE_OPENAI_ENDPOINT=$(
+AZURE_OPENAI_URL=$(
   az cognitiveservices account show \
     --name "$AI_SERVICE" \
     --resource-group "$RESOURCE_GROUP" \
@@ -61,5 +61,5 @@ AZURE_OPENAI_ENDPOINT=$(
   )
 
 echo "AZURE_OPENAI_KEY=$AZURE_OPENAI_KEY"
-echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT"
+echo "AZURE_OPENAI_URL=$AZURE_OPENAI_URL"
 echo "AZURE_OPENAI_DEPLOYMENT_NAME=$AI_MODEL"
