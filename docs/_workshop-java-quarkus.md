@@ -34,7 +34,7 @@ include::sections/java-quarkus/08-website.md[]
 
 ---
 
-include::sections/09-azure.md[]
+include::sections/java-quarkus/09-azure.md[]
 
 ---
 
