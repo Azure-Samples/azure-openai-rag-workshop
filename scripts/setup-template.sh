@@ -93,7 +93,8 @@ elif [ "$template_name" == "quarkus" ]; then
 " > docker-compose.yml
 
   perl -pi -e 's/api_mode=false/api_mode=true/g' scripts/ingest-data.sh
-  perl -pi -e 's/$api_mode = false/$api_mode = true/g' scripts/ingest-data.ps1  
+  perl -pi -e 's/$api_mode = false/$api_mode = true/g' scripts/ingest-data.ps1
+  npm install
 else
   echo "Invalid template name. Please use 'aisearch', 'qdrant' or 'quarkus' as the template name."
   echo "Usage: setup-template.sh [aisearch|qdrant|quarkus]"
