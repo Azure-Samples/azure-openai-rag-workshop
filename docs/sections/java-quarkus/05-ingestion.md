@@ -89,7 +89,7 @@ curl -X PUT 'http://localhost:6333/collections/kbindex' \
      --data-raw '{
        "vectors": {
          "size": 384,
-         "distance": "Dot"
+         "distance": "Cosine"
        }
      }'
 ```
