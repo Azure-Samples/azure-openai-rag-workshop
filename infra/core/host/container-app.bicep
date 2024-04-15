@@ -13,6 +13,8 @@ param keyVaultName string = ''
 param managedIdentity bool = !empty(keyVaultName)
 param targetPort int = 80
 param allowedOrigins array = []
+param transport string = 'auto'
+param allowInsecure bool = false
 
 @description('CPU cores allocated to a single container instance, e.g. 0.5')
 param containerCpuCoreCount string = '0.5'
@@ -32,7 +34,8 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
       ingress: {
         external: external
         targetPort: targetPort
-        transport: 'auto'
+        transport: transport
+        allowInsecure: allowInsecure
         corsPolicy: {
           allowedOrigins: empty(allowedOrigins) ? ['*'] : allowedOrigins
         }

@@ -74,7 +74,7 @@ var tags = { 'azd-env-name': environmentName }
 var finalOpenAiUrl = empty(openAiUrl) ? 'https://${openAi.outputs.name}.openai.azure.com' : openAiUrl
 var useAzureAISearch = !useQdrant
 var azureSearchService = useAzureAISearch ? searchService.outputs.name : ''
-var qdrantUrl = useQdrant ? '${qdrant.outputs.uri}:443' : ''
+var qdrantUrl = useQdrant ? (qdrantPort == 6334 ? replace('${qdrant.outputs.uri}:80', 'https', 'http') : '${qdrant.outputs.uri}:443') : ''
 
 // Organize resources in a resource group
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -322,6 +322,9 @@ module qdrant './core/host/container-app.bicep' = if (useQdrant) {
     }] : [])
     imageName: !empty(qdrantImageName) ? qdrantImageName : 'docker.io/qdrant/qdrant'
     targetPort: qdrantPort
+    allowInsecure: (qdrantPort == 6334 ? true : false)
+    // gRPC needs to be explicitly set for HTTP2
+    transport: (qdrantPort == 6334 ? 'HTTP2' : 'auto')
   }
 }
 
