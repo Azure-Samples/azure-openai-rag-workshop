@@ -19,8 +19,7 @@ if [ "$template_name" == "qdrant" ]; then
   rm -rf src/ingestion-*
   rm -rf pom.xml
 
-  echo -e "version: '3.9'
-services:
+  echo -e "services:
   # backend:
   #   build:
   #     dockerfile: ./src/backend/Dockerfile
@@ -64,8 +63,7 @@ elif [ "$template_name" == "quarkus" ]; then
   rm -rf src/backend-*
   rm -rf src/ingestion-*
 
-  echo -e "version: '3.9'
-services:
+  echo -e "services:
   # backend:
   #   build:
   #     dockerfile: ./src/backend/Dockerfile
