@@ -32,7 +32,7 @@ On Azure, you can run the vector databases listed above, or use specific Azure s
 
 [Qdrant](https://qdrant.tech/) is an open-source vector database that is easy to use and deploy. The core of Qdrant is a vector similarity search engine that provides a production-ready service with a convenient API to store, search, and manage vectors with an additional payload. You can think of the payloads as additional pieces of information that can help you hone in on your search and also receive useful information that you can give to your users.
 
-For this workshop, we'll use Qdrant as our vector database as it works well with JavaScript and can run locally in Docker. For the RAG use-case, most vector databases will work in a similar way.
+For this workshop, we'll use Qdrant as our vector database as it works well with Java and can run locally in Docker. For the RAG use-case, most vector databases will work in a similar way.
 
 ### Running Qdrant locally
 
