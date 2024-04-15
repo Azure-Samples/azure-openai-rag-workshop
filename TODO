@@ -1,25 +1,6 @@
 # Tasks
 
-## Devoxx Paris
-
-- [x] generate the template
-- [x] check the ports for ingestion/chat services
-- [x] test ingestion
-- [x] generate solution package
-- [x] simplify ingestion: just run the script and explain parts of the code
-- [x] use env vars for Qdrant host / collection name!
-- [x] rename collection to use env variable / kbindex by default
-- [x] check/fix citations format
-- [x] 6334 for Qdrant in infra
-- [x] update ingest-data scripts for java
-- [x] update slides (new version?)
-- [x] .env at root project
-- [x] dockerfiles in /backend and /ingestion
-- [x] generate aka.ms link: aka.ms/ws/openai-rag-quarkus
-  aka.ms/openai-rag-devoxx
-  + link w/ proxy in the slides
-- [x] fix solution
-- [x] change deployment names
+## Devoxx Paris/UK
 
 - [ ] add note about the embedding model, explain how to switch to Azure model
 - [ ] build&copy the frontend in java build
