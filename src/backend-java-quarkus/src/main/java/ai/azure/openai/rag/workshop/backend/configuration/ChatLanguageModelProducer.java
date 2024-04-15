@@ -9,7 +9,7 @@ import static java.time.Duration.ofSeconds;
 
 public class ChatLanguageModelProducer {
 
-  @ConfigProperty(name = "AZURE_OPENAI_KEY", defaultValue = "")
+  @ConfigProperty(name = "AZURE_OPENAI_KEY", defaultValue = "__dummy")
   String azureOpenAiKey;
 
   @ConfigProperty(name = "AZURE_OPENAI_ENDPOINT")
