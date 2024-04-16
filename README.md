@@ -1,17 +1,26 @@
 # 🤖 azure-openai-rag-workshop
 
-In this workshop, we will build a chatbot based on OpenAI language models and implementing the Retrieval Augmented Generation (RAG) pattern. You'll use [Fastify](https://fastify.dev) to create a [Node.js](https://nodejs.org/en/) service that leverage [OpenAI SDK](https://platform.openai.com/docs/libraries/) and [LangChain](https://js.langchain.com/) to build a chatbot that will answer questions based on a corpus of documents, as well as a website to test it.
+In this workshop, we will build a chatbot based on OpenAI language models and implementing the Retrieval Augmented Generation (RAG) pattern. 
 <!-- Finally, we will deploy everything on Azure with a CI/CD pipeline. -->
 
 This workshop exists in different variants:
+
+#### Node.js
+
+You'll use [Fastify](https://fastify.dev) to create a [Node.js](https://nodejs.org/en/) service that leverage [OpenAI SDK](https://platform.openai.com/docs/libraries/) and [LangChain](https://js.langchain.com/) to build a chatbot that will answer questions based on a corpus of documents, as well as a website to test it.
 
 - 👉 [**See the workshop using Node.js + Azure AI Search**](https://aka.ms/ws/openai-rag): we will use [Azure AI Search](https://azure.microsoft.com/services/search/) to index and search the documents.
 
 - 👉 [**See the workshop using Node.js + Qdrant**](https://aka.ms/ws/openai-rag-qdrant): we will use [Qdrant](https://qdrant.tech/) to index and search the documents.
 
-- 👉 [**See the workshop using Java / Quarkus + Qdrant**](https://aka.ms/ws/openai-rag-quarkus): we will use [Qdrant](https://qdrant.tech/) to index and search the documents.
+#### Java
 
-💡 [See the completed solution and workshop source for all versions](https://github.com/Azure-Samples/azure-openai-rag-workshop/tree/base)
+You'll use [Quarkus](https://quarkus.io/) to create a [Java](https://openjdk.org/) service that leverage [OpenAI SDK](https://platform.openai.com/docs/libraries/) and [LangChain4j](https://github.com/langchain4j/langchain4j) to build a chatbot that will answer questions based on a corpus of documents, as well as a website to test it.
+
+- 👉 [**See the workshop using Quarkus + Qdrant**](https://aka.ms/ws/openai-rag-quarkus): we will use [Qdrant](https://qdrant.tech/) to index and search the documents.
+
+> [!TIP]
+> 💡 [See the completed solution and workshop source for all versions](https://github.com/Azure-Samples/azure-openai-rag-workshop/tree/base)
 
 ## Prerequisites
 
