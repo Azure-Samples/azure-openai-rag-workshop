@@ -5,59 +5,34 @@ In this workshop, we will build a chatbot based on OpenAI language models and im
 
 This workshop exists in different variants:
 
-- 👉 [**See the workshop using Azure AI Search**](https://aka.ms/ws/openai-rag): we will use [Azure AI Search](https://azure.microsoft.com/services/search/) to index and search the documents.
+- 👉 [**See the workshop using Node.js + Azure AI Search**](https://aka.ms/ws/openai-rag): we will use [Azure AI Search](https://azure.microsoft.com/services/search/) to index and search the documents.
 
-- 👉 [**See the workshop using Qdrant**](https://aka.ms/ws/openai-rag-qdrant): we will use [Qdrant](https://qdrant.tech/) to index and search the documents.
+- 👉 [**See the workshop using Node.js + Qdrant**](https://aka.ms/ws/openai-rag-qdrant): we will use [Qdrant](https://qdrant.tech/) to index and search the documents.
 
+- 👉 [**See the workshop using Java / Quarkus + Qdrant**](https://aka.ms/ws/openai-rag-quarkus): we will use [Qdrant](https://qdrant.tech/) to index and search the documents.
 
-
-👉 [See the completed solution and workshop source](https://github.com/Azure-Samples/azure-openai-rag-workshop/tree/base)
+💡 [See the completed solution and workshop source for all versions](https://github.com/Azure-Samples/azure-openai-rag-workshop/tree/base)
 
 ## Prerequisites
 
-- **Node.js v20+**
-- **Docker v20+**
 - **Azure account**. If you're new to Azure, [get an Azure account for free](https://azure.microsoft.com/free/?WT.mc_id=javascript-0000-cxa) to get free Azure credits to get started.
 - **Azure subscription with access enabled for the Azure OpenAI service**. You can request access with [this form](https://aka.ms/oaiapply).
 
 You can use [GitHub Codespaces](https://github.com/features/codespaces) to work on this project directly from your browser: select the **Code** button, then the **Codespaces** tab and click on **Create Codespaces on main**.
 
-You can also use the [Dev Containers extension for VS Code](https://aka.ms/vscode/ext/devcontainer) to work locally using a ready-to-use dev environment.
+You can also use Docker and the [Dev Containers extension for VS Code](https://aka.ms/vscode/ext/devcontainer) to work locally using a ready-to-use dev environment.
 
 ## Project details
 
-This project is structured as monorepo and makes use of [NPM Workspaces](https://docs.npmjs.com/cli/using-npm/workspaces).
+This project is structured as monorepo, all packages source code is located under the `src/` folder.
 
 Here's the architecture of the application:
 
 ![Architecture diagram](https://github.com/Azure-Samples/azure-openai-rag-workshop/blob/base/docs/assets/architecture.png)
 
-## How to run locally
-
-```bash
-npm install
-npm start
-```
-
-This command will start the frontend and backend services.
-For these services to work, you need to have a `.env` file at the root of the project with at least the following content:
-
-```bash
-AZURE_SEARCH_SERVICE=<your_azure_ai_search_instance_name>
-AZURE_OPENAI_URL=<you_openai_instance_url>
-```
-
-The application will then be available at `http://localhost:8000`.
-
-## How to build Docker images
-
-```bash
-npm run docker:build
-```
-
-This command will build the container images for all services.
-
 ## How deploy to Azure
+
+Before deploying to Azure, you need to install the [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd). Once you're ready, run the following commands:
 
 ```bash
 azd auth login
