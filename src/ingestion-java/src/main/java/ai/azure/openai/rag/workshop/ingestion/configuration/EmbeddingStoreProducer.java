@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 public class EmbeddingStoreProducer {
 
@@ -29,7 +28,7 @@ public class EmbeddingStoreProducer {
   String qdrantUrl;
 
   @Produces
-  public EmbeddingStore<TextSegment> embeddingStore() throws URISyntaxException {
+  public EmbeddingStore<TextSegment> embeddingStore() throws Exception {
     String qdrantHostname = new URI(qdrantUrl).getHost();
     int qdrantPort = new URI(qdrantUrl).getPort();
 
