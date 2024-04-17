@@ -35,7 +35,13 @@ public class EmbeddingStoreProducer {
 
     QdrantGrpcClient.Builder grpcClientBuilder = QdrantGrpcClient.newBuilder(qdrantHostname, qdrantPort, false);
     QdrantClient qdrantClient = new QdrantClient(grpcClientBuilder.build());
-    qdrantClient.createCollectionAsync(azureSearchIndexName, VectorParams.newBuilder().setSize(384).setDistance(Distance.Cosine).build()).get();
+    qdrantClient.createCollectionAsync(
+      azureSearchIndexName,
+      VectorParams.newBuilder()
+        .setSize(384)
+        .setDistance(Distance.Cosine)
+        .build()
+      ).get();
 
     return QdrantEmbeddingStore.builder()
       .client(qdrantClient)

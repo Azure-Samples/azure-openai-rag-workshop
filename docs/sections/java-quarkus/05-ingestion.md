@@ -54,6 +54,8 @@ The embeddings along with the original texts are then added to the vector databa
 ```java
 public class EmbeddingStoreProducer {
 
+  private static final Logger log = LoggerFactory.getLogger(EmbeddingStoreProducer.class);
+
   @ConfigProperty(name = "AZURE_SEARCH_INDEX", defaultValue = "kbindex")
   String azureSearchIndexName;
 
@@ -64,14 +66,26 @@ public class EmbeddingStoreProducer {
   public EmbeddingStore<TextSegment> embeddingStore() throws URISyntaxException {
     String qdrantHostname = new URI(qdrantUrl).getHost();
     int qdrantPort = new URI(qdrantUrl).getPort();
+
+    QdrantGrpcClient.Builder grpcClientBuilder = QdrantGrpcClient.newBuilder(qdrantHostname, qdrantPort, false);
+    QdrantClient qdrantClient = new QdrantClient(grpcClientBuilder.build());
+    qdrantClient.createCollectionAsync(
+      azureSearchIndexName,
+      VectorParams.newBuilder()
+        .setSize(384)
+        .setDistance(Distance.Cosine)
+        .build()
+      ).get();
+
     return QdrantEmbeddingStore.builder()
+      .client(qdrantClient)
       .collectionName(azureSearchIndexName)
-      .host(qdrantHostname)
-      .port(qdrantPort)
       .build();
   }
 }
 ```
+
+If there's no collection found with the specified name in Qdrant, it will create one.
 
 ### Running the ingestion process
 
@@ -81,18 +95,7 @@ Let's now execute this process. First, you need to make sure you have Qdrant run
 docker compose up qdrant
 ```
 
-This will start Qdrant locally. Make sure you can access the Qdrant dashboard at the URL http://localhost:6333/dashboard. Then, create a new collection named `kbindex` with the following cUrl command:
-
-```bash
-curl -X PUT 'http://localhost:6333/collections/kbindex' \
-     -H 'Content-Type: application/json' \
-     --data-raw '{
-       "vectors": {
-         "size": 384,
-         "distance": "Cosine"
-       }
-     }'
-```
+This will start Qdrant locally. Make sure you can access the Qdrant dashboard at the URL http://localhost:6333/dashboard.
 
 You should see the collection in the dashabord:
 
