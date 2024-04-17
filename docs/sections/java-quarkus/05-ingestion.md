@@ -69,13 +69,17 @@ public class EmbeddingStoreProducer {
 
     QdrantGrpcClient.Builder grpcClientBuilder = QdrantGrpcClient.newBuilder(qdrantHostname, qdrantPort, false);
     QdrantClient qdrantClient = new QdrantClient(grpcClientBuilder.build());
-    qdrantClient.createCollectionAsync(
-      azureSearchIndexName,
-      VectorParams.newBuilder()
-        .setSize(384)
-        .setDistance(Distance.Cosine)
-        .build()
+    try {
+      qdrantClient.createCollectionAsync(
+        azureSearchIndexName,
+        VectorParams.newBuilder()
+          .setSize(384)
+          .setDistance(Distance.Cosine)
+          .build()
       ).get();
+    } catch (Exception e) {
+      log.info("Collection already exists, skipping creation. Error: {}", e.getMessage());
+    }
 
     return QdrantEmbeddingStore.builder()
       .client(qdrantClient)
