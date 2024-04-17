@@ -341,6 +341,7 @@ A program that perceives its environment, make decisions and takes actions to ac
 
 # Frameworks
 - [LangChain4j](https://docs.langchain4j.dev/)
+- [Spring AI](https://spring.io/projects/spring-ai)
 - [Semantic Kernel](https://github.com/microsoft/semantic-kernel)
 
 They provide an abstraction layer on top of the LLM APIs, and
