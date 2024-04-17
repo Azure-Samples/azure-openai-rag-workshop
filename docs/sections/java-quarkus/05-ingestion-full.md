@@ -202,13 +202,6 @@ You should see the collection in the dashabord:
 
 ![Collection listed in the Qdrant dashboard](./assets/qdrant-dashboard-collection.png)
 
-You can also use a few cUrl commands to visualize the collection:
-
-```bash
-curl http://localhost:6333/collections
-curl http://localhost:6333/collections/kbindex | jq
-```
-
 Once Qdrant is started and the collection is created, you can run the ingestion process by opening a new terminal and running the following Maven command under the `src/ingestion-java` folder. This will compile the code and run the ingestion process by running `DocumentIngestor`:
 
 ```bash
@@ -239,6 +232,13 @@ You should see the collection named `kbindex` in the list:
 
 ![Screenshot of the Qdrant dashboard](./assets/qdrant-dashboard.png)
 
-You can select that collection and browse it. You should see the entries that were created by the ingestion process. Documents are split into multiple overlapping sections to improve the search results, so you should see multiple entries for each document.
+Select that collection and browse it. You should see the entries that were created by the ingestion process. Documents are split into multiple overlapping sections to improve the search results, so you should see multiple entries for each document.
+
+You can also use a few cUrl commands to visualize the collection:
+
+```bash
+curl http://localhost:6333/collections
+curl http://localhost:6333/collections/kbindex | jq
+```
 
 Keep the services running, as we'll use them in the next section.
