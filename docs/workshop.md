@@ -207,7 +207,7 @@ bash --version
 
 ---
 
-## Additional setup
+## Complete the setup
 
 To complete the template setup, please run the following command in a terminal, at the root of the project:
 
