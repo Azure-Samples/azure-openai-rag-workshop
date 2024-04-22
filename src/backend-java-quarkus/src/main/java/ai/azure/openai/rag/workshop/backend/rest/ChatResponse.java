@@ -14,6 +14,7 @@ public class ChatResponse {
     choice.index = 0;
     choice.message = new ai.azure.openai.rag.workshop.backend.rest.ChatMessage();
     choice.message.content = message;
+    choice.message.role = "assistant";
     chatResponse.choices.add(choice);
     return chatResponse;
   }
