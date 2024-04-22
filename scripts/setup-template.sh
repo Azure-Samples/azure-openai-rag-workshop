@@ -15,8 +15,8 @@ fi
 if [ "$template_name" == "qdrant" ]; then
   echo "Preparing project template for Qdrant..."
   mv src/backend-node-qdrant src/backend
-  rm -rf src/backend-*
-  rm -rf src/ingestion-*
+  rm -rf src/backend-* | true
+  rm -rf src/ingestion-* | true
   rm -rf pom.xml
 
   echo -e "services:
@@ -51,8 +51,8 @@ if [ "$template_name" == "qdrant" ]; then
 elif [ "$template_name" == "aisearch" ]; then
   echo "Preparing project template for Azure AI Search..."
   mv src/backend-node-aisearch src/backend
-  rm -rf src/backend-*
-  rm -rf src/ingestion-*
+  rm -rf src/backend-* | true
+  rm -rf src/ingestion-* | true
   rm -rf pom.xml
   npm install
 elif [ "$template_name" == "quarkus" ]; then
@@ -60,8 +60,8 @@ elif [ "$template_name" == "quarkus" ]; then
   mv src/backend-java-quarkus src/backend
   rm -rf src/ingestion
   mv src/ingestion-java src/ingestion
-  rm -rf src/backend-*
-  rm -rf src/ingestion-*
+  rm -rf src/backend-* | true
+  rm -rf src/ingestion-* | true
 
   echo -e "services:
   # backend:
