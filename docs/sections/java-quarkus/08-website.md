@@ -1,6 +1,6 @@
 <div class="info" data-title="Skip notice">
 
-> If you want to skip the Chat website implementation and jump directly to the next section, run this command in the terminal **at the root of the project** to get the completed code directly:
+> If you don't want to implement the Chat website you can skip the optional parts and jump directly to the end of this section. For that, run this command in the terminal **at the root of the project** to get the completed code directly so you don't have to code it yourself:
 > ```bash
 > curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/frontend.tar.gz | tar -xvz
 > ```
@@ -11,7 +11,7 @@
 
 Now that we have our Chat API, it's time to complete the website that will use it.
 
-### Introducing Vite and Lit
+### (Optional) Introducing Vite and Lit
 
 We'll use [Vite](https://vitejs.dev/) as a frontend build tool, and [Lit](https://lit.dev/) as a Web components library.
 
@@ -32,7 +32,7 @@ This will start the application in development mode. Open [http://localhost:8000
 
 </div>
 
-### The chat Web component
+### (Optional) The chat Web component
 
 We already built a chat Web component for you, so you can focus on connecting the chat API. The nice thing about Web components is that they are just HTML elements, so you can use them in any framework, or even without a framework, just like we do in this workshop.
 
@@ -57,7 +57,7 @@ protected renderLoader = () => {
 };
 ```
 
-### Calling the chat API
+### (Optional) Calling the chat API
 
 Now we need to call the chat API we created earlier. For this, we need to edit the `src/frontend/src/api.ts` file and complete the code where the  `TODO` comment is:
 
@@ -91,16 +91,20 @@ This method will be called from the Web component, in the `onSendClicked` method
 
 ### Testing the completed website
 
-Once you completed the code, you also need to run the backend to be able to test the application. Keep your frontend server running, and make sure that your Qdrant database and chat backend are running.
+Now that you've completed the code or downloaded it, let's test the entire application. For that, you need to make sure that your Qdrant database and chat backend are running, as well as the chat website:
 
-Run this command from the project root if you need to restart the backend services:
+Run these commands from the project root if you need to restart the backend services:
 
 ```bash
 docker compose up qdrant
+
 cd src/backend
 ./mvnw quarkus:dev
+
+cd src/frontend
+npm run dev
 ```
 
-Now go back to your browser, and send a question to the chatbot. You should see the answer appear in the chat window.
+Now go back to your browser at http://localhost:8000, and send a question to the chatbot. You should see the answer appear in the chat window.
 
 ![Screenshot of the chatbot answer](./assets/chatbot-answer.png)
