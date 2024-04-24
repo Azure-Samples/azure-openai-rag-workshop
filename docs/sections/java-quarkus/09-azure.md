@@ -88,6 +88,10 @@ This will create a `.env` file at the root of your repository, containing the en
 
 As this file may sometimes contains application secrets, it's a best practice to keep it safe and not commit it to your repository. We already added it to the `.gitignore` file, so you don't have to worry about it.
 
+At this stage, if you go to the Azure Portal at https://portal.azure.com you should see something similar to this:
+
+![Resource deployed on Azure](./assets/azure-portal-azd.png)
+
 ### Introducing Azure services
 
 In our journey to deploy the chat application, we'll be utilizing a suite of Azure services, each playing a crucial role in the application's architecture and performance.

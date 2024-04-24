@@ -17,15 +17,17 @@ Below is the architecture of the application we're going to build:
 
 ![Application architecture](./assets/architecture.png)
 
-Our application consists of four main components:
+Our application consists of fiave main components:
 
-1. **Vector Database and Ingestion Service**: The vector database stores mathematical representations of our documents, known as _embeddings_. These are used by the Chat API to find documents relevant to a user's question. An ingestion service is required to feed data from your documents into this vector database.
+1. **Vector Database**: The vector database stores mathematical representations of our documents, known as _embeddings_. These are used by the Chat API to find documents relevant to a user's question.
 
-2. **Chat API**: This API enables a client application to send chat messages and receive answers generated from the documents in the vector database.
+2. **Ingestion Service**: The ingestion service feeds data from your documents into this vector database.
 
-3. **Chat Website**: This site offers a ChatGPT-like interface for users to ask questions and receive answers about the ingested documents.
+3. **Chat API**: This API enables a client application to send chat messages and receive answers generated from the documents in the vector database.
 
-4. **OpenAI Model Deployment**: We will use the `gpt-3.5-turbo` model, hosted on Azure, for this workshop. The code can also be adapted to work with OpenAI's APIs with minimal changes.
+4. **Chat Website**: This site offers a ChatGPT-like interface for users to ask questions and receive answers about the ingested documents.
+
+5. **OpenAI Model Deployment**: We will use the `gpt-3.5-turbo` model, hosted on Azure, for this workshop. The code can also be adapted to work with OpenAI's APIs or Ollame with minimal changes.
 
 ### What is Retrievial-Augmented Generation?
 
@@ -33,7 +35,7 @@ Retrieval-Augmented generation (RAG) is a powerful technique that combines the s
 
 At its core, RAG involves two main components:
 
-- **Retriever**: Think "_like a search engine_", finding relevant information from a database. The retriever usually searches in a vector database. It could also - for some use cases - search on application dabases, APIs and other sources of information. In this workshop, we will implement this login in the _Chat API_.
+- **Retriever**: Think "_like a search engine_", finding relevant information from a database. The retriever usually searches in a vector database. It could also - for some use cases - search on application dabases, APIs and other sources of information. In this workshop, we will implement this logic in the _Chat API_.
 
 - **Generator**: Acts like a writer, taking the prompt and information retrieved to craft a response. In this workshop, OpenAI `gpt-3.5-turbo` will be our generator.
 
