@@ -6,8 +6,12 @@ import jakarta.enterprise.inject.Produces;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import static java.time.Duration.ofSeconds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ChatLanguageModelProducer {
+public class ChatLanguageModelAzureOpenAiProducer {
+
+  private static final Logger log = LoggerFactory.getLogger(ChatLanguageModelAzureOpenAiProducer.class);
 
   @ConfigProperty(name = "AZURE_OPENAI_KEY", defaultValue = "__dummy")
   String azureOpenAiKey;
@@ -20,6 +24,9 @@ public class ChatLanguageModelProducer {
 
   @Produces
   public ChatLanguageModel chatLanguageModel() {
+
+    log.info("### Producing ChatLanguageModel with AzureOpenAiChatModel");
+
     return AzureOpenAiChatModel.builder()
       .apiKey(azureOpenAiKey)
       .endpoint(azureOpenAiEndpoint)

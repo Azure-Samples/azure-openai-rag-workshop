@@ -10,15 +10,17 @@ We'll be using [Quarkus](https://quarkus.io) to create our Chat API.
 
 We're going to use [Quarkus' Context And Dependency Injection (CDI) mechanism](https://quarkus.io/guides/cdi) to manage our AI services:
 
-- The `ai.azure.openai.rag.workshop.backend.configuration.ChatLanguageModelProducer` will be responsible for configuring the OpenAI chat language model API.
+- The `ai.azure.openai.rag.workshop.backend.configuration.ChatLanguageModelAzureOpenAiProducer` will be responsible for configuring the Azure OpenAI chat language model API.
 - The `ai.azure.openai.rag.workshop.backend.configuration.EmbeddingModelProducer` will be responsible for configuring the embedding model.
 - The `ai.azure.openai.rag.workshop.backend.configuration.EmbeddingStoreProducer` will be responsible for configuring the Qdrant embedding store.
 
 As those producers are configured in separate files, and use the LangChain4J API, they can later be switched easily to use other implementations: this will be useful for example to use a more powerful language or embedding model, or for running tests locally.
 
-Let's start by configuring `ChatLanguageModelProducer`, using the Azure OpenAI API:
+Let's start by configuring `ChatLanguageModelAzureOpenAiProducer`, using the Azure OpenAI API:
 
 ```java
+  private static final Logger log = LoggerFactory.getLogger(ChatLanguageModelAzureOpenAiProducer.class);
+
   @ConfigProperty(name = "AZURE_OPENAI_KEY", defaultValue = "__dummy")
   String azureOpenAiKey;
 
@@ -30,6 +32,9 @@ Let's start by configuring `ChatLanguageModelProducer`, using the Azure OpenAI A
 
   @Produces
   public ChatLanguageModel chatLanguageModel() {
+
+    log.info("### Producing ChatLanguageModel with AzureOpenAiChatModel");
+
     return AzureOpenAiChatModel.builder()
       .apiKey(azureOpenAiKey)
       .endpoint(azureOpenAiEndpoint)
@@ -340,5 +345,55 @@ curl -X 'POST' 'http://localhost:3000/chat' \
 You can play a bit and change the question to see how the model behaves.
 
 When you're done with the testing, stop the Quarkus by pressing `Ctrl+C` in each of the terminals.
+
+### Using Ollama Local Models
+
+As seen in the setup chapter, if you have a machine with enough resources, you can run a local Ollama model. You shloud already have installed [Ollama](https://ollama.com) and downloaded a Llama3 models on your machine with the `ollama pull llama3` command.
+
+To use the local Ollama model instead of the remote Azure OpenAI model, you first need to add the Ollama dependency in the `pom.xml` file under `src/backend`:
+
+```xml 
+    <dependency>
+      <groupId>dev.langchain4j</groupId>
+      <artifactId>langchain4j-ollama</artifactId>
+    </dependency>
+```
+
+Then, you need to create a new chat model producer. At the same location where you've created the `ChatLanguageModelAzureOpenAiProducer`, create a new class called `ChatLanguageModelOllamaProducer` with the following code
+
+```java
+@Alternative
+public class ChatLanguageModelOllamaProducer {
+
+  private static final Logger log = LoggerFactory.getLogger(ChatLanguageModelOllamaProducer.class);
+
+  @ConfigProperty(name = "OLLAMA_BASE_URL", defaultValue = "http://localhost:11434")
+  String ollamaBaseUrl;
+
+  @ConfigProperty(name = "OLLAMA_MODEL_NAME", defaultValue = "llama3")
+  String ollamaModelName;
+
+  @Produces
+  public ChatLanguageModel chatLanguageModel() {
+
+    log.info("### Producing ChatLanguageModel with OllamaChatModel");
+
+    return OllamaChatModel.builder()
+      .baseUrl(ollamaBaseUrl)
+      .modelName(ollamaModelName)
+      .timeout(ofSeconds(60))
+      .build();
+  }
+}
+```
+
+Notice the `@Alternative` annotation. This tells Quarkus that this producer is an alternative to the default one (`ChatLanguageModelAzureOpenAiProducer`). This way, you can switch between the Azure OpenAI and the Ollama model by enabling the `@Alternative` annotation in the properties file.
+So, if you want to use the Azure OpenAI model, you don't have to configure anything. If instedd you want to use the Ollama model, you will have to add the following property to the `src/backend/src/main/resources/application.properties` file:
+
+```properties
+quarkus.arc.selected-alternatives=ai.azure.openai.rag.workshop.backend.configuration.ChatLanguageModelOllamaProducer
+```
+
+That's it. If Ollama is running on the default port (http://localhost:11434) and you have the `llama3` model installed, you don't even have to configure anything. Just restart the Quarkus backend and it will use the Ollama model instead of the Azure OpenAI model.
 
 After you checked that everything works as expected, don't forget to commit your changes to the repository, to keep track of your progress.
