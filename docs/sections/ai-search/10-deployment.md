@@ -4,7 +4,7 @@ Our application is now ready to be deployed to Azure!
 
 We'll use [Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/overview) to deploy the frontend, and [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/overview) to deploy the backend and ingestion services.
 
-Run this command from the root of the project to build and deploy the application (this command deploys all services listed in the `azure.yaml` file located in the current directory):
+Run this command from the root of the project to build and deploy the application (this command deploys all services listed in the `azure.yaml` file located in the project root):
 
 ```bash
 azd deploy

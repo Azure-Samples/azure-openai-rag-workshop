@@ -17,7 +17,7 @@ Below is the architecture of the application we're going to build:
 
 ![Application architecture](./assets/architecture.png)
 
-Our application consists of fiave main components:
+Our application consists of five main components:
 
 1. **Vector Database**: The vector database stores mathematical representations of our documents, known as _embeddings_. These are used by the Chat API to find documents relevant to a user's question.
 
