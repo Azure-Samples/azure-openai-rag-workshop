@@ -10,11 +10,11 @@ scripts/        # Utility scripts for document ingestion
 src/            # Source code for the application's services
 ├── backend/    # The Chat API developed with Quarkus
 ├── frontend/   # The Chat website
-├── ingestion/  # Service for document ingestion
+├── ingestion/  # The service for document ingestion developed with Quarkus
 pom.xml         # Main Maven parent POM
 ```
 
-We're using Java and Quarkus for our APIs and website, and have set up a Maven parent POM to manage dependencies across all projects from a single place. Running `mvn install` at the root installs dependencies for all projects, simplifying monorepo management.
+We're using Java and Quarkus for our APIs and Node.js for our website, and have set up a Maven parent POM to manage dependencies across all projects from a single place. Running `mvn install` at the root installs dependencies for all backend projects ( `npm install` for the frontend), simplifying monorepo management.
 
 Otherwise, you can use your regular `mvn` commands in any project folder and it will work as usual.
 
@@ -63,7 +63,7 @@ The chat service responds with a JSON object representing the generated response
 }
 ```
 
-You can learn more about the [ChatBotAI OpenAPI specification here](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) and on [the GitHub repo](https://github.com/ChatBootAI/chatbootai-openapi).
+You can learn more about the [ChatBootAI OpenAPI specification here](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) and on [the GitHub repo](https://github.com/ChatBootAI/chatbootai-openapi).
 
 <div class="info" data-title="note">
 

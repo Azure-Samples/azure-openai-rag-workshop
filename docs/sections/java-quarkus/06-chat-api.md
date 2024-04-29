@@ -346,11 +346,12 @@ You can play a bit and change the question to see how the model behaves.
 
 When you're done with the testing, stop the Quarkus by pressing `Ctrl+C` in each of the terminals.
 
-### Using Ollama Local Models
+
+<div class="info" data-title="Optional notice">
 
 As seen in the setup chapter, if you have a machine with enough resources, you can run a local Ollama model. You shloud already have installed [Ollama](https://ollama.com) and downloaded a Llama3 models on your machine with the `ollama pull llama3` command.
 
-To use the local Ollama model instead of the remote Azure OpenAI model, you first need to add the Ollama dependency in the `pom.xml` file under `src/backend`:
+To use the local Ollama model (in addition with the remote Azure OpenAI model), you need the LangChain4j Ollama dependency. If you check the `pom.xml` file under `src/backend` you should have the following dependency:
 
 ```xml 
     <dependency>
@@ -387,13 +388,15 @@ public class ChatLanguageModelOllamaProducer {
 }
 ```
 
-Notice the `@Alternative` annotation. This tells Quarkus that this producer is an alternative to the default one (`ChatLanguageModelAzureOpenAiProducer`). This way, you can switch between the Azure OpenAI and the Ollama model by enabling the `@Alternative` annotation in the properties file.
+Notice the `@Alternative` annotation. This tells Quarkus that this producer is an alternative to the default one (`ChatLanguageModelAzureOpenAiProducer`). This way, you can switch between the Azure OpenAI and the Ollama model by enabling the `@Alternative` annotation in the properties file (`@Alternative` are not enabled by default).
 So, if you want to use the Azure OpenAI model, you don't have to configure anything. If instedd you want to use the Ollama model, you will have to add the following property to the `src/backend/src/main/resources/application.properties` file:
 
 ```properties
 quarkus.arc.selected-alternatives=ai.azure.openai.rag.workshop.backend.configuration.ChatLanguageModelOllamaProducer
 ```
 
-That's it. If Ollama is running on the default port (http://localhost:11434) and you have the `llama3` model installed, you don't even have to configure anything. Just restart the Quarkus backend and it will use the Ollama model instead of the Azure OpenAI model.
+That's it. If Ollama is running on the default port (http://localhost:11434) and you have the `llama3` model installed, you don't even have to configure anything. Just restart the Quarkus backend, and it will use the Ollama model instead of the Azure OpenAI model.
 
 After you checked that everything works as expected, don't forget to commit your changes to the repository, to keep track of your progress.
+
+<div>
