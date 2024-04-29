@@ -46,7 +46,6 @@ A chat request is sent in JSON format, and must contain at least the user's mess
 }
 ```
 
-
 #### The chat response
 
 The chat service responds with a JSON object representing the generated response. The answer is located under the message's `content` property.

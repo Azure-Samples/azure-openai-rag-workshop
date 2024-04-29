@@ -260,6 +260,7 @@ declare module 'fastify' {
 ##############################################################################
 rm -rf src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/rest/ChatResource.java
 rm -rf src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/rest/ChatRequest.java
+rm -rf src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/configuration/ChatLanguageModelOllamaProducer.java
 
 echo -e "package ai.azure.openai.rag.workshop.backend.configuration;
 
@@ -270,7 +271,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import static java.time.Duration.ofSeconds;
 
-public class ChatLanguageModelProducer {
+public class ChatLanguageModelAzureOpenAiProducer {
 
   @Produces
   public ChatLanguageModel chatLanguageModel() {
@@ -278,7 +279,7 @@ public class ChatLanguageModelProducer {
     return null;
   }
 }
-" > src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/configuration/ChatLanguageModelProducer.java
+" > src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/configuration/ChatLanguageModelAzureOpenAiProducer.java
 
 echo -e "package ai.azure.openai.rag.workshop.backend.configuration;
 
