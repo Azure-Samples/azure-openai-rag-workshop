@@ -45,7 +45,7 @@ Let's start by configuring `ChatLanguageModelAzureOpenAiProducer`, using the Azu
   }
 ```
 
-<div class="info" data-title="Optional notice" data-hidden="$$proxy$$">
+<div class="info" data-title="Optional notice">
 
 As seen in the setup chapter, if you have a machine with enough resources, you can run a local Ollama model. You shloud already have installed [Ollama](https://ollama.com) and downloaded a Llama3 models on your machine with the `ollama pull llama3` command.
 
@@ -86,7 +86,7 @@ quarkus.arc.selected-alternatives=ai.azure.openai.rag.workshop.backend.configura
 
 That's it. If Ollama is running on the default port (http://localhost:11434) and you have the `llama3` model installed, you don't even have to configure anything. Just restart the Quarkus backend, and it will use the Ollama model instead of the Azure OpenAI model.
 
-<div>
+</div>
 
 Now let's configure the `EmbeddingModelProducer`, using a local embedding model (less performant than using Azure OpenAI, but runs locally and for free):
 
