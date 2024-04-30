@@ -17,7 +17,7 @@ public class ChatLanguageModelOllamaProducer {
   @ConfigProperty(name = "OLLAMA_BASE_URL", defaultValue = "http://localhost:11434")
   String ollamaBaseUrl;
 
-  @ConfigProperty(name = "OLLAMA_MODEL_NAME", defaultValue = "llama3")
+  @ConfigProperty(name = "OLLAMA_MODEL_NAME", defaultValue = "mistral")
   String ollamaModelName;
 
   @Produces

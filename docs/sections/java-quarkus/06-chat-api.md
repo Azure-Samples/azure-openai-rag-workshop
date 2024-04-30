@@ -47,7 +47,7 @@ Let's start by configuring `ChatLanguageModelAzureOpenAiProducer`, using the Azu
 
 <div class="info" data-title="Optional notice">
 
-As seen in the setup chapter, if you have a machine with enough resources, you can run a local Ollama model. You shloud already have installed [Ollama](https://ollama.com) and downloaded a Llama3 models on your machine with the `ollama pull llama3` command.
+As seen in the setup chapter, if you have a machine with enough resources, you can run a local Ollama model. You shloud already have installed [Ollama](https://ollama.com) and downloaded a Mistral 7B model on your machine with the `ollama pull mistral` command.
 
 To use the local Ollama model, you need to create a new chat model producer. At the same location where you've created the `ChatLanguageModelAzureOpenAiProducer`, create a new class called `ChatLanguageModelOllamaProducer` with the following code
 
@@ -60,7 +60,7 @@ public class ChatLanguageModelOllamaProducer {
   @ConfigProperty(name = "OLLAMA_BASE_URL", defaultValue = "http://localhost:11434")
   String ollamaBaseUrl;
 
-  @ConfigProperty(name = "OLLAMA_MODEL_NAME", defaultValue = "llama3")
+  @ConfigProperty(name = "OLLAMA_MODEL_NAME", defaultValue = "mistral")
   String ollamaModelName;
 
   @Produces
@@ -84,7 +84,7 @@ So, if you want to use the Azure OpenAI model, you don't have to configure anyth
 quarkus.arc.selected-alternatives=ai.azure.openai.rag.workshop.backend.configuration.ChatLanguageModelOllamaProducer
 ```
 
-That's it. If Ollama is running on the default port (http://localhost:11434) and you have the `llama3` model installed, you don't even have to configure anything. Just restart the Quarkus backend, and it will use the Ollama model instead of the Azure OpenAI model.
+That's it. If Ollama is running on the default port (http://localhost:11434) and you have the `mistral` model installed, you don't even have to configure anything. Just restart the Quarkus backend, and it will use the Ollama model instead of the Azure OpenAI model.
 
 </div>
 
