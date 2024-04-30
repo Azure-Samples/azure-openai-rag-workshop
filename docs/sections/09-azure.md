@@ -153,7 +153,7 @@ To set up our application, we can choose from various tools like the Azure CLI, 
 
 Any resource you create in Azure is part of a **resource group**. A resource group is a logical container that holds related resources for an Azure solution, just like a folder.
 
-When we ran `azd provision`, it created a resource group named `rg-openai-rag-workshop` and deployed all necessary infrastructure components using Azure CLI and Infrastructure as Code (IaC) templates.
+When we ran `azd provision`, it created a resource group named `rg-openai-rag-workshop` and deployed all necessary infrastructure components using Infrastructure as Code (IaC) templates.
 
 ### Introducing Infrastructure as Code
 
