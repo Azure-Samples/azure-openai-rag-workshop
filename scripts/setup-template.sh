@@ -59,7 +59,7 @@ elif [ "$template_name" == "quarkus" ]; then
   echo "Preparing project template for Quarkus..."
   mv src/backend-java-quarkus src/backend
   rm -rf src/ingestion
-  mv src/ingestion-java src/ingestion
+  mv src/ingestion-java-quarkus src/ingestion
   rm -rf src/backend-* | true
   rm -rf src/ingestion-* | true
 

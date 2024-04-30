@@ -91,7 +91,7 @@ echo "Creating solution package (for Java + Quarkus)..."
 copyFolder . solution-java-quarkus
 mv "$target_folder/solution-java-quarkus/src/backend-java-quarkus" "$target_folder/solution-java-quarkus/src/backend"
 rm -rf "$target_folder/solution-java-quarkus/src/ingestion"
-mv "$target_folder/solution-java-quarkus/src/ingestion-java" "$target_folder/solution-java-quarkus/src/ingestion"
+mv "$target_folder/solution-java-quarkus/src/ingestion-java-quarkus" "$target_folder/solution-java-quarkus/src/ingestion"
 rm -rf "$target_folder/solution-java-quarkus/.azure"
 rm -rf "$target_folder/solution-java-quarkus/.qdrant"
 rm -rf "$target_folder/solution-java-quarkus/.env"
