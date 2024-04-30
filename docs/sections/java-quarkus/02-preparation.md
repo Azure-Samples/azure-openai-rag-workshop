@@ -69,7 +69,6 @@ If you want to work locally without using a dev container, you need to clone the
 | Docker v20+   | [Get Docker](https://docs.docker.com/get-docker) |
 | Java v17+     | [Get Java](https://www.java.com/download/) |
 | Node.js v20+  | [Get Node.js](https://nodejs.org) |
-| Azure CLI     | [Get Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli#install) |
 | GitHub CLI    | [Get GitHub CLI](https://cli.github.com/manual/installation) |
 | Azure Developer CLI | [Get Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd) |
 | Bash v3+      | [Get bash](https://www.gnu.org/software/bash/) (Windows users can use **Git bash** that comes with Git) |
@@ -82,7 +81,6 @@ git --version
 docker --version
 java --version
 node --version
-az --version
 gh --version
 azd version
 gh --version
