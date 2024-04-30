@@ -270,6 +270,8 @@ import jakarta.enterprise.inject.Produces;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import static java.time.Duration.ofSeconds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ChatLanguageModelAzureOpenAiProducer {
 
