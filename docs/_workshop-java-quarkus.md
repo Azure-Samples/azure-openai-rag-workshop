@@ -38,7 +38,7 @@ include::sections/java-quarkus/09-azure.md[]
 
 ---
 
-include::sections/10-deployment.md[]
+include::sections/java-quarkus/10-deployment.md[]
 
 ---
 

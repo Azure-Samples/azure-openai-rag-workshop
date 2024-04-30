@@ -27,7 +27,10 @@
     },
     "ghcr.io/devcontainers/features/github-cli:1": {},
     // "ghcr.io/devcontainers/features/powershell:1": {},
-    "ghcr.io/azure/azure-dev/azd:latest": {}
+    "ghcr.io/azure/azure-dev/azd:latest": {},
+    "ghcr.io/prulloac/devcontainer-features/ollama:1": {
+      "pull": "llama3"
+    }
   },
 
   // Configure tool-specific properties.
@@ -46,7 +49,7 @@
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [3000, 3001, 8000, 6333],
+  "forwardPorts": [3000, 3001, 8000, 6333, 11434],
 
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "npm install -g @moaw/cli fuzz-run",
