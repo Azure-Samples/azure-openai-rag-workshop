@@ -346,21 +346,11 @@ You can play a bit and change the question to see how the model behaves.
 
 When you're done with the testing, stop the Quarkus by pressing `Ctrl+C` in each of the terminals.
 
-
-<div class="info" data-title="Optional notice">
+<div class="info" data-title="Optional notice" data-hidden="$$proxy$$">
 
 As seen in the setup chapter, if you have a machine with enough resources, you can run a local Ollama model. You shloud already have installed [Ollama](https://ollama.com) and downloaded a Llama3 models on your machine with the `ollama pull llama3` command.
 
-To use the local Ollama model (in addition with the remote Azure OpenAI model), you need the LangChain4j Ollama dependency. If you check the `pom.xml` file under `src/backend` you should have the following dependency:
-
-```xml 
-    <dependency>
-      <groupId>dev.langchain4j</groupId>
-      <artifactId>langchain4j-ollama</artifactId>
-    </dependency>
-```
-
-Then, you need to create a new chat model producer. At the same location where you've created the `ChatLanguageModelAzureOpenAiProducer`, create a new class called `ChatLanguageModelOllamaProducer` with the following code
+To use the local Ollama model, you need to create a new chat model producer. At the same location where you've created the `ChatLanguageModelAzureOpenAiProducer`, create a new class called `ChatLanguageModelOllamaProducer` with the following code
 
 ```java
 @Alternative
