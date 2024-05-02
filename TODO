@@ -1,9 +1,7 @@
 # Tasks
 
 ## Devoxx Paris/UK
-
 - [ ] add note about the embedding model, explain how to switch to Azure model
-- [ ] build&copy the frontend in java build
 - [ ] feature: missing message history in chat: use input message and feed it to LC4J Memory with a token window, see https://github.com/langchain4j/langchain4j-examples/blob/main/other-examples/src/main/java/ChatMemoryExamples.java
 
 ### Maybe
@@ -12,6 +10,8 @@
 - [ ] Java improvements section: add streaming
 
 ## For later
+
+- [ ] trainer infra => managed identity
 
 - [ ] rename ingestion to ingestion-node
 - [ ] rework ingestion-node to use langchainjs
