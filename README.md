@@ -58,6 +58,7 @@ This workshop is based on the enterprise-ready sample **ChatGPT + Enterprise dat
 - [Python version](https://github.com/Azure-Samples/azure-search-openai-demo/)
 - [Java version](https://github.com/Azure-Samples/azure-search-openai-demo-java)
 - [C# version](https://github.com/Azure-Samples/azure-search-openai-demo-csharp)
+- [Serverless JavaScript version](https://github.com/Azure-Samples/serverless-chat-langchainjs)
 
 If you want to go further with more advanced use-cases, authentication, history and more, you should check it out!
 
