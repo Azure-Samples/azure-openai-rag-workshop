@@ -252,6 +252,7 @@ module openAi 'core/ai/cognitiveservices.bicep' = if (empty(openAiUrl)) {
     sku: {
       name: openAiSkuName
     }
+    disableLocalAuth: true
     deployments: [
       {
         name: chatGptDeploymentName
