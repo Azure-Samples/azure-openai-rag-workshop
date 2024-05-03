@@ -12,6 +12,7 @@ src/            # Source code for the application's services
 |- frontend/    # The Chat website
 |- ingestion/   # Service for document ingestion
 package.json    # Configuration for NPM workspace
+.env            # File that you created for environment variables
 ```
 
 We're using Node.js for our APIs and website, and have set up an [NPM workspace](https://docs.npmjs.com/cli/using-npm/workspaces) to manage dependencies across all projects from a single place. Running `npm install` at the root installs dependencies for all projects, simplifying monorepo management.
