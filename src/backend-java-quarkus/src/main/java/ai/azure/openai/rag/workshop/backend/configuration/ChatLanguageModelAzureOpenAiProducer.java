@@ -4,6 +4,7 @@ import dev.langchain4j.model.azure.AzureOpenAiChatModel;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import jakarta.enterprise.inject.Produces;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import com.azure.identity.DefaultAzureCredentialBuilder;
 
 import static java.time.Duration.ofSeconds;
 import org.slf4j.Logger;
@@ -12,9 +13,6 @@ import org.slf4j.LoggerFactory;
 public class ChatLanguageModelAzureOpenAiProducer {
 
   private static final Logger log = LoggerFactory.getLogger(ChatLanguageModelAzureOpenAiProducer.class);
-
-  @ConfigProperty(name = "AZURE_OPENAI_KEY", defaultValue = "__dummy")
-  String azureOpenAiKey;
 
   @ConfigProperty(name = "AZURE_OPENAI_URL")
   String azureOpenAiEndpoint;
@@ -28,7 +26,7 @@ public class ChatLanguageModelAzureOpenAiProducer {
     log.info("### Producing ChatLanguageModel with AzureOpenAiChatModel");
 
     return AzureOpenAiChatModel.builder()
-      .apiKey(azureOpenAiKey)
+      .tokenCredential(new DefaultAzureCredentialBuilder().build())
       .endpoint(azureOpenAiEndpoint)
       .deploymentName(azureOpenAiDeploymentName)
       .timeout(ofSeconds(60))

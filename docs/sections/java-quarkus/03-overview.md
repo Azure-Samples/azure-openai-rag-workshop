@@ -12,6 +12,7 @@ src/            # Source code for the application's services
 ├── frontend/   # The Chat website
 ├── ingestion/  # The service for document ingestion developed with Quarkus
 pom.xml         # Main Maven parent POM
+.env            # File that you created for environment variables
 ```
 
 We're using Java and Quarkus for our APIs and Node.js for our website, and have set up a Maven parent POM to manage dependencies across all projects from a single place. Running `mvn install` at the root installs dependencies for all backend projects ( `npm install` for the frontend), simplifying monorepo management.
