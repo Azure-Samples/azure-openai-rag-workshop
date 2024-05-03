@@ -24,15 +24,15 @@ services:
           continueOnError: false
 
   backend:
-    project: ./src/backend
-    language: ts
+    project: ./src/backend-java-quarkus
+    language: java
     host: containerapp
     docker:
       context: ../..
 
   ingestion:
-    project: ./src/ingestion
-    language: ts
+    project: ./src/ingestion-java-quarkus
+    language: java
     host: containerapp
     docker:
       context: ../..

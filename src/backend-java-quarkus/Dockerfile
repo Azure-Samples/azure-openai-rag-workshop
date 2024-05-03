@@ -86,7 +86,7 @@ FROM registry.access.redhat.com/ubi8/openjdk-17:1.18 as build
 WORKDIR /app
 USER root
 # Docker context is set at the root of the repo
-COPY ./src/backend ./
+COPY ./src/backend-java-quarkus ./
 RUN ./mvnw dependency:resolve
 RUN ./mvnw clean package
 
