@@ -16,33 +16,67 @@ We're going to use [Quarkus' Context And Dependency Injection (CDI) mechanism](h
 
 As those producers are configured in separate files, and use the LangChain4J API, they can later be switched easily to use other implementations: this will be useful for example to use a more powerful language or embedding model, or for running tests locally.
 
-Let's start by configuring `ChatLanguageModelAzureOpenAiProducer`, using the Azure OpenAI API:
+Let's start by configuring `ChatLanguageModelAzureOpenAiProducer`, using the Azure OpenAI API.
+
+#### Managing Azure credentials
+
+Before we can create the clients, we need to retrieve the credentials to access our Azure services. We'll use the [Azure Identity SDK](https://learn.microsoft.com/en-us/java/api/com.azure.identity?view=azure-java-stable) to do that.
+
+Make sure this import is at the top of the file:
 
 ```java
-  private static final Logger log = LoggerFactory.getLogger(ChatLanguageModelAzureOpenAiProducer.class);
+import com.azure.identity.DefaultAzureCredentialBuilder;
+```
+Then add this code to retrieve the token to build the `AzureOpenAIChatModel`
 
-  @ConfigProperty(name = "AZURE_OPENAI_KEY", defaultValue = "__dummy")
-  String azureOpenAiKey;
+```java
+AzureOpenAiChatModel model;
 
-  @ConfigProperty(name = "AZURE_OPENAI_URL")
-  String azureOpenAiEndpoint;
+try {
+  // Use the current user identity to authenticate with Azure OpenAI.
+  // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
+  model = AzureOpenAiChatModel.builder()
+    .tokenCredential(new DefaultAzureCredentialBuilder().build())
+    .endpoint(azureOpenAiEndpoint)
+    .deploymentName(azureOpenAiDeploymentName)
+    .timeout(ofSeconds(60))
+    .logRequestsAndResponses(true)
+    .build();
+} catch (Exception e) {
+  // default value for local execution
+  log.info("### Using fallback configuration for OpenAI");
+}
+```
 
-  @ConfigProperty(name = "AZURE_OPENAI_DEPLOYMENT_NAME", defaultValue = "gpt-35-turbo")
-  String azureOpenAiDeploymentName;
+This will use the current user identity to authenticate with Azure OpenAI and AI Search. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
 
-  @Produces
-  public ChatLanguageModel chatLanguageModel() {
+<div class="info" data-title="note">
 
-    log.info("### Producing ChatLanguageModel with AzureOpenAiChatModel");
+> When run locally inside a container, the Azure Identity SDK will not be able to retrieve the current user identity from the Azure Developer CLI. For simplicity, we'll use a dummy key in this case but it only works if you use the OpenAI proxy we provide if you attend this workshop in-person.
+> If need to properly authenticate locally, you should either run the app outside of a container with `mvn compile quarkus:dev`, or create a [Service Principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal), assign it the needed permissions and pass the environment variables to the container.
 
-    return AzureOpenAiChatModel.builder()
-      .apiKey(azureOpenAiKey)
+</div>
+
+#### Fallback using keys
+
+To use the fallback, add the following code in the catch statement and return the `model`.
+
+```java
+  } catch (Exception e) {
+    // default value for local execution
+    log.info("### Using fallback configuration for OpenAI");
+    model = AzureOpenAiChatModel.builder()
+      .apiKey("__dummy")
       .endpoint(azureOpenAiEndpoint)
       .deploymentName(azureOpenAiDeploymentName)
       .timeout(ofSeconds(60))
       .logRequestsAndResponses(true)
       .build();
   }
+
+  log.info("### Producing ChatLanguageModel with AzureOpenAiChatModel");
+
+  return model;
 ```
 
 <div class="info" data-title="Optional notice">
