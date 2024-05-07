@@ -99,20 +99,7 @@ Let's now execute this process. First, you need to make sure you have Qdrant run
 docker compose up qdrant
 ```
 
-This will start Qdrant locally. Make sure you can access the Qdrant dashboard at the URL http://localhost:6333/dashboard.
-
-You should see the collection in the dashabord:
-
-![Collection listed in the Qdrant dashboard](./assets/qdrant-dashboard-collection.png)
-
-You can also use a few cUrl commands to visualize the collection:
-
-```bash
-curl http://localhost:6333/collections
-curl http://localhost:6333/collections/kbindex
-```
-
-Once Qdrant is started and the collection is created, you can run the ingestion process by opening a new terminal and running the following commands. This will compile the code and run the ingestion server:
+This will start Qdrant locally. Now we'll start the ingestion process by opening a new terminal and running the following commands. This will compile the code and run the ingestion server:
 
 ```bash
 cd src/ingestion
