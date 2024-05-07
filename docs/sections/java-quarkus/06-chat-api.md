@@ -22,12 +22,7 @@ Let's start by configuring `ChatLanguageModelAzureOpenAiProducer`, using the Azu
 
 Before we can create the clients, we need to retrieve the credentials to access our Azure services. We'll use the [Azure Identity SDK](https://learn.microsoft.com/java/api/com.azure.identity?view=azure-java-stable) to do that.
 
-Make sure this import is at the top of the file:
-
-```java
-import com.azure.identity.DefaultAzureCredentialBuilder;
-```
-Then add this code to retrieve the token to build the `AzureOpenAIChatModel`:
+Add this code under the `TODO:` to retrieve the token to build the `AzureOpenAIChatModel`:
 
 ```java
 AzureOpenAiChatModel model;
@@ -81,44 +76,44 @@ To use the fallback, add the following code in the catch statement and return th
 
 <div class="info" data-title="Optional notice">
 
-As seen in the setup chapter, if you have a machine with enough resources, you can run a local Ollama model. You shloud already have installed [Ollama](https://ollama.com) and downloaded a Mistral 7B model on your machine with the `ollama pull mistral` command.
-
-To use the local Ollama model, you need to create a new chat model producer. At the same location where you've created the `ChatLanguageModelAzureOpenAiProducer`, create a new class called `ChatLanguageModelOllamaProducer` with the following code
-
-```java
-@Alternative
-public class ChatLanguageModelOllamaProducer {
-
-  private static final Logger log = LoggerFactory.getLogger(ChatLanguageModelOllamaProducer.class);
-
-  @ConfigProperty(name = "OLLAMA_BASE_URL", defaultValue = "http://localhost:11434")
-  String ollamaBaseUrl;
-
-  @ConfigProperty(name = "OLLAMA_MODEL_NAME", defaultValue = "mistral")
-  String ollamaModelName;
-
-  @Produces
-  public ChatLanguageModel chatLanguageModel() {
-
-    log.info("### Producing ChatLanguageModel with OllamaChatModel");
-
-    return OllamaChatModel.builder()
-      .baseUrl(ollamaBaseUrl)
-      .modelName(ollamaModelName)
-      .timeout(ofSeconds(60))
-      .build();
-  }
-}
-```
-
-Notice the `@Alternative` annotation. This tells Quarkus that this producer is an alternative to the default one (`ChatLanguageModelAzureOpenAiProducer`). This way, you can switch between the Azure OpenAI and the Ollama model by enabling the `@Alternative` annotation in the properties file (`@Alternative` are not enabled by default).
-So, if you want to use the Azure OpenAI model, you don't have to configure anything. If instedd you want to use the Ollama model, you will have to add the following property to the `src/backend/src/main/resources/application.properties` file:
-
-```properties
-quarkus.arc.selected-alternatives=ai.azure.openai.rag.workshop.backend.configuration.ChatLanguageModelOllamaProducer
-```
-
-That's it. If Ollama is running on the default port (http://localhost:11434) and you have the `mistral` model installed, you don't even have to configure anything. Just restart the Quarkus backend, and it will use the Ollama model instead of the Azure OpenAI model.
+> As seen in the setup chapter, if you have a machine with enough resources, you can run a local Ollama model. You shloud already have installed [Ollama](https://ollama.com) and downloaded a Mistral 7B model on your machine with the `ollama pull mistral` command.
+> 
+> To use the local Ollama model, you need to create a new chat model producer. At the same location where you've created the `ChatLanguageModelAzureOpenAiProducer`, create a new class called `ChatLanguageModelOllamaProducer` with the following code
+>
+> ```java
+> @Alternative
+> public class ChatLanguageModelOllamaProducer {
+> 
+>   private static final Logger log = LoggerFactory.getLogger(ChatLanguageModelOllamaProducer.class);
+> 
+>   @ConfigProperty(name = "OLLAMA_BASE_URL", defaultValue = "http://localhost:11434")
+>   String ollamaBaseUrl;
+> 
+>   @ConfigProperty(name = "OLLAMA_MODEL_NAME", defaultValue = "mistral")
+>   String ollamaModelName;
+> 
+>   @Produces
+>   public ChatLanguageModel chatLanguageModel() {
+> 
+>     log.info("### Producing ChatLanguageModel with OllamaChatModel");
+> 
+>     return OllamaChatModel.builder()
+>       .baseUrl(ollamaBaseUrl)
+>       .modelName(ollamaModelName)
+>       .timeout(ofSeconds(60))
+>       .build();
+>   }
+> }
+> ```
+> 
+> Notice the `@Alternative` annotation. This tells Quarkus that this producer is an alternative to the default one (`ChatLanguageModelAzureOpenAiProducer`). This way, you can switch between the Azure OpenAI and the Ollama model by enabling the `@Alternative` annotation in the properties file (`@Alternative` are not enabled by default).
+> So, if you want to use the Azure OpenAI model, you don't have to configure anything. If instedd you want to use the Ollama model, you will have to add the following property to the `src/backend/src/main/resources/application.properties` file:
+> 
+> ```properties
+> quarkus.arc.selected-alternatives=ai.azure.openai.rag.workshop.backend.configuration.ChatLanguageModelOllamaProducer
+> ```
+> 
+> That's it. If Ollama is running on the default port (http://localhost:11434) and you have the `mistral` model installed, you don't even have to configure anything. Just restart the Quarkus backend, and it will use the Ollama model instead of the Azure OpenAI model.
 
 </div>
 
