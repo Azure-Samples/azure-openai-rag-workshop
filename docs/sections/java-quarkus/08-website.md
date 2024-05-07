@@ -23,6 +23,13 @@ npm run dev
 
 This will start the application in development mode. Open [http://localhost:8000](http://localhost:8000) to view it in the browser.
 
+<div class="tip" data-title="tip">
+
+> In Codespaces, once the servce is running, you can click on the **Open in browser** button when prompted.
+> You can also select the **Ports** tab in the bottom panel, right click on the URL in the **Forwarded Address** column next to the `8000` port, and select **Open in browser**.
+
+</div>
+
 <div class="tip" data-title="Tip">
 
 > In development mode, the Web page will automatically reload when you make any change to the code. We recommend you to keep this command running in the background, and then have two windows side-by-side: one with your IDE where you will edit the code, and one with your Web browser where you can see the final result.
