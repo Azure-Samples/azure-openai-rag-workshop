@@ -27,7 +27,7 @@ Make sure this import is at the top of the file:
 ```java
 import com.azure.identity.DefaultAzureCredentialBuilder;
 ```
-Then add this code to retrieve the token to build the `AzureOpenAIChatModel`
+Then add this code to retrieve the token to build the `AzureOpenAIChatModel`:
 
 ```java
 AzureOpenAiChatModel model;
