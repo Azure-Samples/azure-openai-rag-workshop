@@ -34,7 +34,7 @@ AzureOpenAiChatModel model;
 
 try {
   // Use the current user identity to authenticate with Azure OpenAI.
-  // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
+  // (no secrets needed, just use `az login` or `azd auth login` locally, and managed identity when deployed on Azure).
   model = AzureOpenAiChatModel.builder()
     .tokenCredential(new DefaultAzureCredentialBuilder().build())
     .endpoint(azureOpenAiEndpoint)
