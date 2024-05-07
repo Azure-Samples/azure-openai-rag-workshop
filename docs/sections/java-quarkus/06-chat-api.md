@@ -20,7 +20,7 @@ Let's start by configuring `ChatLanguageModelAzureOpenAiProducer`, using the Azu
 
 #### Managing Azure credentials
 
-Before we can create the clients, we need to retrieve the credentials to access our Azure services. We'll use the [Azure Identity SDK](https://learn.microsoft.com/en-us/java/api/com.azure.identity?view=azure-java-stable) to do that.
+Before we can create the clients, we need to retrieve the credentials to access our Azure services. We'll use the [Azure Identity SDK](https://learn.microsoft.com/java/api/com.azure.identity?view=azure-java-stable) to do that.
 
 Make sure this import is at the top of the file:
 
