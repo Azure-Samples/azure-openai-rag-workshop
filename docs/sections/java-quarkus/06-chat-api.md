@@ -207,7 +207,7 @@ public class ChatResource {
 
 ![Model](./assets/class-diagram-model.png)
 
-Notice that the `chat` method takes a `ChatRequest` parameter. This is the object that will be sent by the UI to the API, containing the messages of the conversation (`ChatRequestMessage`).
+Notice that the `chat` method takes a `ChatRequest` parameter. This is the object that will be sent by the UI to the API, containing the messages of the conversation (`ChatMessage`).
 
 ```java
 package ai.azure.openai.rag.workshop.backend.rest;
