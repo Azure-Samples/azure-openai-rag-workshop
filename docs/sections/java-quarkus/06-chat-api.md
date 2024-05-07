@@ -145,7 +145,6 @@ And let's finish with configuring the `EmbeddingStoreProducer`, using the Qdrant
       .port(qdrantPort)
       .build();
   }
-}
 ```
 
 ### Creating the Chat API
