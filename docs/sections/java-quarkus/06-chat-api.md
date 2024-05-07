@@ -25,22 +25,29 @@ Before we can create the clients, we need to retrieve the credentials to access 
 Add this code under the `TODO:` to retrieve the token to build the `AzureOpenAIChatModel`:
 
 ```java
-AzureOpenAiChatModel model;
+    AzureOpenAiChatModel model;
 
-try {
-  // Use the current user identity to authenticate with Azure OpenAI.
-  // (no secrets needed, just use `az login` or `azd auth login` locally, and managed identity when deployed on Azure).
-  model = AzureOpenAiChatModel.builder()
-    .tokenCredential(new DefaultAzureCredentialBuilder().build())
-    .endpoint(azureOpenAiEndpoint)
-    .deploymentName(azureOpenAiDeploymentName)
-    .timeout(ofSeconds(60))
-    .logRequestsAndResponses(true)
-    .build();
-} catch (Exception e) {
-  // default value for local execution
-  log.info("### Using fallback configuration for OpenAI");
-}
+    try {
+      // Use the current user identity to authenticate with Azure OpenAI.
+      // (no secrets needed, just use `az login` or `azd auth login` locally, and managed identity when deployed on Azure).
+      DefaultAzureCredential credentials = new DefaultAzureCredentialBuilder().build();
+
+      // Try requesting a token, so we can fallback to the other builder if it doesn't work
+      TokenRequestContext request = new TokenRequestContext();
+      request.addScopes("https://cognitiveservices.azure.com/.default");
+      credentials.getTokenSync(request);
+
+      model = AzureOpenAiChatModel.builder()
+        .tokenCredential(credentials)
+        .endpoint(azureOpenAiEndpoint)
+        .deploymentName(azureOpenAiDeploymentName)
+        .timeout(ofSeconds(60))
+        .logRequestsAndResponses(true)
+        .build();
+    } catch (Exception e) {
+      // Default value for local execution
+      // ...
+    }
 ```
 
 This will use the current user identity to authenticate with Azure OpenAI and AI Search. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
@@ -58,7 +65,7 @@ To use the fallback, add the following code in the catch statement and return th
 
 ```java
   } catch (Exception e) {
-    // default value for local execution
+    // Default value for local execution
     log.info("### Using fallback configuration for OpenAI");
     model = AzureOpenAiChatModel.builder()
       .apiKey("__dummy")

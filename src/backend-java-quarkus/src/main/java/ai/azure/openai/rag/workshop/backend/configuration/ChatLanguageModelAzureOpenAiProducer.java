@@ -4,6 +4,9 @@ import dev.langchain4j.model.azure.AzureOpenAiChatModel;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import jakarta.enterprise.inject.Produces;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import com.azure.core.credential.TokenRequestContext;
+import com.azure.identity.DefaultAzureCredential;
 import com.azure.identity.DefaultAzureCredentialBuilder;
 
 import static java.time.Duration.ofSeconds;
@@ -22,27 +25,36 @@ public class ChatLanguageModelAzureOpenAiProducer {
 
   @Produces
   public ChatLanguageModel chatLanguageModel() {
-
+    // initialize chat model here
     AzureOpenAiChatModel model;
+
     try {
-      // Instantiate the DefaultAzureCredential using managed identities
+      // Use the current user identity to authenticate with Azure OpenAI.
+      // (no secrets needed, just use `az login` or `azd auth login` locally, and managed identity when deployed on Azure).
+      DefaultAzureCredential credentials = new DefaultAzureCredentialBuilder().build();
+
+      // Try requesting a token, so we can fallback to the other builder if it doesn't work
+      TokenRequestContext request = new TokenRequestContext();
+      request.addScopes("https://cognitiveservices.azure.com/.default");
+      credentials.getTokenSync(request);
+
       model = AzureOpenAiChatModel.builder()
-      .tokenCredential(new DefaultAzureCredentialBuilder().build())
-      .endpoint(azureOpenAiEndpoint)
-      .deploymentName(azureOpenAiDeploymentName)
-      .timeout(ofSeconds(60))
-      .logRequestsAndResponses(true)
-      .build();
+        .tokenCredential(credentials)
+        .endpoint(azureOpenAiEndpoint)
+        .deploymentName(azureOpenAiDeploymentName)
+        .timeout(ofSeconds(60))
+        .logRequestsAndResponses(true)
+        .build();
     } catch (Exception e) {
-      // default value for local execution
+      // Default value for local execution
       log.info("### Using fallback configuration for OpenAI");
       model = AzureOpenAiChatModel.builder()
-      .apiKey("__dummy")
-      .endpoint(azureOpenAiEndpoint)
-      .deploymentName(azureOpenAiDeploymentName)
-      .timeout(ofSeconds(60))
-      .logRequestsAndResponses(true)
-      .build();
+        .apiKey("__dummy")
+        .endpoint(azureOpenAiEndpoint)
+        .deploymentName(azureOpenAiDeploymentName)
+        .timeout(ofSeconds(60))
+        .logRequestsAndResponses(true)
+        .build();
     }
 
     log.info("### Producing ChatLanguageModel with AzureOpenAiChatModel");
