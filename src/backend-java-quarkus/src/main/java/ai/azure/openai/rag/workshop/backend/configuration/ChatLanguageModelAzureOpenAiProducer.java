@@ -25,40 +25,8 @@ public class ChatLanguageModelAzureOpenAiProducer {
 
   @Produces
   public ChatLanguageModel chatLanguageModel() {
-    // initialize chat model here
-    AzureOpenAiChatModel model;
-
-    try {
-      // Use the current user identity to authenticate with Azure OpenAI.
-      // (no secrets needed, just use `az login` or `azd auth login` locally, and managed identity when deployed on Azure).
-      DefaultAzureCredential credentials = new DefaultAzureCredentialBuilder().build();
-
-      // Try requesting a token, so we can fallback to the other builder if it doesn't work
-      TokenRequestContext request = new TokenRequestContext();
-      request.addScopes("https://cognitiveservices.azure.com/.default");
-      credentials.getTokenSync(request);
-
-      model = AzureOpenAiChatModel.builder()
-        .tokenCredential(credentials)
-        .endpoint(azureOpenAiEndpoint)
-        .deploymentName(azureOpenAiDeploymentName)
-        .timeout(ofSeconds(60))
-        .logRequestsAndResponses(true)
-        .build();
-    } catch (Exception e) {
-      // Default value for local execution
-      log.info("### Using fallback configuration for OpenAI");
-      model = AzureOpenAiChatModel.builder()
-        .apiKey("__dummy")
-        .endpoint(azureOpenAiEndpoint)
-        .deploymentName(azureOpenAiDeploymentName)
-        .timeout(ofSeconds(60))
-        .logRequestsAndResponses(true)
-        .build();
-    }
-
-    log.info("### Producing ChatLanguageModel with AzureOpenAiChatModel");
-
-    return model;
+    // TODO: initialize chat model here
+    return null;
   }
 }
+
