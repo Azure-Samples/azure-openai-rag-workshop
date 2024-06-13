@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ##############################################################################
-# Usage: ./setup-template.sh [aisearch|qdrant|quarkus]
+# Usage: ./setup-template.sh [aisearch|qdrant]
 # Setup the current project template.
 ##############################################################################
 set -euo pipefail
@@ -8,7 +8,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 template_name=$1
 if [ -z "$template_name" ]; then
-  echo "Usage: setup-template.sh [aisearch|qdrant|quarkus]"
+  echo "Usage: setup-template.sh [aisearch|qdrant]"
   exit 1
 fi
 
@@ -172,7 +172,6 @@ declare module 'fastify' {
   mv src/backend-node-qdrant src/backend
   rm -rf src/backend-* | true
   rm -rf src/ingestion-* | true
-  rm -rf pom.xml
 
   echo -e "services:
   # backend:
@@ -281,123 +280,6 @@ declare module 'fastify' {
   mv src/backend-node-aisearch src/backend
   rm -rf src/backend-* | true
   rm -rf src/ingestion-* | true
-  rm -rf pom.xml
-  npm install
-elif [ "$template_name" == "quarkus" ]; then
-  echo "Preparing project template for Quarkus..."
-
-  rm -rf src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/rest/ChatResource.java
-  rm -rf src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/rest/ChatRequest.java
-  rm -rf src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/configuration/ChatLanguageModelOllamaProducer.java
-
-  echo -e "package ai.azure.openai.rag.workshop.backend.configuration;
-
-import dev.langchain4j.model.azure.AzureOpenAiChatModel;
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import jakarta.enterprise.inject.Produces;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import com.azure.core.credential.TokenRequestContext;
-import com.azure.identity.DefaultAzureCredential;
-import com.azure.identity.DefaultAzureCredentialBuilder;
-
-import static java.time.Duration.ofSeconds;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class ChatLanguageModelAzureOpenAiProducer {
-
-  private static final Logger log = LoggerFactory.getLogger(ChatLanguageModelAzureOpenAiProducer.class);
-
-  @ConfigProperty(name = \"AZURE_OPENAI_URL\")
-  String azureOpenAiEndpoint;
-
-  @ConfigProperty(name = \"AZURE_OPENAI_DEPLOYMENT_NAME\", defaultValue = \"gpt-35-turbo\")
-  String azureOpenAiDeploymentName;
-
-  @Produces
-  public ChatLanguageModel chatLanguageModel() {
-    // TODO: initialize chat model here
-    return null;
-  }
-}
-" > src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/configuration/ChatLanguageModelAzureOpenAiProducer.java
-
-  echo -e "package ai.azure.openai.rag.workshop.backend.configuration;
-
-import dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel;
-import dev.langchain4j.model.embedding.EmbeddingModel;
-import jakarta.enterprise.inject.Produces;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-public class EmbeddingModelProducer {
-
-  @Produces
-  public EmbeddingModel embeddingModel() {
-    // TODO: initialize embedding model here
-    return null;
-  }
-}
-" > src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/configuration/EmbeddingModelProducer.java
-
-  echo -e "package ai.azure.openai.rag.workshop.backend.configuration;
-
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.store.embedding.EmbeddingStore;
-import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
-import jakarta.enterprise.inject.Produces;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
-public class EmbeddingStoreProducer {
-
-  @Produces
-  public EmbeddingStore<TextSegment> embeddingStore() {
-    // TODO: initialize embedding store here
-    return null;
-  }
-}
-" > src/backend-java-quarkus/src/main/java/ai/azure/openai/rag/workshop/backend/configuration/EmbeddingStoreProducer.java
-
-  mv src/backend-java-quarkus src/backend
-  rm -rf src/ingestion
-  mv src/ingestion-java-quarkus src/ingestion
-  rm -rf src/backend-* | true
-  rm -rf src/ingestion-* | true
-
-  echo -e "services:
-  # backend:
-  #   build:
-  #     dockerfile: ./src/backend/Dockerfile
-  #   environment:
-  #     - AZURE_OPENAI_URL=\${AZURE_OPENAI_URL}
-  #     - QDRANT_URL=http://qdrant:6334
-  #     - LOCAL=true
-  #   ports:
-  #     - 3000:3000
-
-  ingestion:
-    build:
-      dockerfile: ./src/ingestion/Dockerfile
-    environment:
-      - AZURE_OPENAI_URL=\${AZURE_OPENAI_URL}
-      - QDRANT_URL=http://qdrant:6334
-    ports:
-      - 3001:3001
-
-  qdrant:
-    image: docker.io/qdrant/qdrant:v1.8.2
-    ports:
-      - 6333:6333
-      - 6334:6334
-    volumes:
-      - .qdrant:/qdrant/storage:z
-" > docker-compose.yml
-
-  perl -pi -e 's/api_mode=false/api_mode=true/g' scripts/ingest-data.sh
-  perl -pi -e 's/$api_mode = false/$api_mode = true/g' scripts/ingest-data.ps1
   npm install
 else
   echo "Invalid template name. Please use 'aisearch', 'qdrant' or 'quarkus' as the template name."
