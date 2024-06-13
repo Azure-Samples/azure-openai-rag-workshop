@@ -43,8 +43,7 @@ If you want to go further with more advanced use-cases, authentication, history 
 ### References
 
 - This workshop URL: [aka.ms/ws/openai-rag-quarkus](https://aka.ms/ws/openai-rag-quarkus)
-- The source repository for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop/tree/base)
-- The base template for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop)
+- The source repository for this workshop: [GitHub link](https://github.com/Azure-Samples/azure-openai-rag-workshop/)
 - If something does not work: [Report an issue](https://github.com/Azure-Samples/azure-openai-rag-workshop/issues)
 - Introduction presentation for this workshop: [Slides](https://azure-samples.github.io/azure-openai-rag-workshop/java-quarkus/)
 - Outperforming vector search performance with hybrid retrieval and semantic ranking: [Blog post](https://techcommunity.microsoft.com/t5/ai-azure-ai-services-blog/azure-ai-search-outperforming-vector-search-with-hybrid/ba-p/3929167)

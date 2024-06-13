@@ -1,7 +1,7 @@
 name: Deploy slides
 on:
   push:
-    branches: [base]
+    branches: [main]
   workflow_dispatch:
 
 concurrency:

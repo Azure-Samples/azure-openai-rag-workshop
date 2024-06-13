@@ -19,9 +19,6 @@ You'll use [Quarkus](https://quarkus.io/) to create a [Java](https://openjdk.org
 
 - 👉 [**See the workshop using Quarkus + Qdrant**](https://aka.ms/ws/openai-rag-quarkus): we will use [Qdrant](https://qdrant.tech/) to index and search the documents.
 
-> [!TIP]
-> 💡 [See the completed solution and workshop source for all versions](https://github.com/Azure-Samples/azure-openai-rag-workshop/tree/base)
-
 ## Prerequisites
 
 - **Azure account**. If you're new to Azure, [get an Azure account for free](https://azure.microsoft.com/free/?WT.mc_id=javascript-0000-cxa) to get free Azure credits to get started.
@@ -37,7 +34,7 @@ This project is structured as monorepo, all packages source code is located unde
 
 Here's the architecture of the application:
 
-![Architecture diagram](https://github.com/Azure-Samples/azure-openai-rag-workshop/blob/base/docs/assets/architecture.png)
+![Architecture diagram](https://github.com/Azure-Samples/azure-openai-rag-workshop/blob/main/docs/assets/architecture.png)
 
 ## How deploy to Azure
 

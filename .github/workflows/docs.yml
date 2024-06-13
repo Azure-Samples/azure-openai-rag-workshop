@@ -1,7 +1,7 @@
 name: Build workshop docs
 on:
   push:
-    branches: [base]
+    branches: [main]
 
 jobs:
   build:
