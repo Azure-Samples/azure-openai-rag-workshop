@@ -100,13 +100,24 @@ export async function* getChunksFromResponse<T>(response: Response, intervalMs: 
 }
 " > src/frontend/src/api.ts
 
+rm -rf src/backend/Dockerfile
+echo -e "import { type FastifyReply, type FastifyPluginAsync } from 'fastify';
+
+const root: FastifyPluginAsync = async (fastify, options): Promise<void> => {
+  fastify.get('/', async function (request, reply) {
+    return { message: 'server up' };
+  });
+
+  // TODO: create /chat endpoint
+};
+
+export default root;
+" > src/backend/src/routes/root.ts
+
 ##############################################################################
 
 if [ "$template_name" == "qdrant" ]; then
   echo "Preparing project template for Qdrant..."
-
-  rm -rf src/backend-node-aisearch/Dockerfile
-  cp -f src/backend-node-aisearch/src/routes/root.ts src/backend-node-qdrant/src/routes/root.ts
 
   echo -e "import fp from 'fastify-plugin';
 import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
@@ -167,11 +178,7 @@ declare module 'fastify' {
     chat: ChatService;
   }
 }
-" > src/backend-node-qdrant/src/plugins/chat.ts
-
-  mv src/backend-node-qdrant src/backend
-  rm -rf src/backend-* | true
-  rm -rf src/ingestion-* | true
+" > src/backend/src/plugins/chat.ts
 
   echo -e "services:
   # backend:
@@ -197,27 +204,12 @@ declare module 'fastify' {
     image: docker.io/qdrant/qdrant:v1.8.2
     ports:
       - 6333:6333
-      - 6334:6334
     volumes:
       - .qdrant:/qdrant/storage:z
 " > docker-compose.yml
   npm install
 elif [ "$template_name" == "aisearch" ]; then
   echo "Preparing project template for Azure AI Search..."
-
-  rm -rf src/backend-node-aisearch/Dockerfile
-  echo -e "import { type FastifyReply, type FastifyPluginAsync } from 'fastify';
-
-const root: FastifyPluginAsync = async (fastify, options): Promise<void> => {
-  fastify.get('/', async function (request, reply) {
-    return { message: 'server up' };
-  });
-
-  // TODO: create /chat endpoint
-};
-
-export default root;
-" > src/backend-node-aisearch/src/routes/root.ts
 
   echo -e "import fp from 'fastify-plugin';
 import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
@@ -275,15 +267,12 @@ declare module 'fastify' {
     chat: ChatService;
   }
 }
-" > src/backend-node-aisearch/src/plugins/chat.ts
+" > src/backend/src/plugins/chat.ts
 
-  mv src/backend-node-aisearch src/backend
-  rm -rf src/backend-* | true
-  rm -rf src/ingestion-* | true
   npm install
 else
-  echo "Invalid template name. Please use 'aisearch', 'qdrant' or 'quarkus' as the template name."
-  echo "Usage: setup-template.sh [aisearch|qdrant|quarkus]"
+  echo "Invalid template name. Please use 'aisearch' or 'qdrant' as the template name."
+  echo "Usage: setup-template.sh [aisearch|qdrant]"
   exit 1
 fi
 
@@ -293,4 +282,3 @@ git add .
 git commit -m "chore: complete project setup"
 
 echo "Template ready!"
-

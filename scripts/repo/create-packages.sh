@@ -44,7 +44,7 @@ makeArchive() {
 
 echo "Creating solution package (for JS + Azure AI Search)..."
 copyFolder . solution
-mv "$target_folder/solution/src/backend-node-aisearch" "$target_folder/solution/src/backend"
+rm -rf "$target_folder/solution/src/backend/plugins/_chat.*"
 rm -rf "$target_folder/solution/.azure"
 rm -rf "$target_folder/solution/.qdrant"
 rm -rf "$target_folder/solution/.env"
@@ -53,21 +53,19 @@ rm -rf "$target_folder/solution/docs"
 rm -rf "$target_folder/solution/trainer"
 rm -rf "$target_folder/solution/scripts/repo"
 rm -rf "$target_folder/solution/.github"
-rm -rf "$target_folder/solution/src/backend-"*
-rm -rf "$target_folder/solution/src/ingestion-"*
 rm -rf "$target_folder/solution/TODO"
 rm -rf "$target_folder/solution/SUPPORT.md"
 rm -rf "$target_folder/solution/CODE_OF_CONDUCT.md"
 rm -rf "$target_folder/solution/SECURITY.md"
 rm -rf "$target_folder/solution/docker-compose.yml"
 rm -rf "$target_folder/solution/scripts/setup-template.sh"
-rm -rf "$target_folder/solution/pom.xml"
 perl -pi -e 's/stream: false/stream: true/g' "$target_folder/solution/src/frontend/src/components/chat.ts"
 makeArchive . solution solution
 
 echo "Creating solution package (for JS + Qdrant)..."
 copyFolder . solution-qdrant
-mv "$target_folder/solution-qdrant/src/backend-node-qdrant" "$target_folder/solution-qdrant/src/backend"
+rm -rf "$target_folder/solution/src/backend/plugins/chat.ts"
+mv "$target_folder/solution-qdrant/src/backend/plugins/_chat.qdrant.ts" "$target_folder/solution-qdrant/src/backend/plugins/chat.ts"
 rm -rf "$target_folder/solution-qdrant/.azure"
 rm -rf "$target_folder/solution-qdrant/.qdrant"
 rm -rf "$target_folder/solution-qdrant/.env"
@@ -76,14 +74,11 @@ rm -rf "$target_folder/solution-qdrant/docs"
 rm -rf "$target_folder/solution-qdrant/trainer"
 rm -rf "$target_folder/solution-qdrant/scripts/repo"
 rm -rf "$target_folder/solution-qdrant/.github"
-rm -rf "$target_folder/solution-qdrant/src/backend-"*
-rm -rf "$target_folder/solution-qdrant/src/ingestion-"*
 rm -rf "$target_folder/solution-qdrant/TODO"
 rm -rf "$target_folder/solution-qdrant/SUPPORT.md"
 rm -rf "$target_folder/solution-qdrant/CODE_OF_CONDUCT.md"
 rm -rf "$target_folder/solution-qdrant/SECURITY.md"
 rm -rf "$target_folder/solution-qdrant/scripts/setup-template.sh"
-rm -rf "$target_folder/solution/pom.xml"
 perl -pi -e 's/stream: false/stream: true/g' "$target_folder/solution-qdrant/src/frontend/src/components/chat.ts"
 makeArchive . solution-qdrant solution-qdrant
 
@@ -93,12 +88,12 @@ makeArchive . solution-qdrant solution-qdrant
 
 echo "Creating backend-dockerfile package (for JS + Azure AI Search)..."
 mkdir -p "$target_folder/src/backend"
-cp -R src/backend-node-aisearch/Dockerfile "$target_folder/src/backend/Dockerfile"
+cp -R src/backend/Dockerfile "$target_folder/src/backend/Dockerfile"
 makeArchive src backend-dockerfile-aisearch
 
 echo "Creating backend-dockerfile package (for JS + Qdrant)..."
 mkdir -p "$target_folder/backend-dockerfile/src/backend"
-cp -R src/backend-node-qdrant/Dockerfile "$target_folder/backend-dockerfile/src/backend/Dockerfile"
+cp -R src/backend/Dockerfile "$target_folder/backend-dockerfile/src/backend/Dockerfile"
 cp -R docker-compose.yml "$target_folder/backend-dockerfile/docker-compose.yml"
 makeArchive . backend-dockerfile backend-dockerfile
 
