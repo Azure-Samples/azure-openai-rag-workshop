@@ -56,9 +56,6 @@ param embeddingModelName string = 'text-embedding-ada-002'
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
 
-@description('Use Application Insights for monitoring and performance tracing')
-param useApplicationInsights bool = false
-
 @description('Use Qdrant as the vector DB')
 param useQdrant bool = false
 
@@ -76,6 +73,10 @@ var useAzureAISearch = !useQdrant
 var azureSearchService = useAzureAISearch ? searchService.outputs.name : ''
 var qdrantUrl = useQdrant ? (qdrantPort == 6334 ? replace('${qdrant.outputs.uri}:80', 'https', 'http') : '${qdrant.outputs.uri}:443') : ''
 
+var ingestionApiIdentityName = '${abbrs.managedIdentityUserAssignedIdentities}ingestion-api-${resourceToken}'
+var backendApiIdentityName = '${abbrs.managedIdentityUserAssignedIdentities}backend-api-${resourceToken}'
+var qdrantIdentityName = '${abbrs.managedIdentityUserAssignedIdentities}qdrant-${resourceToken}'
+
 // Organize resources in a resource group
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: !empty(resourceGroupName) ? resourceGroupName : '${abbrs.resourcesResourceGroups}${environmentName}'
@@ -91,7 +92,8 @@ module monitoring './core/monitor/monitoring.bicep' = {
     location: location
     tags: tags
     logAnalyticsName: '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
-    applicationInsightsName: useApplicationInsights ? '${abbrs.insightsComponents}${resourceToken}' : ''
+    applicationInsightsName: '${abbrs.insightsComponents}${resourceToken}'
+    applicationInsightsDashboardName: '${abbrs.portalDashboards}${resourceToken}'
   }
 }
 
@@ -105,7 +107,9 @@ module containerApps './core/host/container-apps.bicep' = {
     containerRegistryName: '${abbrs.containerRegistryRegistries}${resourceToken}'
     location: location
     tags: tags
+    applicationInsightsName: monitoring.outputs.applicationInsightsName
     logAnalyticsWorkspaceName: monitoring.outputs.logAnalyticsWorkspaceName
+    containerRegistryAdminUserEnabled: true
   }
 }
 
@@ -120,6 +124,16 @@ module frontend './core/host/staticwebapp.bicep' = {
   }
 }
 
+// Backend API identity
+module backendApiIdentity 'core/security/managed-identity.bicep' = {
+  name: 'backend-api-identity'
+  scope: resourceGroup
+  params: {
+    name: backendApiIdentityName
+    location: location
+  }
+}
+
 // The backend API
 module backendApi './core/host/container-app.bicep' = {
   name: 'backend-api'
@@ -130,16 +144,14 @@ module backendApi './core/host/container-app.bicep' = {
     tags: union(tags, { 'azd-service-name': backendApiName })
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
-    managedIdentity: true
+    identityName: backendApiIdentityName
+    allowedOrigins: [frontend.outputs.uri]
     containerCpuCoreCount: '1.0'
     containerMemory: '2.0Gi'
-    secrets: useApplicationInsights ? [
-      {
-        name: 'appinsights-cs'
-        value: monitoring.outputs.applicationInsightsConnectionString
-      }
-    ] : []
-    env: concat([
+    secrets: {
+      'appinsights-cs': monitoring.outputs.applicationInsightsConnectionString
+    }
+    env: [
       {
         name: 'AZURE_OPENAI_CHATGPT_DEPLOYMENT'
         value: chatGptDeploymentName
@@ -172,12 +184,27 @@ module backendApi './core/host/container-app.bicep' = {
         name: 'QDRANT_URL'
         value: qdrantUrl
       }
-    ], useApplicationInsights ? [{
-      name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-      secretRef: 'appinsights-cs'
-    }] : [])
+      {
+        name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+        secretRef: 'appinsights-cs'
+      }
+      {
+        name: 'AZURE_CLIENT_ID'
+        value: backendApiIdentity.outputs.clientId
+      }
+    ]
     imageName: !empty(backendApiImageName) ? backendApiImageName : 'nginx:latest'
     targetPort: 3000
+  }
+}
+
+// Ingestion API identity
+module ingestionApiIdentity 'core/security/managed-identity.bicep' = {
+  name: 'ingestion-api-identity'
+  scope: resourceGroup
+  params: {
+    name: ingestionApiIdentityName
+    location: location
   }
 }
 
@@ -191,16 +218,13 @@ module ingestionApi './core/host/container-app.bicep' = {
     tags: union(tags, { 'azd-service-name': ingestionApiName })
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
-    managedIdentity: true
+    identityName: ingestionApiIdentityName
     containerCpuCoreCount: '1.0'
     containerMemory: '2.0Gi'
-    secrets: useApplicationInsights ? [
-      {
-        name: 'appinsights-cs'
-        value: monitoring.outputs.applicationInsightsConnectionString
-      }
-    ] : []
-    env: concat([
+    secrets: {
+      'appinsights-cs': monitoring.outputs.applicationInsightsConnectionString
+    }
+    env: [
       {
         name: 'AZURE_OPENAI_CHATGPT_DEPLOYMENT'
         value: chatGptDeploymentName
@@ -233,10 +257,15 @@ module ingestionApi './core/host/container-app.bicep' = {
         name: 'QDRANT_URL'
         value: qdrantUrl
       }
-    ], useApplicationInsights ? [{
-      name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-      secretRef: 'appinsights-cs'
-    }] : [])
+      {
+        name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+        secretRef: 'appinsights-cs'
+      }
+      {
+        name: 'AZURE_CLIENT_ID'
+        value: ingestionApiIdentity.outputs.clientId
+      }
+    ]
     imageName: !empty(ingestionApiImageName) ? ingestionApiImageName : 'nginx:latest'
     targetPort: 3001
   }
@@ -286,6 +315,7 @@ module searchService 'core/search/search-services.bicep' = if (useAzureAISearch)
     name: 'gptkb-${resourceToken}'
     location: location
     tags: tags
+    disableLocalAuth: true
     authOptions: {
       aadOrApiKey: {
         aadAuthFailureMode: 'http401WithBearerChallenge'
@@ -298,6 +328,15 @@ module searchService 'core/search/search-services.bicep' = if (useAzureAISearch)
   }
 }
 
+// Qdrant identity
+module qdrantIdentity 'core/security/managed-identity.bicep' = if (useQdrant) {
+  name: 'qdrant-api-identity'
+  scope: resourceGroup
+  params: {
+    name: qdrantIdentityName
+    location: location
+  }
+}
 
 module qdrant './core/host/container-app.bicep' = if (useQdrant) {
   name: 'qdrant'
@@ -308,26 +347,24 @@ module qdrant './core/host/container-app.bicep' = if (useQdrant) {
     tags: union(tags, { 'azd-service-name': qdrantName })
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
-    managedIdentity: true
+    identityName: qdrantIdentityName
     containerCpuCoreCount: '1.0'
     containerMemory: '2.0Gi'
-    secrets: useApplicationInsights ? [
+    secrets: {
+      'appinsights-cs': monitoring.outputs.applicationInsightsConnectionString
+    }
+    env: [
       {
-        name: 'appinsights-cs'
-        value: monitoring.outputs.applicationInsightsConnectionString
+        name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+        secretRef: 'appinsights-cs'
       }
-    ] : []
-    env: concat([], useApplicationInsights ? [{
-      name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-      secretRef: 'appinsights-cs'
-    }] : [])
+    ]
     imageName: !empty(qdrantImageName) ? qdrantImageName : 'docker.io/qdrant/qdrant'
     targetPort: qdrantPort
     allowInsecure: (qdrantPort == 6334 ? true : false)
     // gRPC needs to be explicitly set for HTTP2
     transport: (qdrantPort == 6334 ? 'HTTP2' : 'auto')
     additionalPortMappings: (qdrantPort == 6334 ? [{
-      // external: false
       targetPort: 6333
       exposedPort: 6333
     }] : [])
