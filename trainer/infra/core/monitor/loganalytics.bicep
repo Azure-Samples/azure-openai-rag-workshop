@@ -1,9 +1,10 @@
-param logAnalyticsName string
+metadata description = 'Creates a Log Analytics workspace.'
+param name string
 param location string = resourceGroup().location
 param tags object = {}
 
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
-  name: logAnalyticsName
+  name: name
   location: location
   tags: tags
   properties: any({
@@ -17,4 +18,5 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-12-01-previ
   })
 }
 
-output logAnalyticsWorkspaceName string = logAnalytics.name
+output id string = logAnalytics.id
+output name string = logAnalytics.name

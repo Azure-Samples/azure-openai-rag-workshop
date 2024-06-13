@@ -38,6 +38,7 @@ param principalId string = ''
 var abbrs = loadJsonContent('abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
+var proxyApiIdentityName = '${abbrs.managedIdentityUserAssignedIdentities}proxy-${resourceToken}'
 
 // Organize resources in a resource group
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -53,7 +54,7 @@ module logAnalytics './core/monitor/loganalytics.bicep' = {
   params: {
     location: location
     tags: tags
-    logAnalyticsName: '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
+    name: '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
   }
 }
 
@@ -67,7 +68,17 @@ module containerApps './core/host/container-apps.bicep' = {
     containerRegistryName: '${abbrs.containerRegistryRegistries}${resourceToken}'
     location: location
     tags: tags
-    logAnalyticsWorkspaceName: logAnalytics.outputs.logAnalyticsWorkspaceName
+    logAnalyticsWorkspaceName: logAnalytics.outputs.name
+  }
+}
+
+// Proxy API identity
+module proxyApiIdentity 'core/security/managed-identity.bicep' = {
+  name: 'proxy-api-identity'
+  scope: resourceGroup
+  params: {
+    name: proxyApiIdentityName
+    location: location
   }
 }
 
@@ -81,10 +92,14 @@ module proxyApi './core/host/container-app.bicep' = {
     tags: union(tags, { 'azd-service-name': proxyApiName })
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
-    managedIdentity: true
+    identityName: proxyApiIdentityName
     containerCpuCoreCount: '1.0'
     containerMemory: '2.0Gi'
     env: [
+      {
+        name: 'AZURE_CLIENT_ID'
+        value: proxyApiIdentity.outputs.clientId
+      }
       {
         name: 'AZURE_OPENAI_CHATGPT_DEPLOYMENT'
         value: chatGptDeploymentName
@@ -121,6 +136,7 @@ module openAi 'core/ai/cognitiveservices.bicep' = {
     sku: {
       name: openAiSkuName
     }
+    disableLocalAuth: true
     deployments: [
       {
         name: chatGptDeploymentName
@@ -147,7 +163,7 @@ module openAi 'core/ai/cognitiveservices.bicep' = {
   }
 }
 
-// USER ROLES
+// User roles
 module openAiRoleUser 'core/security/role.bicep' = {
   scope: resourceGroup
   name: 'openai-role-user'
@@ -159,7 +175,7 @@ module openAiRoleUser 'core/security/role.bicep' = {
   }
 }
 
-// SYSTEM IDENTITIES
+// System roles
 module openAiRoleProxyApi 'core/security/role.bicep' = {
   scope: resourceGroup
   name: 'openai-role-proxyapi'

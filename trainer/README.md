@@ -6,7 +6,7 @@ It also contains a proxy that you can use to share your Azure OpenAI instance wi
 
 ## Content
 
-- The introduction slides are in the `docs/slides` folder, and available at https://azure-samples.github.io/azure-openai-rag-workshop/
+- The introduction slides are in the `docs/slides` folder, and available at https://azure-samples.github.io/azure-openai-rag-workshop-java/
 - The workshop is in the `docs/workshop` folder, and available at https://aka.ms/ws/openai-rag
 
 ## Preparation
@@ -20,12 +20,19 @@ To deploy it, run:
 ```bash
 azd auth login # if needed
 azd env new openai-trainer
-azd env set AZURE_OPENAI_LOCATION <location> # optional, default is eastus2
-azd env set AZURE_OPENAI_CAPACITY <tokens_per_minutes> # optional, default is 300
+azd env set AZURE_OPENAI_LOCATION <location> # optional, default is swedencentral
+azd env set AZURE_OPENAI_CAPACITY <tokens_per_minutes> # optional, default is 200
 azd up
 ```
 
 You'll get a container app instance URL of the proxy when the deployment is complete.
+
+You can share it with your attendees so they can use it during the workshop with a link like this:
+
+```
+https://aka.ms/ws/openai-rag-quarkus?vars=proxy:<proxy_url>
+```
+
 
 ## During the workshop
 

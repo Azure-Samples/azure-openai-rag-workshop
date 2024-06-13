@@ -1,6 +1,6 @@
 import fp from 'fastify-plugin';
 import proxy from '@fastify/http-proxy';
-import { type AccessToken, DefaultAzureCredential } from '@azure/identity';
+import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 
 const AZURE_COGNITIVE_SERVICES_AD_SCOPE = 'https://cognitiveservices.azure.com/.default';
 
@@ -12,35 +12,28 @@ export default fp(
     // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
     // If you need to use keys, use separate AzureKeyCredential instances with the keys for each service
     const credential = new DefaultAzureCredential();
+    const getToken = getBearerTokenProvider(credential, AZURE_COGNITIVE_SERVICES_AD_SCOPE);
 
     const openAiUrl = `https://${config.azureOpenAiService}.openai.azure.com`;
     fastify.log.info(`Using OpenAI at ${openAiUrl}`);
 
-    let openAiToken: AccessToken;
-    const refreshOpenAiToken = async () => {
-      if (!openAiToken || openAiToken.expiresOnTimestamp < Date.now() + 60 * 1000) {
-        openAiToken = await credential.getToken(AZURE_COGNITIVE_SERVICES_AD_SCOPE);
-      }
-    };
+    let openAiToken: string;
 
     fastify.register(proxy, {
       upstream: openAiUrl,
       prefix: '/openai',
       rewritePrefix: '/openai',
       preHandler: async (request, reply) => {
-        if (!config.azureOpenAiApiKey) {
-          await refreshOpenAiToken();
-        }
+        openAiToken = await getToken();
       },
       // TODO: add and check API key
       // preValidation:
       replyOptions: {
         getUpstream: (request, base) => {
-          // TODO: load balance
           return openAiUrl;
         },
         rewriteRequestHeaders: (request, headers) => {
-          const apiKey = config.azureOpenAiApiKey || openAiToken.token;
+          const apiKey = openAiToken;
           return {
             ...headers,
             authorization: `Bearer ${apiKey}`,
