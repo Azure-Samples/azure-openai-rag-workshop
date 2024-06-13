@@ -1,44 +1,64 @@
-# 🤖 azure-openai-rag-workshop
+<!-- prettier-ignore -->
+<div align="center">
 
-In this workshop, we will build a chatbot based on OpenAI language models and implementing the Retrieval Augmented Generation (RAG) pattern. 
-<!-- Finally, we will deploy everything on Azure with a CI/CD pipeline. -->
+# 🤖 Azure OpenAI RAG workshop - Node.js version
 
-This workshop exists in different variants:
+[![Open project in GitHub Codespaces](https://img.shields.io/badge/Codespaces-Open-blue?style=flat-square&logo=github)](https://codespaces.new/Azure-Samples/azure-openai-rag-workshop?hide_repo_select=true&ref=main&quickstart=true)
+![Node version](https://img.shields.io/badge/Node.js->=20-3c873a?style=flat-square)
+[![Ollama + Mistral](https://img.shields.io/badge/Ollama-Mistral-ff7000?style=flat-square)](https://ollama.com/library/mistral)
+[![TypeScript](https://img.shields.io/badge/TypeScript-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-#### Node.js
+:star: If you like this sample, star it on GitHub — it helps a lot!
 
-You'll use [Fastify](https://fastify.dev) to create a [Node.js](https://nodejs.org/en/) service that leverage [OpenAI SDK](https://platform.openai.com/docs/libraries/) and [LangChain](https://js.langchain.com/) to build a chatbot that will answer questions based on a corpus of documents, as well as a website to test it.
+[Overview](#overview) • [Run the sample](#run-the-sample) • [Other versions](#other-versions) • [References](#references)
 
-- 👉 [**See the workshop using Node.js + Azure AI Search**](https://aka.ms/ws/openai-rag): we will use [Azure AI Search](https://azure.microsoft.com/services/search/) to index and search the documents.
+</div>
 
-- 👉 [**See the workshop using Node.js + Qdrant**](https://aka.ms/ws/openai-rag-qdrant): we will use [Qdrant](https://qdrant.tech/) to index and search the documents.
+This sample shows how to build an AI chat experience with Retrieval-Augmented Generation (RAG) using LangChain4J and OpenAI language models. The application is hosted on [Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/overview) and [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/overview), with [Azure AI Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search) as the vector database. You can use it as a starting point for building more complex AI applications.
 
-#### Java
+> [!IMPORTANT]
+> 👉 **Follow the [full-length workshop](https://aka.ms/ws/openai-rag)** to learn how we built this sample and how you can run and deploy it.
 
-You'll use [Quarkus](https://quarkus.io/) to create a [Java](https://openjdk.org/) service that leverage [OpenAI SDK](https://platform.openai.com/docs/libraries/) and [LangChain4j](https://github.com/langchain4j/langchain4j) to build a chatbot that will answer questions based on a corpus of documents, as well as a website to test it.
+## Overview
 
-- 👉 [**See the workshop using Quarkus + Qdrant**](https://aka.ms/ws/openai-rag-quarkus): we will use [Qdrant](https://qdrant.tech/) to index and search the documents.
-
-## Prerequisites
-
-- **Azure account**. If you're new to Azure, [get an Azure account for free](https://azure.microsoft.com/free/?WT.mc_id=javascript-0000-cxa) to get free Azure credits to get started.
-- **Azure subscription with access enabled for the Azure OpenAI service**. You can request access with [this form](https://aka.ms/oaiapply).
-
-You can use [GitHub Codespaces](https://github.com/features/codespaces) to work on this project directly from your browser: select the **Code** button, then the **Codespaces** tab and click on **Create Codespaces on main**.
-
-You can also use Docker and the [Dev Containers extension for VS Code](https://aka.ms/vscode/ext/devcontainer) to work locally using a ready-to-use dev environment.
-
-## Project details
+This sample uses [Fastify](https://fastify.dev) to create a [Node.js](https://nodejs.org/) service that leverage [OpenAI SDK](https://platform.openai.com/docs/libraries/) and [LangChain](https://js.langchain.com/) to build a chatbot that will answer questions based on a corpus of documents, with a website to interact with the API.
 
 This project is structured as monorepo, all packages source code is located under the `src/` folder.
-
 Here's the architecture of the application:
 
-![Architecture diagram](https://github.com/Azure-Samples/azure-openai-rag-workshop/blob/main/docs/assets/architecture.png)
+<div align="center">
+  <img src="./docs/assets/architecture.png" alt="Architecture diagram" width="640px" />
+</div>
 
-## How deploy to Azure
+## Run the sample
 
-Before deploying to Azure, you need to install the [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd). Once you're ready, run the following commands:
+You can use [GitHub Codespaces](https://github.com/features/codespaces) to work on this project directly from your browser:
+
+[![Open in GitHub Codespaces](https://img.shields.io/badge/Codespaces-Open-blue?style=flat-square&logo=github)](https://codespaces.new/Azure-Samples/azure-openai-rag-workshop?hide_repo_select=true&ref=main&quickstart=true)
+
+You can also use [Docker](https://www.docker.com/products/docker-desktop) and the [Dev Containers extension for VS Code](https://aka.ms/vscode/ext/devcontainer) to work locally using a ready-to-use dev environment:
+
+[![Open in Dev Containers](https://img.shields.io/static/v1?style=flat-square&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Azure-Samples/azure-openai-rag-workshop)
+
+If you prefer to install all the tools locally, you can follow these [setup instructions](https://aka.ms/ws?src=gh%3AAzure-Samples%2Fazure-openai-rag-workshop%2Fdocs%2Fworkshop.md&step=2#optional-working-locally-without-the-dev-container).
+
+<!--
+> [!TIP]
+> You can run this sample entirely locally without any cost using [Ollama](https://ollama.com/). Follow the instructions above to setup the tools locally to get started.
+-->
+
+### Azure prerequisites
+
+- **Azure account**. If you're new to Azure, [get an Azure account for free](https://azure.microsoft.com/free) to get free Azure credits to get started. If you're a student, you can also get free credits with [Azure for Students](https://aka.ms/azureforstudents).
+- **Azure subscription with access enabled for the Azure OpenAI service**. You can request access with [this form](https://aka.ms/oaiapply).
+- **Azure account permissions**:
+  - Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner). If you don't have subscription-level permissions, you must be granted [RBAC](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview) for an existing resource group and [deploy to that existing group](docs/deploy_existing.md#resource-group).
+  - Your Azure account also needs `Microsoft.Resources/deployments/write` permissions on the subscription level.
+
+### Deploy the sample
+
+Open a terminal and run the following commands:
 
 ```bash
 azd auth login
@@ -47,15 +67,37 @@ azd up
 
 This commands will first ask you to log in into Azure. Then it will provison the Azure resources, package the services and deploy them to Azure.
 
+### Clean up
+
+To clean up all the Azure resources created by this sample:
+
+1. Run `azd down --purge`
+2. When asked if you are sure you want to continue, enter `y`
+
+The resource group and all the resources will be deleted.
+
+## Other versions
+
+This sample and workshop exists in different versions:
+- [**Node.js + Azure AI Search**](https://aka.ms/ws/openai-rag)
+- [**Node.js + Qdrant**](https://aka.ms/ws/openai-rag-qdrant)
+- [**Java/Quarkus + Qdrant**](https://aka.ms/ws/openai-rag-quarkus).
+
 ## References
 
-This workshop is based on the enterprise-ready sample **ChatGPT + Enterprise data with Azure OpenAI and AI Search**:
+Here are some resources to learn more about the technologies used in this sample:
 
-- [JavaScript version](https://github.com/Azure-Samples/azure-search-openai-javascript)
+- [LangChain.js documentation](https://js.langchain.com/)
+- [Generative AI For Beginners](https://github.com/microsoft/generative-ai-for-beginners)
+- [Azure OpenAI Service](https://learn.microsoft.com/azure/ai-services/openai/overview)
+
+You can also find [more Azure AI samples here](https://github.com/Azure-Samples/azureai-samples).
+
+This sample/workshop was based on the enterprise-ready sample **ChatGPT + Enterprise data with Azure OpenAI and AI Search**:
+- [JavaScript version](https://github.com/Azure-Samples/azure-search-openai-javascript) / [Serverless JavaScript version](https://github.com/Azure-Samples/serverless-chat-langchainjs)
 - [Python version](https://github.com/Azure-Samples/azure-search-openai-demo/)
 - [Java version](https://github.com/Azure-Samples/azure-search-openai-demo-java)
 - [C# version](https://github.com/Azure-Samples/azure-search-openai-demo-csharp)
-- [Serverless JavaScript version](https://github.com/Azure-Samples/serverless-chat-langchainjs)
 
 If you want to go further with more advanced use-cases, authentication, history and more, you should check it out!
 
