@@ -174,6 +174,14 @@ module backendApi './core/host/container-app.bicep' = {
         value: embeddingsDeploymentName
       }
       {
+        name: 'AZURE_OPENAI_API_MODEL'
+        value: chatModelName
+      }
+      {
+        name: 'AZURE_OPENAI_API_EMBEDDINGS_MODEL'
+        value: embeddingsModelName
+      }
+      {
         name: 'AZURE_AISEARCH_ENDPOINT'
         value: searchUrl
       }
@@ -241,6 +249,14 @@ module ingestionApi './core/host/container-app.bicep' = {
       {
         name: 'AZURE_OPENAI_API_EMBEDDINGS_DEPLOYMENT_NAME'
         value: embeddingsDeploymentName
+      }
+      {
+        name: 'AZURE_OPENAI_API_MODEL'
+        value: chatModelName
+      }
+      {
+        name: 'AZURE_OPENAI_API_EMBEDDINGS_MODEL'
+        value: embeddingsModelName
       }
       {
         name: 'AZURE_AISEARCH_ENDPOINT'
@@ -463,6 +479,8 @@ output AZURE_OPENAI_API_INSTANCE_NAME string = openAi.outputs.name
 output AZURE_OPENAI_API_VERSION string = openAiApiVersion
 output AZURE_OPENAI_API_DEPLOYMENT_NAME string = chatDeploymentName
 output AZURE_OPENAI_API_EMBEDDINGS_DEPLOYMENT_NAME string = embeddingsDeploymentName
+output AZURE_OPENAI_API_MODEL string = chatModelName
+output AZURE_OPENAI_API_EMBEDDINGS_MODEL string = embeddingsModelName
 
 output AZURE_AISEARCH_ENDPOINT string = searchUrl
 output QDRANT_URL string = qdrantUrl

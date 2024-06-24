@@ -15,13 +15,9 @@ services:
         windows:
           shell: pwsh
           run: Export-ModuleMember -Variable BACKEND_API_URI && npm run build
-          interactive: true
-          continueOnError: false
         posix:
           shell: sh
           run: export BACKEND_API_URI && npm run build
-          interactive: true
-          continueOnError: false
 
   backend:
     project: ./src/backend
@@ -38,14 +34,17 @@ services:
       context: ../..
 
 hooks:
+  postprovision:
+    windows:
+      shell: pwsh
+      run: azd env get-values > .env
+    posix:
+      shell: sh
+      run: azd env get-values > .env
   postup:
     windows:
       shell: pwsh
       run: ./scripts/ingest-data.ps1
-      interactive: true
-      continueOnError: false
     posix:
       shell: sh
       run: ./scripts/ingest-data.sh
-      interactive: true
-      continueOnError: false
