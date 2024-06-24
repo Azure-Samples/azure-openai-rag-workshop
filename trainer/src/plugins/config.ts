@@ -17,7 +17,7 @@ export default fp(
   async (fastify, options) => {
     const environmentPath = path.resolve(process.cwd(), '.env');
 
-    console.log(`Loading .env config from ${environmentPath}...`);
+    console.log(`Loading .env config from ${environmentPath}`);
     dotenv.config({ path: environmentPath });
 
     const config: AppConfig = {
