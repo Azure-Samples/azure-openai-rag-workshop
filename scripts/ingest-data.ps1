@@ -22,19 +22,7 @@ if ([string]::IsNullOrEmpty($env:INDEX_NAME)) {
   [Environment]::SetEnvironmentVariable('INDEX_NAME', 'kbindex')
 }
 
-$api_mode = false
-
-if ($api_mode) {
-  Write-Host 'Uploading PDF files to the ingestion API'
-  Invoke-RestMethod -Uri "$env:INGESTION_API_URI/ingest" -Method Post -InFile "./data/privacy-policy.pdf"
-  Invoke-RestMethod -Uri "$env:INGESTION_API_URI/ingest" -Method Post -InFile "./data/support.pdf"
-  Invoke-RestMethod -Uri "$env:INGESTION_API_URI/ingest" -Method Post -InFile "./data/terms-of-service.pdf"
-} else {
-  Write-Host 'Installing dependencies and building CLI'
-  npm install
-  npm run build --workspace=ingestion
-
-  Write-Host 'Running "ingest-files" CLI tool'
-  $files = Get-Item "data/*.pdf"
-  npx ingest-files --wait --ingestion-url "$env:INGESTION_API_URI" --index-name "$env:INDEX_NAME" $files
-}
+Write-Host 'Uploading PDF files to the ingestion API'
+Invoke-RestMethod -Uri "$env:INGESTION_API_URI/ingest" -Method Post -InFile "./data/privacy-policy.pdf"
+Invoke-RestMethod -Uri "$env:INGESTION_API_URI/ingest" -Method Post -InFile "./data/support.pdf"
+Invoke-RestMethod -Uri "$env:INGESTION_API_URI/ingest" -Method Post -InFile "./data/terms-of-service.pdf"

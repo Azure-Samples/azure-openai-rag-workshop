@@ -1,19 +1,31 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { type FastifyPluginAsync } from 'fastify';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const root: FastifyPluginAsync = async (fastify, _options): Promise<void> => {
   fastify.get('/', async function (_request, _reply) {
-    const packageJson = JSON.parse(await fs.readFile(path.join(__dirname, '../../package.json'), 'utf8'));
-    return {
-      service: packageJson.name,
-      description: packageJson.description,
-      version: packageJson.version,
-    };
+    return { message: 'server up' };
   });
+  
+  fastify.post('/documents', async function (request, reply) {
+    const { file } = request.body as any;
+    if (file.type !== 'file') {
+      return reply.badRequest('field "file" must be a file');
+    }
+    try {
+      const filesInfos = {
+        filename: file.filename,
+        data: await file.toBuffer(),
+        type: file.mimetype,
+      };
+      fastify.log.info(`Ingesting file "${filesInfos.filename}"...`);
+      await fastify.ingestion.ingestFile(filesInfos);
+      reply.code(204);
+    } catch (_error: unknown) {
+      const error = _error as Error;
+      fastify.log.error(error);
+      reply.internalServerError(`Internal server error: ${error.message}`);
+    }
+  });
+
 };
 
 export default root;
