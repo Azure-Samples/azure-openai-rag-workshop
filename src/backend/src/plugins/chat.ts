@@ -1,8 +1,11 @@
 import fp from 'fastify-plugin';
-import { DefaultAzureCredential } from '@azure/identity';
-import { SearchClient } from '@azure/search-documents';
-import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
+import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
+import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/openai';
+import { AzureAISearchVectorStore } from '@langchain/community/vectorstores/azure_aisearch';
+import { BaseChatModel } from '@langchain/core/language_models/chat_models';
+import { VectorStore } from '@langchain/core/vectorstores';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
+import { AppConfig } from './config.js';
 
 const SYSTEM_MESSAGE_PROMPT = `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
 Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
@@ -19,22 +22,13 @@ Enclose the follow-up questions in double angle brackets. Example:
 Do no repeat questions that have already been asked.
 Make sure the last question ends with ">>".`;
 
-/**
- * Simple retrieve-then-read implementation, using the AI Search and OpenAI APIs directly.
- * It first retrieves top documents from search, then constructs a prompt with them, and then uses
- * OpenAI to generate an completion (answer) with that prompt.
- */
 export class ChatService {
   tokenLimit: number = 4000;
 
   constructor(
-    private searchClient: SearchClient<any>,
-    private chatClient: (options?: Partial<OpenAIChatInput>) => ChatOpenAI,
-    private embeddingsClient: (options?: Partial<OpenAIEmbeddingsParams>) => OpenAIEmbeddings,
-    private chatGptModel: string,
-    private embeddingModel: string,
-    private sourcePageField: string,
-    private contentField: string,
+    private config: AppConfig,
+    private model: BaseChatModel,
+    private vectorStore: VectorStore,
   ) {}
 
   async run(messages: Message[]): Promise<ChatResponse> {
@@ -43,32 +37,15 @@ export class ChatService {
 
     const query = messages[messages.length - 1].content;
 
-    // Compute an embedding for the query
-    const embeddingsClient = this.embeddingsClient({ modelName: this.embeddingModel });
-    const queryVector = await embeddingsClient.embedQuery(query);
-
-    // Performs a hybrid search (vectors + text)
-    // For a vector search, replace the query by '*'
-    const searchResults = await this.searchClient.search(query, {
-      top: 3,
-      vectorSearchOptions: {
-        queries: [
-          {
-            kind: 'vector',
-            vector: queryVector,
-            kNearestNeighborsCount: 50,
-            fields: ['embedding'],
-          },
-        ],
-      },
-    });
+    // Performs a hybrid search (vectors + text),
+    // Embedding for the query is automatically computed
+    const documents = await this.vectorStore.similaritySearch(query, 3);
 
     const results: string[] = [];
-    for await (const result of searchResults.results) {
-      const document = result.document;
-      const sourcePage = document[this.sourcePageField];
-      const content = document[this.contentField].replaceAll(/[\n\r]+/g, ' ');
-      results.push(`${sourcePage}: ${content}`);
+    for await (const document of documents) {
+      const source = document.metadata.source;
+      const content = document.pageContent.replaceAll(/[\n\r]+/g, ' ');
+      results.push(`${source}: ${content}`);
     }
 
     const content = results.join('\n');
@@ -82,7 +59,7 @@ export class ChatService {
     const userMessage = `${messages[messages.length - 1].content}\n\nSources:\n${content}`;
 
     // Create the messages prompt
-    const messageBuilder = new MessageBuilder(systemMessage, this.chatGptModel);
+    const messageBuilder = new MessageBuilder(systemMessage, this.config.azureOpenAiApiModelName);
     messageBuilder.appendMessage('user', userMessage);
 
     // Add the previous messages to the prompt, as long as we don't exceed the token limit
@@ -98,15 +75,7 @@ export class ChatService {
     // STEP 3: Generate the completion (answer) using the prompt
     // ---------------------------------------------------------
 
-    const chatClient = this.chatClient({
-      // Controls randomness. 0 = deterministic, 1 = maximum randomness
-      temperature: 0.7,
-      // Maximum number of tokens to generate
-      maxTokens: 1024,
-      // Number of completions to generate
-      n: 1,
-    });
-    const completion = await chatClient.invoke(messageBuilder.getMessages());
+    const completion = await this.model.invoke(messageBuilder.getMessages());
 
     return {
       choices: [
@@ -131,32 +100,15 @@ export class ChatService {
 
     const query = messages[messages.length - 1].content;
 
-    // Compute an embedding for the query
-    const embeddingsClient = this.embeddingsClient({ modelName: this.embeddingModel });
-    const queryVector = await embeddingsClient.embedQuery(query);
-
-    // Performs a hybrid search (vectors + text)
-    // For a vector search, replace the query by '*'
-    const searchResults = await this.searchClient.search(query, {
-      top: 3,
-      vectorSearchOptions: {
-        queries: [
-          {
-            kind: 'vector',
-            vector: queryVector,
-            kNearestNeighborsCount: 50,
-            fields: ['embedding'],
-          },
-        ],
-      },
-    });
+    // Performs a hybrid search (vectors + text),
+    // Embedding for the query is automatically computed
+    const documents = await this.vectorStore.similaritySearch(query, 3);
 
     const results: string[] = [];
-    for await (const result of searchResults.results) {
-      const document = result.document;
-      const sourcePage = document[this.sourcePageField];
-      const content = document[this.contentField].replaceAll(/[\n\r]+/g, ' ');
-      results.push(`${sourcePage}: ${content}`);
+    for await (const document of documents) {
+      const source = document.metadata.source;
+      const content = document.pageContent.replaceAll(/[\n\r]+/g, ' ');
+      results.push(`${source}: ${content}`);
     }
 
     const content = results.join('\n');
@@ -170,7 +122,7 @@ export class ChatService {
     const userMessage = `${messages[messages.length - 1].content}\n\nSources:\n${content}`;
 
     // Create the messages prompt
-    const messageBuilder = new MessageBuilder(systemMessage, this.chatGptModel);
+    const messageBuilder = new MessageBuilder(systemMessage, this.config.azureOpenAiApiModelName);
     messageBuilder.appendMessage('user', userMessage);
 
     // Add the previous messages to the prompt, as long as we don't exceed the token limit
@@ -186,15 +138,7 @@ export class ChatService {
     // STEP 3: Generate the completion (answer) using the prompt
     // ---------------------------------------------------------
 
-    const chatClient = this.chatClient({
-      // Controls randomness. 0 = deterministic, 1 = maximum randomness
-      temperature: 0.7,
-      // Maximum number of tokens to generate
-      maxTokens: 1024,
-      // Number of completions to generate
-      n: 1,
-    });
-    const completion = await chatClient.stream(messageBuilder.getMessages());
+    const completion = await this.model.stream(messageBuilder.getMessages());
     let id = 0;
 
     // Process the completion in chunks
@@ -225,49 +169,36 @@ export default fp(
   async (fastify, options) => {
     const config = fastify.config;
 
-    // Use the current user identity to authenticate with Azure OpenAI and AI Search.
-    // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
-    const credential = new DefaultAzureCredential();
+    // Use the current user identity to authenticate.
+    // No secrets needed, it uses `az login` or `azd auth login` locally,
+    // and managed identity when deployed on Azure.
+    const credentials = new DefaultAzureCredential();
 
-    // Set up Azure AI Search client
-    const searchClient = new SearchClient<any>(
-      `https://${config.azureSearchService}.search.windows.net`,
-      config.indexName,
-      credential,
+    // Set up OpenAI token provider
+    const azureADTokenProvider = getBearerTokenProvider(
+      credentials,
+      'https://cognitiveservices.azure.com/.default'
     );
 
-    // Set up Langchain clients
-    fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);
+    // Set up LangChain clients
+    fastify.log.info(`Using OpenAI at ${config.azureOpenAiApiEndpoint}`);
 
-    const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
-    const commonOptions = {
-      openAIApiKey: openAiToken.token,
-      azureOpenAIApiVersion: '2024-02-01',
-      azureOpenAIApiKey: openAiToken.token,
-      azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,
-    };
-
-    const chatClient = (options?: Partial<OpenAIChatInput>) =>
-      new ChatOpenAI({
-        ...options,
-        ...commonOptions,
-        azureOpenAIApiDeploymentName: config.azureOpenAiChatGptDeployment,
-      });
-    const embeddingsClient = (options?: Partial<OpenAIEmbeddingsParams>) =>
-      new OpenAIEmbeddings({
-        ...options,
-        ...commonOptions,
-        azureOpenAIApiDeploymentName: config.azureOpenAiEmbeddingDeployment,
-      });
+    const model = new AzureChatOpenAI({
+      azureADTokenProvider,
+      // Controls randomness. 0 = deterministic, 1 = maximum randomness
+      temperature: 0.7,
+      // Maximum number of tokens to generate
+      maxTokens: 1024,
+      // Number of completions to generate
+      n: 1,
+    });
+    const embeddings = new AzureOpenAIEmbeddings({ azureADTokenProvider });
+    const vectorStore = new AzureAISearchVectorStore(embeddings, { credentials });
 
     const chatService = new ChatService(
-      searchClient,
-      chatClient,
-      embeddingsClient,
-      config.azureOpenAiChatGptModel,
-      config.azureOpenAiEmbeddingModel,
-      config.kbFieldsSourcePage,
-      config.kbFieldsContent,
+      config,
+      model,
+      vectorStore
     );
 
     fastify.decorate('chat', chatService);

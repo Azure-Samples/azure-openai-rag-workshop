@@ -4,15 +4,12 @@ import * as dotenv from 'dotenv';
 import fp from 'fastify-plugin';
 
 export interface AppConfig {
-  azureSearchService: string;
-  azureOpenAiUrl: string;
-  azureOpenAiChatGptDeployment: string;
-  azureOpenAiChatGptModel: string;
-  azureOpenAiEmbeddingDeployment: string;
-  azureOpenAiEmbeddingModel: string;
-  kbFieldsContent: string;
-  kbFieldsSourcePage: string;
-  indexName: string;
+  azureAiSearchEndpoint: string;
+  azureOpenAiApiEndpoint: string;
+  azureOpenAiApiDeploymentName: string;
+  azureOpenAiApiEmbeddingDeploymentName: string;
+  azureOpenAiApiModelName: string;
+  azureOpenAiApiEmbeddingsModelName: string;
   qdrantUrl: string;
 }
 
@@ -24,25 +21,22 @@ export default fp(
   async (fastify, options) => {
     const environmentPath = path.resolve(process.cwd(), '../../.env');
 
-    console.log(`Loading .env config from ${environmentPath}...`);
+    console.log(`Loading .env config from ${environmentPath}`);
     dotenv.config({ path: environmentPath });
 
     const config: AppConfig = {
-      azureSearchService: process.env.AZURE_SEARCH_SERVICE || '',
-      azureOpenAiUrl: process.env.AZURE_OPENAI_URL || '',
-      azureOpenAiChatGptDeployment: process.env.AZURE_OPENAI_CHATGPT_DEPLOYMENT || 'gpt-35-turbo',
-      azureOpenAiChatGptModel: process.env.AZURE_OPENAI_CHATGPT_MODEL || 'gpt-35-turbo',
-      azureOpenAiEmbeddingDeployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT || 'text-embedding-ada-002',
-      azureOpenAiEmbeddingModel: process.env.AZURE_OPENAI_EMBEDDING_MODEL || 'text-embedding-ada-002',
-      kbFieldsContent: process.env.KB_FIELDS_CONTENT || 'content',
-      kbFieldsSourcePage: process.env.KB_FIELDS_SOURCEPAGE || 'sourcepage',
-      indexName: process.env.INDEX_NAME || 'kbindex',
+      azureAiSearchEndpoint: process.env.AZURE_AISEARCH_ENDPOINT || '',
+      azureOpenAiApiEndpoint: process.env.AZURE_OPENAI_API_ENDPOINT || '',
+      azureOpenAiApiDeploymentName: process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME || 'gpt-4',
+      azureOpenAiApiEmbeddingDeploymentName: process.env.AZURE_OPENAI_API_EMBEDDINGS_DEPLOYMENT_NAME || 'text-embedding-ada-002',
+      azureOpenAiApiModelName: process.env.AZURE_OPENAI_API_MODEL || 'gpt-4',
+      azureOpenAiApiEmbeddingsModelName: process.env.AZURE_OPENAI_API_EMBEDDINGS_MODEL || 'text-embedding-ada-002',
       qdrantUrl: process.env.QDRANT_URL || '',
     };
 
     // Set the config value for unused database service to avoid errors
     if (config.qdrantUrl) {
-      config.azureSearchService = unusedService;
+      config.azureAiSearchEndpoint = unusedService;
     } else {
       config.qdrantUrl = unusedService;
     }
