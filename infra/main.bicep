@@ -17,7 +17,6 @@ param ingestionApiName string = 'ingestion'
 param ingestionApiImageName string = ''
 param qdrantName string = 'qdrant'
 param qdrantImageName string = 'docker.io/qdrant/qdrant:v1.8.2'
-param indexName string // Set in main.parameters.json
 
 // The free tier does not support managed identity (required) or semantic search (optional)
 @allowed(['basic', 'standard', 'standard2', 'standard3', 'storage_optimized_l1', 'storage_optimized_l2'])
@@ -33,6 +32,7 @@ param searchServiceSkuName string // Set in main.parameters.json
 param openAiLocation string // Set in main.parameters.json
 param openAiUrl string = ''
 param openAiSkuName string = 'S0'
+param openAiApiVersion string // Set in main.parameters.json
 
 // Location is not relevant here as it's only for the built-in api
 // which is not used here. Static Web App is a global service otherwise
@@ -45,13 +45,14 @@ param openAiSkuName string = 'S0'
 })
 param frontendLocation string = 'eastus2'
 
-param chatGptDeploymentName string // Set in main.parameters.json
-param chatGptDeploymentCapacity int = 30
-param chatGptModelName string = 'gpt-35-turbo'
-param chatGptModelVersion string = '0613'
-param embeddingDeploymentName string = 'text-embedding-ada-002'
-param embeddingDeploymentCapacity int = 30
-param embeddingModelName string = 'text-embedding-ada-002'
+param chatModelName string // Set in main.parameters.json
+param chatDeploymentName string = chatModelName
+param chatModelVersion string // Set in main.parameters.json
+param chatDeploymentCapacity int = 15
+param embeddingsModelName string // Set in main.parameters.json
+param embeddingsModelVersion string // Set in main.parameters.json
+param embeddingsDeploymentName string = embeddingsModelName
+param embeddingsDeploymentCapacity int = 30
 
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
@@ -70,12 +71,12 @@ var resourceToken = toLower(uniqueString(subscription().id, environmentName, loc
 var tags = { 'azd-env-name': environmentName }
 var finalOpenAiUrl = empty(openAiUrl) ? 'https://${openAi.outputs.name}.openai.azure.com' : openAiUrl
 var useAzureAISearch = !useQdrant
-var azureSearchService = useAzureAISearch ? searchService.outputs.name : ''
 var qdrantUrl = useQdrant ? (qdrantPort == 6334 ? replace('${qdrant.outputs.uri}:80', 'https', 'http') : '${qdrant.outputs.uri}:443') : ''
 
 var ingestionApiIdentityName = '${abbrs.managedIdentityUserAssignedIdentities}ingestion-api-${resourceToken}'
 var backendApiIdentityName = '${abbrs.managedIdentityUserAssignedIdentities}backend-api-${resourceToken}'
 var qdrantIdentityName = '${abbrs.managedIdentityUserAssignedIdentities}qdrant-${resourceToken}'
+var searchUrl = useQdrant ? '' : 'https://${searchService.outputs.name}.search.windows.net'
 
 // Organize resources in a resource group
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -153,32 +154,28 @@ module backendApi './core/host/container-app.bicep' = {
     }
     env: [
       {
-        name: 'AZURE_OPENAI_CHATGPT_DEPLOYMENT'
-        value: chatGptDeploymentName
+        name: 'AZURE_OPENAI_API_INSTANCE_NAME'
+        value: openAi.outputs.name
       }
       {
-        name: 'AZURE_OPENAI_CHATGPT_MODEL'
-        value: chatGptModelName
-      }
-      {
-        name: 'AZURE_OPENAI_EMBEDDING_DEPLOYMENT'
-        value: embeddingDeploymentName
-      }
-      {
-        name: 'AZURE_OPENAI_EMBEDDING_MODEL'
-        value: embeddingModelName
-      }
-      {
-        name: 'AZURE_OPENAI_URL'
+        name: 'AZURE_OPENAI_API_ENDPOINT'
         value: finalOpenAiUrl
       }
       {
-        name: 'AZURE_SEARCH_SERVICE'
-        value: azureSearchService
+        name: 'AZURE_OPENAI_API_VERSION'
+        value: openAiApiVersion
       }
       {
-        name: 'INDEX_NAME'
-        value: indexName
+        name: 'AZURE_OPENAI_API_DEPLOYMENT_NAME'
+        value: chatDeploymentName
+      }
+      {
+        name: 'AZURE_OPENAI_API_EMBEDDINGS_DEPLOYMENT_NAME'
+        value: embeddingsDeploymentName
+      }
+      {
+        name: 'AZURE_AISEARCH_ENDPOINT'
+        value: searchUrl
       }
       {
         name: 'QDRANT_URL'
@@ -226,32 +223,28 @@ module ingestionApi './core/host/container-app.bicep' = {
     }
     env: [
       {
-        name: 'AZURE_OPENAI_CHATGPT_DEPLOYMENT'
-        value: chatGptDeploymentName
+        name: 'AZURE_OPENAI_API_INSTANCE_NAME'
+        value: openAi.outputs.name
       }
       {
-        name: 'AZURE_OPENAI_CHATGPT_MODEL'
-        value: chatGptModelName
-      }
-      {
-        name: 'AZURE_OPENAI_EMBEDDING_DEPLOYMENT'
-        value: embeddingDeploymentName
-      }
-      {
-        name: 'AZURE_OPENAI_EMBEDDING_MODEL'
-        value: embeddingModelName
-      }
-      {
-        name: 'AZURE_OPENAI_URL'
+        name: 'AZURE_OPENAI_API_ENDPOINT'
         value: finalOpenAiUrl
       }
       {
-        name: 'AZURE_SEARCH_SERVICE'
-        value: azureSearchService
+        name: 'AZURE_OPENAI_API_VERSION'
+        value: openAiApiVersion
       }
       {
-        name: 'INDEX_NAME'
-        value: indexName
+        name: 'AZURE_OPENAI_API_DEPLOYMENT_NAME'
+        value: chatDeploymentName
+      }
+      {
+        name: 'AZURE_OPENAI_API_EMBEDDINGS_DEPLOYMENT_NAME'
+        value: embeddingsDeploymentName
+      }
+      {
+        name: 'AZURE_AISEARCH_ENDPOINT'
+        value: searchUrl
       }
       {
         name: 'QDRANT_URL'
@@ -284,25 +277,25 @@ module openAi 'core/ai/cognitiveservices.bicep' = if (empty(openAiUrl)) {
     disableLocalAuth: true
     deployments: [
       {
-        name: chatGptDeploymentName
+        name: chatDeploymentName
         model: {
           format: 'OpenAI'
-          name: chatGptModelName
-          version: chatGptModelVersion
+          name: chatModelName
+          version: chatModelVersion
         }
         sku: {
           name: 'Standard'
-          capacity: chatGptDeploymentCapacity
+          capacity: chatDeploymentCapacity
         }
       }
       {
-        name: embeddingDeploymentName
+        name: embeddingsDeploymentName
         model: {
           format: 'OpenAI'
-          name: embeddingModelName
-          version: '2'
+          name: embeddingsModelName
+          version: embeddingsModelVersion
         }
-        capacity: embeddingDeploymentCapacity
+        capacity: embeddingsDeploymentCapacity
       }
     ]
   }
@@ -316,11 +309,7 @@ module searchService 'core/search/search-services.bicep' = if (useAzureAISearch)
     location: location
     tags: tags
     disableLocalAuth: true
-    authOptions: {
-      aadOrApiKey: {
-        aadAuthFailureMode: 'http401WithBearerChallenge'
-      }
-    }
+    authOptions: null
     sku: {
       name: searchServiceSkuName
     }
@@ -469,16 +458,15 @@ output AZURE_RESOURCE_GROUP string = resourceGroup.name
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerApps.outputs.registryLoginServer
 output AZURE_CONTAINER_REGISTRY_NAME string = containerApps.outputs.registryName
 
-output AZURE_OPENAI_URL string = finalOpenAiUrl
-output AZURE_OPENAI_CHATGPT_DEPLOYMENT string = chatGptDeploymentName
-output AZURE_OPENAI_CHATGPT_MODEL string = chatGptModelName
-output AZURE_OPENAI_EMBEDDING_DEPLOYMENT string = embeddingDeploymentName
-output AZURE_OPENAI_EMBEDDING_MODEL string = embeddingModelName
+output AZURE_OPENAI_API_ENDPOINT string = finalOpenAiUrl
+output AZURE_OPENAI_API_INSTANCE_NAME string = openAi.outputs.name
+output AZURE_OPENAI_API_VERSION string = openAiApiVersion
+output AZURE_OPENAI_API_DEPLOYMENT_NAME string = chatDeploymentName
+output AZURE_OPENAI_API_EMBEDDINGS_DEPLOYMENT_NAME string = embeddingsDeploymentName
 
-output AZURE_SEARCH_SERVICE string = azureSearchService
+output AZURE_AISEARCH_ENDPOINT string = searchUrl
 output QDRANT_URL string = qdrantUrl
 
-output INDEX_NAME string =  indexName
 output FRONTEND_URI string = frontend.outputs.uri
 output BACKEND_API_URI string = backendApi.outputs.uri
 output INGESTION_API_URI string = ingestionApi.outputs.uri
