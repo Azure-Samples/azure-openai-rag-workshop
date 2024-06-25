@@ -1,9 +1,12 @@
 import fp from 'fastify-plugin';
-import { DefaultAzureCredential } from '@azure/identity';
-import { QdrantClient } from '@qdrant/js-client-rest';
-import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
+import { QdrantClient } from '@qdrant/qdrant-js';
+import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
+import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/openai';
+import { QdrantVectorStore } from "@langchain/qdrant";
+import { BaseChatModel } from '@langchain/core/language_models/chat_models';
+import { VectorStore } from '@langchain/core/vectorstores';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
-import { type AppConfig } from './config.js';
+import { AppConfig } from './config.js';
 
 const SYSTEM_MESSAGE_PROMPT = `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
 Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
@@ -20,23 +23,13 @@ Enclose the follow-up questions in double angle brackets. Example:
 Do no repeat questions that have already been asked.
 Make sure the last question ends with ">>".`;
 
-/**
- * Simple retrieve-then-read implementation, using the AI Search and OpenAI APIs directly.
- * It first retrieves top documents from search, then constructs a prompt with them, and then uses
- * OpenAI to generate an completion (answer) with that prompt.
- */
 export class ChatService {
   tokenLimit: number = 4000;
 
   constructor(
     private config: AppConfig,
-    private qdrantClient: QdrantClient,
-    private chatClient: (options?: Partial<OpenAIChatInput>) => ChatOpenAI,
-    private embeddingsClient: (options?: Partial<OpenAIEmbeddingsParams>) => OpenAIEmbeddings,
-    private chatGptModel: string,
-    private embeddingModel: string,
-    private sourcePageField: string,
-    private contentField: string,
+    private model: BaseChatModel,
+    private vectorStore: VectorStore,
   ) {}
 
   async run(messages: Message[]): Promise<ChatResponse> {
@@ -45,27 +38,16 @@ export class ChatService {
 
     const query = messages[messages.length - 1].content;
 
-    // Compute an embedding for the query
-    const embeddingsClient = this.embeddingsClient({ modelName: this.embeddingModel });
-    const queryVector = await embeddingsClient.embedQuery(query);
+    // Performs a hybrid search (vectors + text),
+    // Embedding for the query is automatically computed
+    const documents = await this.vectorStore.similaritySearch(query, 3);
 
-    // Performs a vector search
-    const searchResults = await this.qdrantClient.search(this.config.indexName, {
-      vector: queryVector,
-      limit: 3,
-      params: {
-        hnsw_ef: 128,
-        exact: false,
-      },
-    });
-
-    const results: string[] = searchResults.map((result) => {
-      const document = result.payload!;
-      const sourcePage = document[this.sourcePageField] as string;
-      let content = document[this.contentField] as string;
-      content = content.replaceAll(/[\n\r]+/g, ' ');
-      return `${sourcePage}: ${content}`;
-    });
+    const results: string[] = [];
+    for await (const document of documents) {
+      const source = document.metadata.source;
+      const content = document.pageContent.replaceAll(/[\n\r]+/g, ' ');
+      results.push(`${source}: ${content}`);
+    }
 
     const content = results.join('\n');
 
@@ -78,7 +60,7 @@ export class ChatService {
     const userMessage = `${messages[messages.length - 1].content}\n\nSources:\n${content}`;
 
     // Create the messages prompt
-    const messageBuilder = new MessageBuilder(systemMessage, this.chatGptModel);
+    const messageBuilder = new MessageBuilder(systemMessage, this.config.azureOpenAiApiModelName);
     messageBuilder.appendMessage('user', userMessage);
 
     // Add the previous messages to the prompt, as long as we don't exceed the token limit
@@ -94,15 +76,7 @@ export class ChatService {
     // STEP 3: Generate the completion (answer) using the prompt
     // ---------------------------------------------------------
 
-    const chatClient = this.chatClient({
-      // Controls randomness. 0 = deterministic, 1 = maximum randomness
-      temperature: 0.7,
-      // Maximum number of tokens to generate
-      maxTokens: 1024,
-      // Number of completions to generate
-      n: 1,
-    });
-    const completion = await chatClient.invoke(messageBuilder.getMessages());
+    const completion = await this.model.invoke(messageBuilder.getMessages());
 
     return {
       choices: [
@@ -127,27 +101,16 @@ export class ChatService {
 
     const query = messages[messages.length - 1].content;
 
-    // Compute an embedding for the query
-    const embeddingsClient = this.embeddingsClient({ modelName: this.embeddingModel });
-    const queryVector = await embeddingsClient.embedQuery(query);
+    // Performs a hybrid search (vectors + text),
+    // Embedding for the query is automatically computed
+    const documents = await this.vectorStore.similaritySearch(query, 3);
 
-    // Performs a vector search
-    const searchResults = await this.qdrantClient.search(this.config.indexName, {
-      vector: queryVector,
-      limit: 3,
-      params: {
-        hnsw_ef: 128,
-        exact: false,
-      },
-    });
-
-    const results: string[] = searchResults.map((result) => {
-      const document = result.payload!;
-      const sourcePage = document[this.sourcePageField] as string;
-      let content = document[this.contentField] as string;
-      content = content.replaceAll(/[\n\r]+/g, ' ');
-      return `${sourcePage}: ${content}`;
-    });
+    const results: string[] = [];
+    for await (const document of documents) {
+      const source = document.metadata.source;
+      const content = document.pageContent.replaceAll(/[\n\r]+/g, ' ');
+      results.push(`${source}: ${content}`);
+    }
 
     const content = results.join('\n');
 
@@ -160,7 +123,7 @@ export class ChatService {
     const userMessage = `${messages[messages.length - 1].content}\n\nSources:\n${content}`;
 
     // Create the messages prompt
-    const messageBuilder = new MessageBuilder(systemMessage, this.chatGptModel);
+    const messageBuilder = new MessageBuilder(systemMessage, this.config.azureOpenAiApiModelName);
     messageBuilder.appendMessage('user', userMessage);
 
     // Add the previous messages to the prompt, as long as we don't exceed the token limit
@@ -176,15 +139,7 @@ export class ChatService {
     // STEP 3: Generate the completion (answer) using the prompt
     // ---------------------------------------------------------
 
-    const chatClient = this.chatClient({
-      // Controls randomness. 0 = deterministic, 1 = maximum randomness
-      temperature: 0.7,
-      // Maximum number of tokens to generate
-      maxTokens: 1024,
-      // Number of completions to generate
-      n: 1,
-    });
-    const completion = await chatClient.stream(messageBuilder.getMessages());
+    const completion = await this.model.stream(messageBuilder.getMessages());
     let id = 0;
 
     // Process the completion in chunks
@@ -215,58 +170,42 @@ export default fp(
   async (fastify, options) => {
     const config = fastify.config;
 
-    // Set up Qdrant client
-    const qdrantClient = new QdrantClient({
-      url: config.qdrantUrl,
-      // Port needs to be set explicitly if it's not the default,
-      // see https://github.com/qdrant/qdrant-js/issues/59
-      port: Number(config.qdrantUrl.split(':')[2]),
+    // Use the current user identity to authenticate.
+    // No secrets needed, it uses `az login` or `azd auth login` locally,
+    // and managed identity when deployed on Azure.
+    const credentials = new DefaultAzureCredential();
+
+    // Set up OpenAI token provider
+    const azureADTokenProvider = getBearerTokenProvider(
+      credentials,
+      'https://cognitiveservices.azure.com/.default'
+    );
+
+    // Set up LangChain clients
+    fastify.log.info(`Using OpenAI at ${config.azureOpenAiApiEndpoint}`);
+
+    const model = new AzureChatOpenAI({
+      azureADTokenProvider,
+      // Controls randomness. 0 = deterministic, 1 = maximum randomness
+      temperature: 0.7,
+      // Maximum number of tokens to generate
+      maxTokens: 1024,
+      // Number of completions to generate
+      n: 1,
     });
-
-    // Set up Langchain clients
-    fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);
-
-    // Automatic Azure identity is not supported in the local dev environment, so we use a dummy key.
-    let openAIApiKey = '__dummy';
-    try {
-      // Use the current user identity to authenticate with Azure OpenAI.
-      // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
-      const credential = new DefaultAzureCredential();
-      const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
-      openAIApiKey = openAiToken.token;
-    } catch {
-      fastify.log.warn('Failed to get Azure OpenAI token, using dummy key');
-    }
-
-    const commonOptions = {
-      openAIApiKey,
-      azureOpenAIApiVersion: '2024-02-01',
-      azureOpenAIApiKey: openAIApiKey,
-      azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,
-    };
-
-    const chatClient = (options?: Partial<OpenAIChatInput>) =>
-      new ChatOpenAI({
-        ...options,
-        ...commonOptions,
-        azureOpenAIApiDeploymentName: config.azureOpenAiChatGptDeployment,
-      });
-    const embeddingsClient = (options?: Partial<OpenAIEmbeddingsParams>) =>
-      new OpenAIEmbeddings({
-        ...options,
-        ...commonOptions,
-        azureOpenAIApiDeploymentName: config.azureOpenAiEmbeddingDeployment,
-      });
+    const embeddings = new AzureOpenAIEmbeddings({ azureADTokenProvider });
+    const vectorStore = new QdrantVectorStore(embeddings, {
+      client: new QdrantClient({
+        url: config.qdrantUrl,
+        // https://github.com/qdrant/qdrant-js/issues/59
+        port: Number(config.qdrantUrl.split(':')[2]),
+      })
+    });
 
     const chatService = new ChatService(
       config,
-      qdrantClient,
-      chatClient,
-      embeddingsClient,
-      config.azureOpenAiChatGptModel,
-      config.azureOpenAiEmbeddingModel,
-      config.kbFieldsSourcePage,
-      config.kbFieldsContent,
+      model,
+      vectorStore
     );
 
     fastify.decorate('chat', chatService);
