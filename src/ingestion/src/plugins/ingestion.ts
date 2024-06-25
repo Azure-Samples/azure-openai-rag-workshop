@@ -1,4 +1,5 @@
 import fp from 'fastify-plugin';
+import { QdrantClient } from '@qdrant/qdrant-js';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 import { AzureOpenAIEmbeddings } from '@langchain/openai';
 import { AzureAISearchVectorStore } from '@langchain/community/vectorstores/azure_aisearch';
@@ -8,7 +9,6 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { VectorStore } from '@langchain/core/vectorstores';
 import { FileInfos } from '../lib/file.js';
 import { unusedService } from './config.js';
-import { QdrantClient } from '@qdrant/qdrant-js';
 
 export class IngestionService {
   constructor(private vectorStore: VectorStore) {}
