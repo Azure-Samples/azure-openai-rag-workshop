@@ -18,7 +18,7 @@ const root: FastifyPluginAsync = async (fastify, _options): Promise<void> => {
       };
       fastify.log.info(`Ingesting file "${filesInfos.filename}"...`);
       await fastify.ingestion.ingestFile(filesInfos);
-      reply.code(204);
+      reply.send({ message: `Successfully ingested file "${filesInfos.filename}"` });
     } catch (_error: unknown) {
       const error = _error as Error;
       fastify.log.error(error);
