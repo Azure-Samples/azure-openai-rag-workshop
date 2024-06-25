@@ -1,4 +1,4 @@
-import path, { join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { type FastifyPluginAsync } from 'fastify';
 import AutoLoad, { type AutoloadPluginOptions } from '@fastify/autoload';
@@ -25,14 +25,14 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, options_): Promise<v
   // those should be support plugins that are reused
   // through your application
   fastify.register(AutoLoad, {
-    dir: join(__dirname, 'plugins'),
+    dir: path.join(__dirname, 'plugins'),
     options: options_,
   });
 
   // This loads all plugins defined in routes
   // define your routes in one of these
   fastify.register(AutoLoad, {
-    dir: join(__dirname, 'routes'),
+    dir: path.join(__dirname, 'routes'),
     options: options_,
   });
 };

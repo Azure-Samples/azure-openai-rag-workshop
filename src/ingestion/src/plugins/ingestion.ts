@@ -6,8 +6,8 @@ import { AzureAISearchVectorStore } from '@langchain/community/vectorstores/azur
 import { QdrantVectorStore } from "@langchain/qdrant";
 import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { VectorStore } from '@langchain/core/vectorstores';
-import { FileInfos } from '../lib/file.js';
+import { type VectorStore } from '@langchain/core/vectorstores';
+import { type FileInfos } from '../lib/file.js';
 import { unusedService } from './config.js';
 
 export class IngestionService {
@@ -53,19 +53,15 @@ export default fp(
     fastify.log.info(`Using OpenAI at ${config.azureOpenAiEndpoint}`);
 
     const embeddings = new AzureOpenAIEmbeddings({ azureADTokenProvider });
-    let vectorStore: VectorStore;
-
-    if (config.qdrantUrl !== unusedService) {
-      vectorStore = new QdrantVectorStore(embeddings, {
+    const vectorStore = config.qdrantUrl === unusedService ?
+      new AzureAISearchVectorStore(embeddings, { credentials }) :
+      new QdrantVectorStore(embeddings, {
         client: new QdrantClient({
           url: config.qdrantUrl,
           // https://github.com/qdrant/qdrant-js/issues/59
           port: Number(config.qdrantUrl.split(':')[2]),
         })
       });
-    } else {
-      vectorStore = new AzureAISearchVectorStore(embeddings, { credentials });
-    }
 
     const ingestionService = new IngestionService(vectorStore);
 

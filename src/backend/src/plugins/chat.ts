@@ -2,10 +2,10 @@ import fp from 'fastify-plugin';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/openai';
 import { AzureAISearchVectorStore } from '@langchain/community/vectorstores/azure_aisearch';
-import { BaseChatModel } from '@langchain/core/language_models/chat_models';
-import { VectorStore } from '@langchain/core/vectorstores';
+import { type BaseChatModel } from '@langchain/core/language_models/chat_models';
+import { type VectorStore } from '@langchain/core/vectorstores';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
-import { AppConfig } from './config.js';
+import { type AppConfig } from './config.js';
 
 const SYSTEM_MESSAGE_PROMPT = `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
 Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
