@@ -29,8 +29,42 @@ export class IngestionService {
     });
     const documents = await splitter.splitDocuments(rawDocument);
 
+    // Delete existing documents for the same source
+    await this.deleteDocuments(file.filename);
+
     // Generate embeddings and save in database
     await this.vectorStore.addDocuments(documents);
+  }
+
+  async deleteDocuments(filename: string) {
+    if (this.vectorStore instanceof AzureAISearchVectorStore) {
+      const store = this.vectorStore as AzureAISearchVectorStore;
+      await store.delete({
+        filter: {
+          filterExpression: `metadata/source eq '${filename}'`,
+        },
+      });
+    } else {
+      const store = this.vectorStore as QdrantVectorStore;
+      const client = store.client;
+
+      console.log(filename);
+      console.log(store.collectionName);
+
+      await client.delete(store.collectionName, {
+        wait: true,
+        filter: {
+          must: [
+            {
+              key: 'metadata.source',
+              match: {
+                value: filename,
+              },
+            },
+          ],
+        },
+      });
+    }
   }
 }
 
@@ -50,16 +84,42 @@ export default fp(
     fastify.log.info(`Using OpenAI at ${config.azureOpenAiEndpoint}`);
 
     const embeddings = new AzureOpenAIEmbeddings({ azureADTokenProvider });
-    const vectorStore =
-      config.qdrantUrl === unusedService
-        ? new AzureAISearchVectorStore(embeddings, { credentials })
-        : new QdrantVectorStore(embeddings, {
-            client: new QdrantClient({
-              url: config.qdrantUrl,
-              // https://github.com/qdrant/qdrant-js/issues/59
-              port: Number(config.qdrantUrl.split(':')[2]),
-            }),
+    let vectorStore: VectorStore;
+
+    if (config.qdrantUrl === unusedService) {
+      vectorStore = new AzureAISearchVectorStore(embeddings, { credentials });
+    } else {
+      const qdrantClient = new QdrantClient({
+        url: config.qdrantUrl,
+        // https://github.com/qdrant/qdrant-js/issues/59
+        port: Number(config.qdrantUrl.split(':')[2]),
+      });
+      const store = new QdrantVectorStore(embeddings, { client: qdrantClient });
+      const collectionName = store.collectionName;
+      vectorStore = store;
+
+      // Ensure collection exists
+      try {
+        await qdrantClient.getCollection(collectionName);
+        fastify.log.debug(`Collection "${collectionName}" already exists`);
+      } catch (_error: unknown) {
+        const error = _error as Error;
+        if (error.message === 'Not Found') {
+          // Generate a test vector to determine the size
+          const vector = await embeddings.embedQuery('test');
+
+          fastify.log.debug(`Creating Collection "${collectionName}"`);
+          await qdrantClient.createCollection(collectionName, {
+            vectors: {
+              size: vector.length,
+              distance: 'Cosine',
+            },
           });
+        } else {
+          throw error;
+        }
+      }
+    }
 
     const ingestionService = new IngestionService(vectorStore);
 
