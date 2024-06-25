@@ -27,6 +27,7 @@
     "@langchain/core": "^0.2.9",
     "@langchain/openai": "^0.2.0",
     "@langchain/qdrant": "^0.0.5",
+    "@microsoft/ai-chat-protocol": "^1.0.0-beta.20240610.1",
     "@qdrant/qdrant-js": "^1.7.0",
     "dotenv": "^16.3.1",
     "fastify": "^4.0.0",

@@ -1,9 +1,9 @@
 import { encoding_for_model, type TiktokenModel } from '@dqbd/tiktoken';
 import { type BaseMessage, AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages';
-import { type Message, type MessageRole } from './models.js';
+import { AIChatMessage, AIChatRole } from '@microsoft/ai-chat-protocol';
 
 export class MessageBuilder {
-  messages: Message[];
+  messages: AIChatMessage[];
   model: string;
   tokens: number;
 
@@ -20,20 +20,20 @@ export class MessageBuilder {
 
   /**
    * Append a new message to the conversation.
-   * @param {MessageRole} role The role of the message sender.
+   * @param {AIChatRole} role The role of the message sender.
    * @param {string} content The content of the message.
    * @param {number} index The index at which to insert the message.
    */
-  appendMessage(role: MessageRole, content: string, index = 1) {
+  appendMessage(role: AIChatRole, content: string, index = 1) {
     this.messages.splice(index, 0, { role, content });
     this.tokens += this.getTokenCountFromMessages(this.messages[index], this.model);
   }
 
   /**
    * Get and remove the last message from the conversation.
-   * @returns {Message} The removed message.
+   * @returns {AIChatMessage} The removed message.
    */
-  popMessage(): Message | undefined {
+  popMessage(): AIChatMessage | undefined {
     const message = this.messages.pop();
     if (message) {
       this.tokens -= this.getTokenCountFromMessages(message, this.model);
@@ -59,7 +59,7 @@ export class MessageBuilder {
 
   /**
    * Calculate the number of tokens required to encode a message.
-   * @param {Message} message The message to encode.
+   * @param {AIChatMessage} message The message to encode.
    * @param {string} model The name of the model to use for encoding.
    * @returns {number} The total number of tokens required to encode the message.
    * @example
@@ -68,7 +68,7 @@ export class MessageBuilder {
    * getTokenCountFromMessages(message, model);
    * // output: 11
    */
-  private getTokenCountFromMessages(message: Message, model: string): number {
+  private getTokenCountFromMessages(message: AIChatMessage, model: string): number {
     // GPT3.5 tiktoken model name is slightly different than Azure OpenAI model name
     const tiktokenModel = model.replace('gpt-35', 'gpt-3.5') as TiktokenModel;
     const encoder = encoding_for_model(tiktokenModel);

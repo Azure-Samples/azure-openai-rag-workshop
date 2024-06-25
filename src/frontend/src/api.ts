@@ -1,29 +1,30 @@
-import { type ChatResponse, type ChatRequestOptions, type ChatResponseChunk } from './models.js';
+import { AIChatMessage, AIChatCompletionDelta, AIChatCompletion } from '@microsoft/ai-chat-protocol';
 
 export const apiBaseUrl = import.meta.env.VITE_BACKEND_API_URI || '';
 
+export type ChatRequestOptions = {
+  messages: AIChatMessage[];
+  chunkIntervalMs: number;
+  apiUrl: string;
+  stream: boolean;
+};
+
 export async function getCompletion(options: ChatRequestOptions) {
   const apiUrl = options.apiUrl || apiBaseUrl;
-  const response = await fetch(`${apiUrl}/chat`, {
+  const finalUrl = options.stream ? `${apiUrl}/chat/stream` : `${apiUrl}/chat`;
+  const response = await fetch(finalUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      messages: options.messages,
-      stream: options.stream,
-      context: {
-        top: options.top,
-        temperature: options.temperature,
-      },
-    }),
+    body: JSON.stringify({ messages: options.messages }),
   });
 
   if (options.stream) {
-    return getChunksFromResponse<ChatResponseChunk>(response as Response, options.chunkIntervalMs);
+    return getChunksFromResponse<AIChatCompletionDelta>(response as Response, options.chunkIntervalMs);
   }
 
-  const json: ChatResponse = await response.json();
+  const json: AIChatCompletion = await response.json();
   if (response.status > 299 || !response.ok) {
-    throw new Error(json.error || 'Unknown error');
+    throw new Error(json['error'] || 'Unknown error');
   }
 
   return json;

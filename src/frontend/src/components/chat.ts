@@ -4,16 +4,10 @@ import { map } from 'lit/directives/map.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { customElement, property, state, query } from 'lit/decorators.js';
-import {
-  type ChatRequestOptions,
-  type ChatResponse,
-  type ChatMessage,
-  type ChatResponseChunk,
-  type ChatDebugDetails,
-  type ChatMessageContext,
-} from '../models.js';
-import { getCitationUrl, getCompletion } from '../api.js';
+import { AIChatCompletion, AIChatCompletionDelta, AIChatMessage } from '@microsoft/ai-chat-protocol';
+import { type ChatRequestOptions, getCitationUrl, getCompletion } from '../api.js';
 import { type ParsedMessage, parseMessageIntoHtml } from '../message-parser.js';
+import { ChatDebugDetails, ChatMessageContext } from '../models.js';
 import sendSvg from '../../assets/send.svg?raw';
 import questionSvg from '../../assets/question.svg?raw';
 import lightbulbSvg from '../../assets/lightbulb.svg?raw';
@@ -98,7 +92,7 @@ export class ChatComponent extends LitElement {
   options: ChatComponentOptions = defaultOptions;
 
   @property() question = '';
-  @property({ type: Array }) messages: ChatMessage[] = [];
+  @property({ type: Array }) messages: AIChatMessage[] = [];
   @state() protected hasError = false;
   @state() protected isLoading = false;
   @state() protected isStreaming = false;
@@ -154,9 +148,9 @@ export class ChatComponent extends LitElement {
       const response = await getCompletion({ ...this.options, messages: this.messages });
       if (this.options.stream) {
         this.isStreaming = true;
-        const chunks = response as AsyncGenerator<ChatResponseChunk>;
+        const chunks = response as AsyncGenerator<AIChatCompletionDelta>;
         const messages = this.messages;
-        const message: ChatMessage = {
+        const message: AIChatMessage = {
           content: '',
           role: 'assistant',
           context: {
@@ -165,18 +159,18 @@ export class ChatComponent extends LitElement {
           },
         };
         for await (const chunk of chunks) {
-          if (chunk.choices[0].delta.context?.data_points) {
-            message.context!.data_points = chunk.choices[0].delta.context?.data_points;
-            message.context!.thoughts = chunk.choices[0].delta.context?.thoughts ?? '';
-          } else if (chunk.choices[0].delta.content) {
-            message.content += chunk.choices[0].delta.content;
+          if (chunk.delta.context?.['data_points']) {
+            message.context!['data_points'] = chunk.delta.context?.['data_points'];
+            message.context!['thoughts'] = chunk.delta.context?.['thoughts'] ?? '';
+          } else if (chunk.delta.content) {
+            message.content += chunk.delta.content;
             this.messages = [...messages, message];
             this.scrollToLastMessage();
           }
         }
       } else {
-        const chatResponse = response as ChatResponse;
-        this.messages = [...this.messages, chatResponse.choices[0].message];
+        const chatResponse = response as AIChatCompletion;
+        this.messages = [...this.messages, chatResponse.message];
         this.scrollToLastMessage();
       }
 

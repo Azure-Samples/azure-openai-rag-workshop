@@ -9,12 +9,19 @@ const root: FastifyPluginAsync = async (fastify, _options): Promise<void> => {
   fastify.post('/chat', async function (request, reply) {
     const { messages, stream } = request.body as any;
     try {
-      if (stream) {
-        const chunks = createNdJsonStream(await fastify.chat.runWithStreaming(messages));
-        reply.type('application/x-ndjson').send(Readable.from(chunks));
-      } else {
-        return await fastify.chat.run(messages);
-      }
+      return await fastify.chat.run(messages);
+    } catch (_error: unknown) {
+      const error = _error as Error;
+      fastify.log.error(error);
+      return reply.internalServerError(error.message);
+    }
+  });
+
+  fastify.post('/chat/stream', async function (request, reply) {
+    const { messages } = request.body as any;
+    try {
+      const chunks = createNdJsonStream(await fastify.chat.runWithStreaming(messages));
+      reply.type('application/x-ndjson').send(Readable.from(chunks));
     } catch (_error: unknown) {
       const error = _error as Error;
       fastify.log.error(error);

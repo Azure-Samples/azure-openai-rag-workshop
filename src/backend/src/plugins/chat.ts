@@ -4,7 +4,8 @@ import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/openai';
 import { AzureAISearchVectorStore } from '@langchain/community/vectorstores/azure_aisearch';
 import { type BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { type VectorStore } from '@langchain/core/vectorstores';
-import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
+import { AIChatMessage, AIChatCompletionDelta, AIChatCompletion } from '@microsoft/ai-chat-protocol';
+import { MessageBuilder } from '../lib/message-builder.js';
 import { type AppConfig } from './config.js';
 
 const SYSTEM_MESSAGE_PROMPT = `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
@@ -31,7 +32,7 @@ export class ChatService {
     private vectorStore: VectorStore,
   ) {}
 
-  async run(messages: Message[]): Promise<ChatResponse> {
+  async run(messages: AIChatMessage[]): Promise<AIChatCompletion> {
     // STEP 1: Retrieve relevant documents from the search index
     // ---------------------------------------------------------
 
@@ -78,23 +79,18 @@ export class ChatService {
     const completion = await this.model.invoke(messageBuilder.getMessages());
 
     return {
-      choices: [
-        {
-          index: 0,
-          message: {
-            content: completion.content as string,
-            role: 'assistant',
-            context: {
-              data_points: results,
-              thoughts: thoughts,
-            },
-          },
+      message: {
+        content: completion.content as string,
+        role: 'assistant',
+        context: {
+          data_points: results,
+          thoughts: thoughts,
         },
-      ],
+      },
     };
   }
 
-  async *runWithStreaming(messages: Message[]): AsyncGenerator<ChatResponseChunk, void> {
+  async *runWithStreaming(messages: AIChatMessage[]): AsyncGenerator<AIChatCompletionDelta, void> {
     // STEP 1: Retrieve relevant documents from the search index
     // ---------------------------------------------------------
 
@@ -144,20 +140,14 @@ export class ChatService {
     // Process the completion in chunks
     for await (const chunk of completion) {
       const responseChunk = {
-        choices: [
-          {
-            index: 0,
-            delta: {
-              content: (chunk.content as string) ?? '',
-              role: 'assistant' as const,
-              context: {
-                data_points: id === 0 ? results : undefined,
-                thoughts: id === 0 ? thoughts : undefined,
-              },
-            },
-            finish_reason: '',
+        delta: {
+          content: (chunk.content as string) ?? '',
+          role: 'assistant' as const,
+          context: {
+            data_points: id === 0 ? results : undefined,
+            thoughts: id === 0 ? thoughts : undefined,
           },
-        ],
+        },
       };
       yield responseChunk;
       id++;
