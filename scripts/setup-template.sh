@@ -120,7 +120,12 @@ if [ "$template_name" == "qdrant" ]; then
   echo "Preparing project template for Qdrant..."
 
   echo -e "import fp from 'fastify-plugin';
-import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
+import { QdrantClient } from '@qdrant/qdrant-js';
+import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
+import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/openai';
+import { QdrantVectorStore } from '@langchain/qdrant';
+import { type BaseChatModel } from '@langchain/core/language_models/chat_models';
+import { type VectorStore } from '@langchain/core/vectorstores';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
 import { type AppConfig } from './config.js';
 
@@ -129,13 +134,8 @@ export class ChatService {
 
   constructor(
     private config: AppConfig,
-    private qdrantClient: QdrantClient,
-    private chatClient: (options?: Partial<OpenAIChatInput>) => ChatOpenAI,
-    private embeddingsClient: (options?: Partial<OpenAIEmbeddingsParams>) => OpenAIEmbeddings,
-    private chatGptModel: string,
-    private embeddingModel: string,
-    private sourcePageField: string,
-    private contentField: string,
+    private model: BaseChatModel,
+    private vectorStore: VectorStore,
   ) {}
 
   async run(messages: Message[]): Promise<ChatResponse> {
@@ -151,18 +151,7 @@ export default fp(
 
     // TODO: initialize clients here
 
-    const chatService = new ChatService(
-      /*
-      config,
-      qdrantClient,
-      chatClient,
-      embeddingsClient,
-      config.azureOpenAiChatGptModel,
-      config.azureOpenAiEmbeddingModel,
-      config.kbFieldsSourcePage,
-      config.kbFieldsContent,
-      */
-    );
+    const chatService = new ChatService(config, model, vectorStore);
 
     fastify.decorate('chat', chatService);
   },
@@ -212,20 +201,21 @@ elif [ "$template_name" == "aisearch" ]; then
   echo "Preparing project template for Azure AI Search..."
 
   echo -e "import fp from 'fastify-plugin';
-import { ChatOpenAI, OpenAIEmbeddings, type OpenAIChatInput, type OpenAIEmbeddingsParams } from '@langchain/openai';
+import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
+import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/openai';
+import { AzureAISearchVectorStore } from '@langchain/community/vectorstores/azure_aisearch';
+import { type BaseChatModel } from '@langchain/core/language_models/chat_models';
+import { type VectorStore } from '@langchain/core/vectorstores';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
+import { type AppConfig } from './config.js';
 
 export class ChatService {
   tokenLimit: number = 4000;
 
   constructor(
-    private searchClient: SearchClient<any>,
-    private chatClient: (options?: Partial<OpenAIChatInput>) => ChatOpenAI,
-    private embeddingsClient: (options?: Partial<OpenAIEmbeddingsParams>) => OpenAIEmbeddings,
-    private chatGptModel: string,
-    private embeddingModel: string,
-    private sourcePageField: string,
-    private contentField: string,
+    private config: AppConfig,
+    private model: BaseChatModel,
+    private vectorStore: VectorStore,
   ) {}
 
   async run(messages: Message[]): Promise<ChatResponse> {
@@ -241,17 +231,7 @@ export default fp(
 
     // TODO: initialize clients here
 
-    const chatService = new ChatService(
-      /*
-      searchClient,
-      chatClient,
-      embeddingsClient,
-      config.azureOpenAiChatGptModel,
-      config.azureOpenAiEmbeddingModel,
-      config.kbFieldsSourcePage,
-      config.kbFieldsContent,
-      */
-    );
+    const chatService = new ChatService(config, model, vectorStore);
 
     fastify.decorate('chat', chatService);
   },
