@@ -23,6 +23,6 @@ if ([string]::IsNullOrEmpty($env:INDEX_NAME)) {
 }
 
 Write-Host 'Uploading PDF files to the ingestion API'
-Invoke-RestMethod -Uri "$env:INGESTION_API_URI/ingest" -Method Post -InFile "./data/privacy-policy.pdf"
-Invoke-RestMethod -Uri "$env:INGESTION_API_URI/ingest" -Method Post -InFile "./data/support.pdf"
-Invoke-RestMethod -Uri "$env:INGESTION_API_URI/ingest" -Method Post -InFile "./data/terms-of-service.pdf"
+Invoke-RestMethod -Uri "$env:INGESTION_API_URI/documents" -Method Post -InFile "./data/privacy-policy.pdf"
+Invoke-RestMethod -Uri "$env:INGESTION_API_URI/documents" -Method Post -InFile "./data/support.pdf"
+Invoke-RestMethod -Uri "$env:INGESTION_API_URI/documents" -Method Post -InFile "./data/terms-of-service.pdf"
