@@ -28,7 +28,8 @@ export default fp(
       azureAiSearchEndpoint: process.env.AZURE_AISEARCH_ENDPOINT || '',
       azureOpenAiApiEndpoint: process.env.AZURE_OPENAI_API_ENDPOINT || '',
       azureOpenAiApiDeploymentName: process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME || 'gpt-4',
-      azureOpenAiApiEmbeddingDeploymentName: process.env.AZURE_OPENAI_API_EMBEDDINGS_DEPLOYMENT_NAME || 'text-embedding-ada-002',
+      azureOpenAiApiEmbeddingDeploymentName:
+        process.env.AZURE_OPENAI_API_EMBEDDINGS_DEPLOYMENT_NAME || 'text-embedding-ada-002',
       azureOpenAiApiModelName: process.env.AZURE_OPENAI_API_MODEL || 'gpt-4',
       azureOpenAiApiEmbeddingsModelName: process.env.AZURE_OPENAI_API_EMBEDDINGS_MODEL || 'text-embedding-ada-002',
       qdrantUrl: process.env.QDRANT_URL || '',

@@ -4,7 +4,7 @@ const root: FastifyPluginAsync = async (fastify, _options): Promise<void> => {
   fastify.get('/', async function (_request, _reply) {
     return { message: 'server up' };
   });
-  
+
   fastify.post('/documents', async function (request, reply) {
     const { file } = request.body as any;
     if (file.type !== 'file') {
@@ -25,7 +25,6 @@ const root: FastifyPluginAsync = async (fastify, _options): Promise<void> => {
       reply.internalServerError(`Internal server error: ${error.message}`);
     }
   });
-
 };
 
 export default root;

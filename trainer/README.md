@@ -33,7 +33,6 @@ You can share it with your attendees so they can use it during the workshop with
 https://aka.ms/ws/openai-rag-quarkus?vars=proxy:<proxy_url>
 ```
 
-
 ## During the workshop
 
 Share this URL with your attendees, and make them run this command **before** their provision their own infrastructure (if they already did it, they'll just have to provision again):

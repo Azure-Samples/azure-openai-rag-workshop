@@ -79,6 +79,7 @@ The resource group and all the resources will be deleted.
 ## Other versions
 
 This sample and workshop exists in different versions:
+
 - [**Node.js + Azure AI Search**](https://aka.ms/ws/openai-rag)
 - [**Node.js + Qdrant**](https://aka.ms/ws/openai-rag-qdrant)
 - [**Java/Quarkus + Qdrant**](https://aka.ms/ws/openai-rag-quarkus).
@@ -94,6 +95,7 @@ Here are some resources to learn more about the technologies used in this sample
 You can also find [more Azure AI samples here](https://github.com/Azure-Samples/azureai-samples).
 
 This sample/workshop was based on the enterprise-ready sample **ChatGPT + Enterprise data with Azure OpenAI and AI Search**:
+
 - [JavaScript version](https://github.com/Azure-Samples/azure-search-openai-javascript) / [Serverless JavaScript version](https://github.com/Azure-Samples/serverless-chat-langchainjs)
 - [Python version](https://github.com/Azure-Samples/azure-search-openai-demo/)
 - [Java version](https://github.com/Azure-Samples/azure-search-openai-demo-java)

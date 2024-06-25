@@ -2,7 +2,7 @@ import fp from 'fastify-plugin';
 import { QdrantClient } from '@qdrant/qdrant-js';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/openai';
-import { QdrantVectorStore } from "@langchain/qdrant";
+import { QdrantVectorStore } from '@langchain/qdrant';
 import { type BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { type VectorStore } from '@langchain/core/vectorstores';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
@@ -176,10 +176,7 @@ export default fp(
     const credentials = new DefaultAzureCredential();
 
     // Set up OpenAI token provider
-    const azureADTokenProvider = getBearerTokenProvider(
-      credentials,
-      'https://cognitiveservices.azure.com/.default'
-    );
+    const azureADTokenProvider = getBearerTokenProvider(credentials, 'https://cognitiveservices.azure.com/.default');
 
     // Set up LangChain clients
     fastify.log.info(`Using OpenAI at ${config.azureOpenAiApiEndpoint}`);
@@ -199,14 +196,10 @@ export default fp(
         url: config.qdrantUrl,
         // https://github.com/qdrant/qdrant-js/issues/59
         port: Number(config.qdrantUrl.split(':')[2]),
-      })
+      }),
     });
 
-    const chatService = new ChatService(
-      config,
-      model,
-      vectorStore
-    );
+    const chatService = new ChatService(config, model, vectorStore);
 
     fastify.decorate('chat', chatService);
   },
