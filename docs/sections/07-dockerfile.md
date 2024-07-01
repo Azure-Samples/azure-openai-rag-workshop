@@ -112,6 +112,14 @@ docker compose up
 
 </div>
 
+<div class="info" data-title="note">
+
+> If you're using your own deployed Azure OpenAI instance, you will get an error as the `@azure/identity` SDK cannot automatically authenticate in a local container.
+> There are several ways to fix this, the easiest one would be to create a [Service Principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal), assign it the needed permissions, and pass the environment variables to the container. However, this goes beyond the scope of this workshop, so we'll skip this step for now.
+> If you get this error, simply skip the local testing and move on to the next section.
+
+</div>
+
 You can now test the API again using the `test.http` file or `curl` just like before, to check that everything works. When you're done with the testing, stop the server by pressing `Ctrl+C`.
 
 After that, commit the changes to the repository to keep track of your progress.

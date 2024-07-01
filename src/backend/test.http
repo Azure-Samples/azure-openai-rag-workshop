@@ -19,13 +19,12 @@ Content-Type: application/json
 ###
 
 # Chat with the bot using streaming
-POST {{api_host}}/chat
+POST {{api_host}}/chat/stream
 Content-Type: application/json
 
 {
   "messages": [{
     "content": "How to search and book rentals?",
     "role": "user"
-  }],
-  "stream": true
+  }]
 }

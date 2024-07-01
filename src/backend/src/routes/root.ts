@@ -7,7 +7,7 @@ const root: FastifyPluginAsync = async (fastify, _options): Promise<void> => {
   });
 
   fastify.post('/chat', async function (request, reply) {
-    const { messages, stream } = request.body as any;
+    const { messages } = request.body as any;
     try {
       return await fastify.chat.run(messages);
     } catch (_error: unknown) {

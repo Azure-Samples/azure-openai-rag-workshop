@@ -112,7 +112,12 @@ const embeddings = new AzureOpenAIEmbeddings({ azureADTokenProvider });
 const vectorStore = new AzureAISearchVectorStore(embeddings, { credentials });
 ```
 
-Here we create the clients for the Azure OpenAI chat model and the Azure OpenAI embeddings model, using the `azureADTokenProvider` method we created earlier. For the vector database, we create a `AzureAISearchVectorStore` instance that will be used to interact with the AI Search service.
+Here we create the clients for the Azure OpenAI chat model and the Azure OpenAI embeddings model, using the `azureADTokenProvider` method we created earlier. We pass a few options to control the behavior of the chat model:
+- `temperature` controls the randomness of the model. A value of 0 will make the model deterministic, and a value of 1 will make it generate the most random answers.
+- `maxTokens` is the maximum number of tokens the model will generate. If you set it too low, the model will not be able to generate long answers. If you set it too high, the model may generate answers that are too long.
+- `n` is the number of answers the model will generate. In our case we only want one answer, so we set it to 1.
+
+For the vector database, we create a `AzureAISearchVectorStore` instance that will be used to interact with the AI Search service.
 
 ### Creating the ChatService
 
@@ -128,60 +133,35 @@ We feed the `ChatService` instance with the current configuration, the Azure Ope
 
 It's time to start implementing the RAG pattern! The first step is to retrieve the documents from the vector database. In the `ChatService` class, there's a method named `run` that is currently empty with a `// TODO: implement Retrieval Augmented Generation (RAG) here`. This is where we'll implement the RAG pattern.
 
-Before retrieving the documents, we need to convert the question into a vector:
+Before retrieving the documents, we need to get the question:
 
 ```ts
 // Get the content of the last message (the question)
 const query = messages[messages.length - 1].content;
-
-// Compute an embedding for the query
-const embeddingsClient = this.embeddingsClient({ modelName: this.embeddingModel });
-const queryVector = await embeddingsClient.embedQuery(query);
 ```
 
-To compute the embedding, we first use the embeddings client we created earlier, and call the `embedQuery` method. This method will convert the query into a vector, using the embedding model we specified.
-
-Now that we have the query vector, we can call the Azure AI Search client to retrieve the documents:
+Next we'll retrieve the best 3 matching documents from the vector database. Note that LangChain.js automatically computes the embedding for the query before performing the search.
 
 ```ts
-// Performs a hybrid search (vectors + text)
-// For a vector search, replace the query by '*'
-const searchResults = await this.searchClient.search(query, {
-  top: 3,
-  vectorSearchOptions: {
-    queries: [
-      {
-        kind: 'vector',
-        vector: queryVector,
-        kNearestNeighborsCount: 50,
-        fields: ['embedding'],
-      },
-    ],
-  }
-});
+// Performs a vector similarity search.
+// Embedding for the query is automatically computed
+const documents = await this.vectorStore.similaritySearch(query, 3);
 ```
-
-We pass a few options to the `search` method:
-- The query, which is the question we want to ask. If we pass both a query and a vector, Azure AI Search will perform a hybrid search, which combines semantic and vector search in the same query. To only perform a vector search, we can pass an empty string as the query.
-- `top` is the number of documents we want to retrieve
-- `vectors` is an array of vectors to use for the search. In our case we only have one vector, the query vector we computed earlier. We also specify the number of nearest neighbors to retrieve, and the name of the field that contains the vector in the Azure AI Search index.
 
 Let's process the search results to extract the documents' content:
 
 ```ts
 const results: string[] = [];
-
-for await (const result of searchResults.results) {
-  const document = result.document;
-  const sourcePage = document[this.sourcePageField];
-  const content = document[this.contentField].replaceAll(/[\n\r]+/g, ' ')
-  results.push(`${sourcePage}: ${content}`);
+for await (const document of documents) {
+  const source = document.metadata.source;
+  const content = document.pageContent.replaceAll(/[\n\r]+/g, ' ');
+  results.push(`${source}: ${content}`);
 }
 
 const content = results.join('\n');
 ```
 
-The object `searchResults.results` containing the search results is an [AsyncIterator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator), so we need to use a `for await` loop to iterate over the results. For each result, we extract the page information and the content of the document, and add it to an array.
+The object `documents` containing the search results is an [AsyncIterator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator), so we need to use a `for await` loop to iterate over the results. For each document in the results, we extract the page information and the content of the document, and create a string from it.
 For the content, we use a regular expression to replace all the new lines with spaces, so it's easier to feed it to the GPT model later.
 
 Finally we join all the results into a single string, and separate each document with a new line. We'll use this content to generate the augmented prompt.
@@ -266,39 +246,24 @@ Here we create a `thoughts` string that we'll return along the answer, that cont
 We're now ready to generate the response from the model. Add this code below the previous one:
 
 ```ts
-const chatClient = this.chatClient({
-  temperature: 0.7,
-  maxTokens: 1024,
-  n: 1,
-});
-const completion = await chatClient.invoke(messageBuilder.getMessages());
+const completion = await this.model.invoke(messageBuilder.getMessages());
 ```
 
-First we create the LangChain chat client and pass a few options to control the behavior of the model:
-- `temperature` controls the randomness of the model. A value of 0 will make the model deterministic, and a value of 1 will make it generate the most random answers.
-- `maxTokens` is the maximum number of tokens the model will generate. If you set it too low, the model will not be able to generate long answers. If you set it too high, the model may generate answers that are too long.
-- `n` is the number of answers the model will generate. In our case we only want one answer, so we set it to 1.
-
-Then we call the `invoke` method to generate the response. We pass the messages we created earlier as input.
+We call the `invoke` method to generate the response, passing the messages we created earlier as input.
 
 The final step is to return the result in the Chat specification format:
 
 ```ts
 // Return the response in the Chat specification format
 return {
-  choices: [
-    {
-      index: 0,
-      message: {
-        content: completion.content as string,
-        role: 'assistant',
-        context: {
-          data_points: results,
-          thoughts: thoughts,
-        },
-      },
-    },
-  ],
+  message: {
+    content: completion.content as string,
+    role: 'assistant',
+  },
+  context: {
+    data_points: results,
+    thoughts: thoughts,
+  },
 };
 ```
 

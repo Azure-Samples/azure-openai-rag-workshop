@@ -36,6 +36,7 @@ export class ChatService {
     // STEP 1: Retrieve relevant documents from the search index
     // ---------------------------------------------------------
 
+    // Get the content of the last message (the question)
     const query = messages[messages.length - 1].content;
 
     // Performs a hybrid search (vectors + text),
@@ -82,10 +83,10 @@ export class ChatService {
       message: {
         content: completion.content as string,
         role: 'assistant',
-        context: {
-          data_points: results,
-          thoughts: thoughts,
-        },
+      },
+      context: {
+        data_points: results,
+        thoughts: thoughts,
       },
     };
   }
@@ -143,10 +144,10 @@ export class ChatService {
         delta: {
           content: (chunk.content as string) ?? '',
           role: 'assistant' as const,
-          context: {
-            data_points: id === 0 ? results : undefined,
-            thoughts: id === 0 ? thoughts : undefined,
-          },
+        },
+        context: {
+          data_points: id === 0 ? results : undefined,
+          thoughts: id === 0 ? thoughts : undefined,
         },
       };
       yield responseChunk;
