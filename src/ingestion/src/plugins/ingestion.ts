@@ -19,15 +19,15 @@ export class IngestionService {
     const loader = new PDFLoader(blob, {
       splitPages: false,
     });
-    const rawDocument = await loader.load();
-    rawDocument[0].metadata.source = file.filename;
+    const rawDocuments = await loader.load();
+    rawDocuments[0].metadata.source = file.filename;
 
     // Split the text into smaller chunks
     const splitter = new RecursiveCharacterTextSplitter({
       chunkSize: 1500,
       chunkOverlap: 100,
     });
-    const documents = await splitter.splitDocuments(rawDocument);
+    const documents = await splitter.splitDocuments(rawDocuments);
 
     // Delete existing documents for the same source
     await this.deleteDocuments(file.filename);

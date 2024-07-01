@@ -39,18 +39,29 @@ For this workshop, we'll use Qdrant as our vector database as it works well with
 To start Qdrant locally, you can use the following command:
 
 ```bash
-docker run -p 6333:6333 -v $(pwd)/.qdrant:/qdrant/storage:z qdrant/qdrant:v1.9.7
+docker compose up qdrant
 ```
 
-This will pull the Docker image, start Qdrant on port `6333` and mount a volume to store the data in the `.qdrant` folder.
+This will pull the Docker image, start Qdrant on port `6333` and mount a volume to store the data in the `.qdrant` folder. You should see logs that look like:
+
+```text
+qdrant-1  | INFO qdrant::actix: Qdrant HTTP listening on 6333    
+qdrant-1  | INFO actix_server::builder: Starting 9 workers
+qdrant-1  | INFO qdrant::tonic: Qdrant gRPC listening on
+qdrant-1  | INFO actix_server::server: Actix runtime found; starting in Actix runtime
+```
 
 You can test that Qdrant is running by opening the following URL in your browser: [http://localhost:6333/dashboard](http://localhost:6333/dashboard).
 
-<div class="tip" data-title="tip">
+<div class="important" data-title="important">
 
-> In Codespaces, once the servce is running, you click on the **Open in browser** button when prompted and add `/dashboard` at the end of the URL.
+> In Codespaces, once the service is running, you need to click on the **Open in browser** button when prompted and add `/dashboard` at the end of the URL.
 > You can also select the **Ports** tab in the bottom panel, right click on the URL in the **Forwarded Address** column next to the `6333` port, and select **Open in browser**.
 
 </div>
 
-Once you tested that Qdrant is running correctly, you can stop it by pressing `CTRL+C` in your terminal.
+Once you tested that Qdrant is running correctly, you can stop it by pressing `CTRL+C` in your terminal or executing the following command from the root directory of the project:
+
+```bash
+docker compose down qdrant
+```

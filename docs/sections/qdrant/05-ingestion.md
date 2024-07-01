@@ -7,7 +7,7 @@ The code of this is already written for you, but let's have a look at how it wor
 
 ### The ingestion process
 
-The `src/ingestion/src/lib/ingestor.ts` file contains the code that is used to ingest the data in the vector database. This runs inside a Node.js application, and deployed to Azure Container Apps.
+The file `src/ingestion/src/plugins/ingestion.ts` contains the code that is used to ingest the data in the vector database. This runs inside a Node.js application, and deployed to Azure Container Apps.
 
 PDFs files, which are stored in the `data` folder, will be sent to this Node.js application using the command line. The files provided here are for demo purpose only, and suggested prompts we'll use later in the workshop are based on those files.
 
@@ -21,39 +21,37 @@ PDFs files, which are stored in the `data` folder, will be sent to this Node.js 
 
 The content the PDFs files will be used as part of the *Retriever* component of the RAG architecture, to generate answers to your questions using the GPT model.
 
-Text from the PDF files is extracted in the `src/ingestion/src/lib/document-processor.ts` file, using the [pdf.js library](https://mozilla.github.io/pdf.js/). You can have a look at code of the `extractTextFromPdf()` function if you're curious about how it works.
-
-#### Computing the embeddings
-
-After the text is extracted, it's then transformed into embeddings using the [OpenAI JavaScript library](https://github.com/openai/openai-node):
+Text from the PDF files is extracted in the `src/ingestion/src/plugins/ingestion.ts` file, using the [pdf.js library](https://mozilla.github.io/pdf.js/) through LangChain.js [PDF file loader](https://js.langchain.com/docs/integrations/document_loaders/file_loaders/pdf/). Once the text is extracted, we split it into smaller chunks to improve the search results.
 
 ```ts
-async createEmbedding(text: string): Promise<number[]> {
-  const embeddingsClient = await this.openai.getEmbeddings();
-  const result = await embeddingsClient.create({ input: text, model: this.embeddingModelName });
-  return result.data[0].embedding;
-}
+// Extract text from the PDF
+const blob = new Blob([file.data]);
+const loader = new PDFLoader(blob, {
+  splitPages: false,
+});
+const rawDocuments = await loader.load();
+rawDocuments[0].metadata.source = file.filename;
+
+// Split the text into smaller chunks
+const splitter = new RecursiveCharacterTextSplitter({
+  chunkSize: 1500,
+  chunkOverlap: 100,
+});
+const documents = await splitter.splitDocuments(rawDocuments);
 ```
 
 #### Adding the documents to the vector database
 
-The embeddings along with the original texts are then added to the vector database using the [Qdrant JavaScript client library](https://www.npmjs.com/package/@qdrant/qdrant-js). This process is done in batches, to improve performance and limit the number of requests:
+LangChain.js vector store integrations then takes care of the heavy lifting for you. For every document:
+1. The embeddings are computed.
+2. A new document is created combining the original text and the embeddings (vector).
+3. The document is added to the vector database, using the [Qdrant JavaScript client library](https://www.npmjs.com/package/@qdrant/qdrant-js).
+
+This process is done in batches, to improve performance and limit the number of requests.
 
 ```ts
-const points = sections.map((section) => ({
-  // ID must be either a 64-bit integer or a UUID
-  id: getUuid(section.id, 5),
-  vector: section.embedding!,
-  payload: {
-    id: section.id,
-    content: section.content,
-    category: section.category,
-    sourcepage: section.sourcepage,
-    sourcefile: section.sourcefile,
-  },
-}));
-
-await this.qdrantClient.upsert(indexName, { points });
+// Generate embeddings and save in database
+await this.vectorStore.addDocuments(documents);
 ```
 
 ### Running the ingestion process
@@ -78,7 +76,19 @@ Once all services are started, you can run the ingestion process by opening a ne
 ./scripts/ingest-data.sh
 ```
 
-![Screenshot of the ingestion CLI](./assets/ingestion-cli.png)
+TODO update!!!! ![Screenshot of the ingestion CLI](./assets/ingestion-cli.png)
+
+<div class="tip" data-title="tip">
+
+> Alternatively, you can run the ingestion process by simply using cURL to send the PDF files:
+> ```bash
+> curl -F "file=@./data/privacy-policy.pdf" \
+>  -F "file=@./data/support.pdf" \
+>  -F "file=@./data/terms-of-service.pdf" \
+>  http://localhost:3001/documents
+> ```
+
+</div>
 
 Once this process is executed, a new collection will be available in your database, where you can see the documents that were ingested.
 
@@ -86,7 +96,7 @@ Once this process is executed, a new collection will be available in your databa
 
 Open the Qdrant dashboard again by opening the following URL in your browser: [http://localhost:6333/dashboard](http://localhost:6333/dashboard).
 
-<div class="tip" data-title="tip">
+<div class="important" data-title="important">
 
 > In Codespaces, you need to select the **Ports** tab in the bottom panel, right click on the URL in the **Forwarded Address** column next to the `6333` port, and select **Open in browser**.
 
