@@ -78,7 +78,7 @@ Now it's your turn to complete the code! 🙂
 ```ts
 const response = await fetch(`${apiUrl}/chat`, {
   method: 'POST',
-  headers: {'Content-Type': 'application/json' },
+  headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     messages: options.messages,
   }),

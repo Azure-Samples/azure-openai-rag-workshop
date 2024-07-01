@@ -32,9 +32,16 @@ rm -rf ./*.env
 rm -rf docker-compose.yml
 
 # Prepare files
-echo -e "import { type ChatResponse, type ChatRequestOptions, type ChatResponseChunk } from './models.js';
+echo -e "import { AIChatMessage, AIChatCompletionDelta, AIChatCompletion } from '@microsoft/ai-chat-protocol';
 
 export const apiBaseUrl = import.meta.env.VITE_BACKEND_API_URI || '';
+
+export type ChatRequestOptions = {
+  messages: AIChatMessage[];
+  chunkIntervalMs: number;
+  apiUrl: string;
+  stream: boolean;
+};
 
 export async function getCompletion(options: ChatRequestOptions) {
   const apiUrl = options.apiUrl || apiBaseUrl;
@@ -43,12 +50,12 @@ export async function getCompletion(options: ChatRequestOptions) {
   // const response =
 
   if (options.stream) {
-    return getChunksFromResponse<ChatResponseChunk>(response as Response, options.chunkIntervalMs);
+    return getChunksFromResponse<AIChatCompletionDelta>(response as Response, options.chunkIntervalMs);
   }
 
-  const json: ChatResponse = await response.json();
+  const json: AIChatCompletion = await response.json();
   if (response.status > 299 || !response.ok) {
-    throw new Error(json.error || 'Unknown error');
+    throw new Error(json['error'] || 'Unknown error');
   }
 
   return json;
