@@ -14,7 +14,7 @@ banner_url: assets/banner.jpg
 duration_minutes: 120
 audience: students, devs
 level: intermediate
-tags: chatgpt, openai, langchain, retrieval-augmented-generation, azure, containers, docker, static web apps, javascript, typescript, node.js, azure ai search, fastify, azure container apps
+tags: chatgpt, openai, langchain, retrieval-augmented-generation, azure, containers, docker, static web apps, javascript, typescript, node.js, azure ai search, fastify, azure container apps, langchain.js
 published: false
 wt_id: javascript-0000-cxa
 sections_title:
@@ -30,7 +30,7 @@ In this workshop, we'll explore the fundamentals of custom ChatGPT experiences b
 - Create a knowledge base using a vector database.
 - Ingest documents in a vector database.
 - Create a Web API with [Fastify](https://www.fastify.io).
-- Use [OpenAI](https://openai.com) models and [LangChain](https://js.langchain.com/docs/) to generate answers based on a prompt.
+- Use [OpenAI](https://openai.com) models and [LangChain.js](https://js.langchain.com/docs/) to generate answers based on a prompt.
 - Query a vector database and augment a prompt to generate responses.
 - Connect your Web API to a ChatGPT-like website.
 - Deploy your application on Azure.
