@@ -18,10 +18,10 @@
       "value": "${AZURE_OPENAI_LOCATION=swedencentral}"
     },
     "openAiCapacity": {
-      "value": "${AZURE_OPENAI_CAPACITY=200}"
+      "value": "${AZURE_OPENAI_CAPACITY=100}"
     },
     "chatGptDeploymentName": {
-      "value": "${AZURE_OPENAI_CHATGPT_DEPLOYMENT=gpt-35-turbo}"
+      "value": "${AZURE_OPENAI_CHATGPT_DEPLOYMENT=gpt-4}"
     },
     "embeddingDeploymentName": {
       "value": "${AZURE_OPENAI_EMBEDDING_DEPLOYMENT=text-embedding-ada-002}"

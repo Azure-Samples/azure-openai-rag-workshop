@@ -30,7 +30,7 @@ You'll get a container app instance URL of the proxy when the deployment is comp
 You can share it with your attendees so they can use it during the workshop with a link like this:
 
 ```
-https://aka.ms/ws/openai-rag-quarkus?vars=proxy:<proxy_url>
+https://aka.ms/ws/openai-rag?vars=proxy:<proxy_url>
 ```
 
 ## During the workshop

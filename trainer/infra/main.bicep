@@ -26,8 +26,8 @@ param openAiCapacity int // Set in main.parameters.json
 
 param chatGptDeploymentName string // Set in main.parameters.json
 param chatGptDeploymentCapacity int = openAiCapacity
-param chatGptModelName string = 'gpt-35-turbo'
-param chatGptModelVersion string = '0613'
+param chatGptModelName string = 'gpt-4'
+param chatGptModelVersion string = 'turbo-2024-04-09'
 param embeddingDeploymentName string // Set in main.parameters.json
 param embeddingDeploymentCapacity int = openAiCapacity
 param embeddingModelName string = 'text-embedding-ada-002'
