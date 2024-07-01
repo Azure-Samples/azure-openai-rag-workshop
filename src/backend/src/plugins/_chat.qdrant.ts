@@ -146,10 +146,10 @@ export class ChatService {
           content: (chunk.content as string) ?? '',
           role: 'assistant' as const,
         },
-        context: {
-          data_points: id === 0 ? results : undefined,
-          thoughts: id === 0 ? thoughts : undefined,
-        },
+        context: id === 0 ? {
+          data_points: results,
+          thoughts,
+        } : {},
       };
       yield responseChunk;
       id++;
