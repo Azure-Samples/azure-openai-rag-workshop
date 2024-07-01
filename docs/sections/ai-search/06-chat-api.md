@@ -21,7 +21,7 @@ export default fp(
 
     // TODO: initialize clients here
 
-    const chatService = new ChatService(config, model, vectorStore);
+    const chatService = new ChatService(/* config, model, vectorStore */);
 
     fastify.decorate('chat', chatService);
   },

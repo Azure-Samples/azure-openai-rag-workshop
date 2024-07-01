@@ -21,18 +21,7 @@ export default fp(
 
     // TODO: initialize clients here
 
-    const chatService = new ChatService(
-      /*
-      config,
-      qdrantClient,
-      chatClient,
-      embeddingsClient,
-      config.azureOpenAiChatGptModel,
-      config.azureOpenAiEmbeddingModel,
-      config.kbFieldsSourcePage,
-      config.kbFieldsContent,
-      */
-    );
+    const chatService = new ChatService(/* config, model, vectorStore */);
 
     fastify.decorate('chat', chatService);
   },
