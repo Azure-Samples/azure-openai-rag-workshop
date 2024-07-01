@@ -64,7 +64,7 @@ makeArchive . solution solution
 
 echo "Creating solution package (for JS + Qdrant)..."
 copyFolder . solution-qdrant
-rm -rf "$target_folder/solution/src/backend/plugins/chat.ts"
+rm -rf "$target_folder/solution-qdrant/src/backend/plugins/chat.ts"
 mv "$target_folder/solution-qdrant/src/backend/plugins/_chat.qdrant.ts" "$target_folder/solution-qdrant/src/backend/plugins/chat.ts"
 rm -rf "$target_folder/solution-qdrant/.azure"
 rm -rf "$target_folder/solution-qdrant/.qdrant"
