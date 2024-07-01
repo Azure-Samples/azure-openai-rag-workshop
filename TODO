@@ -1,14 +1,27 @@
 # Tasks
+- [x] rework ingestion to use langchainjs
+- [x] use new openai sdk + azure identity
+- [x] ingestion: delete existing data
+- [x] use updated chat protocol
+- [ ] update docs
+  * [ ] ingestion CLI screenshots
+  * [x] qdrant path
+  * [x] aisearch path
 
-- [ ] rework ingestion to use langchainjs
-- [ ] use new openai sdk + azure identity
+- [ ] Ollama support
+
+- [ ] test Qdrant
+- [ ] test AISearch
+- [ ] test with proxy
+
+- [ ] update trainer infra
+  * [ ] vars
+  * [ ] GPT-4, make version identical
 
 ## For later
-
 - [ ] Add troubleshooting for npm run dev backend if it fails (restart) timeout (node-qdrant)
   * try to reproduce!
 
-- [ ] add notes if using OPENAI_TOKEN instead of AZURE OAI + KEY
 - [ ] add docker and troubleshooting section (full rebuild container) / codespaces
 - [ ] add npm i troubleshooting section (npm install) / codespaces
 
@@ -17,9 +30,5 @@
   * [ ] fix fonts
   * [ ] clean up code
 
-- [ ] improve workshop
-  * [ ] add section in improvements about tools usage with LangChain.js and Retrievers
-  * [ ] allow to use regular OpenAI API/token + Ollama
-
 ## Trainer infra
-- [ ] add event key to restrict access?
+- [ ] add event key to restrict access
