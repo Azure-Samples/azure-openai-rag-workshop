@@ -1,4 +1,3 @@
-
 ## The vector database
 
 We'll start by creating a vector database. Vectors are arrays of numbers that represent the features or characteristics of the data. For example, an image can be converted into a vector of pixels, or a word can be converted into a vector of semantic meaning. A vector database can perform fast and accurate searches based on the similarity or distance between the vectors, rather than exact matches. This enables applications such as image recognition, natural language processing, recommendation systems, and more.
@@ -15,7 +14,7 @@ This will be used in the first component (the *Retriever*) of the Retrieval Augm
 
 There are many available vector databases, and a good list can be found in the supported Vector stores list from the LangChain project: [https://js.langchain.com/docs/integrations/vectorstores/](https://js.langchain.com/docs/integrations/vectorstores/).
 
-Some of the most popular ones are:
+Some of the popular ones are:
 
 - [MemoryVectorStore](https://js.langchain.com/docs/integrations/vectorstores/memory) which is an in-memory vector store, which is great for testing and development, but not for production.
 - [Qdrant](https://qdrant.tech/)

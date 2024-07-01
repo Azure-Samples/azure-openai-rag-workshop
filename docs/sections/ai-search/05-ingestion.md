@@ -7,7 +7,7 @@ The code of this is already written for you, but let's have a look at how it wor
 
 ### The ingestion process
 
-The `src/ingestion/src/lib/ingestor.ts` file contains the code that is used to ingest the data in the vector database. This runs inside a Node.js application, and deployed to Azure Container Apps.
+The file `src/ingestion/src/plugins/ingestion.ts` contains the code that is used to ingest the data in the vector database. This runs inside a Node.js application, and deployed to Azure Container Apps.
 
 PDFs files, which are stored in the `data` folder, will be sent to this Node.js application using the command line. The files provided here are for demo purpose only, and suggested prompts we'll use later in the workshop are based on those files.
 
@@ -19,44 +19,39 @@ PDFs files, which are stored in the `data` folder, will be sent to this Node.js 
 
 #### Reading the PDF files content
 
-The content the PDFs files will be used as part of the *Retriever* component of the RAG architecture, to generate answers to your questions using the GPT-3.5 model.
+The content the PDFs files will be used as part of the *Retriever* component of the RAG architecture, to generate answers to your questions using the GPT model.
 
-Text from the PDF files is extracted in the `src/ingestion/src/lib/document-processor.ts` file, using the [pdf.js library](https://mozilla.github.io/pdf.js/). You can have a look at code of the `extractTextFromPdf()` function if you're curious about how it works.
-
-#### Computing the embeddings
-
-After the text is extracted, it's then transformed into embeddings using the [OpenAI JavaScript library](https://github.com/openai/openai-node):
+Text from the PDF files is extracted in the `src/ingestion/src/plugins/ingestion.ts` file, using the [pdf.js library](https://mozilla.github.io/pdf.js/) through LangChain.js [PDF file loader](https://js.langchain.com/docs/integrations/document_loaders/file_loaders/pdf/). Once the text is extracted, we split it into smaller chunks to improve the search results.
 
 ```ts
-async createEmbedding(text: string): Promise<number[]> {
-  const embeddingsClient = await this.openai.getEmbeddings();
-  const result = await embeddingsClient.create({ input: text, model: this.embeddingModelName });
-  return result.data[0].embedding;
-}
+// Extract text from the PDF
+const blob = new Blob([file.data]);
+const loader = new PDFLoader(blob, {
+  splitPages: false,
+});
+const rawDocuments = await loader.load();
+rawDocuments[0].metadata.source = file.filename;
+
+// Split the text into smaller chunks
+const splitter = new RecursiveCharacterTextSplitter({
+  chunkSize: 1500,
+  chunkOverlap: 100,
+});
+const documents = await splitter.splitDocuments(rawDocuments);
 ```
 
 #### Adding the documents to the vector database
 
-The embeddings along with the original texts are then added to the vector database using the [Azure AI Search JavaScript client library](https://www.npmjs.com/package/@azure/search-documents). This process is done in batches, to improve performance and limit the number of requests:
+LangChain.js vector store integrations then takes care of the heavy lifting for you. For every document:
+1. The embeddings are computed.
+2. A new document is created combining the original text and the embeddings (vector).
+3. The document is added to the vector database, using the [Azure AI Search JavaScript client library](https://www.npmjs.com/package/@azure/search-documents).
+
+This process is done in batches, to improve performance and limit the number of requests.
 
 ```ts
-const searchClient = this.azure.searchIndex.getSearchClient(indexName);
-
-const batchSize = INDEXING_BATCH_SIZE;
-let batch: Section[] = [];
-
-for (let index = 0; index < sections.length; index++) {
-  batch.push(sections[index]);
-
-  if (batch.length === batchSize || index === sections.length - 1) {
-    // Send the batch of documents to the vector database
-    const { results } = await searchClient.uploadDocuments(batch);
-    const succeeded = results.filter((r) => r.succeeded).length;
-    const indexed = batch.length;
-    this.logger.debug(`Indexed ${indexed} sections, ${succeeded} succeeded`);
-    batch = [];
-  }
-}
+// Generate embeddings and save in database
+await this.vectorStore.addDocuments(documents);
 ```
 
 ### Running the ingestion process
@@ -75,7 +70,7 @@ Once the ingestion is deployed, you can run the ingestion process by running the
 ./scripts/ingest-data.sh
 ```
 
-![Screenshot of the ingestion CLI](./assets/ingestion-cli.png)
+!!!TODO UPDATE ![Screenshot of the ingestion CLI](./assets/ingestion-cli.png)
 
 Once this process is executed, a new index will be available in your Azure AI Search service, where you can see the documents that were ingested.
 
