@@ -44,7 +44,7 @@ makeArchive() {
 
 echo "Creating solution package (for JS + Azure AI Search)..."
 copyFolder . solution
-rm -rf "$target_folder/solution/src/backend/plugins/_chat.*"
+rm -rf "$target_folder/solution/src/backend/src/plugins/_chat."*
 rm -rf "$target_folder/solution/.azure"
 rm -rf "$target_folder/solution/.qdrant"
 rm -rf "$target_folder/solution/.env"
@@ -64,8 +64,8 @@ makeArchive . solution solution
 
 echo "Creating solution package (for JS + Qdrant)..."
 copyFolder . solution-qdrant
-rm -rf "$target_folder/solution-qdrant/src/backend/plugins/chat.ts"
-mv "$target_folder/solution-qdrant/src/backend/plugins/_chat.qdrant.ts" "$target_folder/solution-qdrant/src/backend/plugins/chat.ts"
+rm -rf "$target_folder/solution-qdrant/src/backend/src/plugins/chat.ts"
+mv "$target_folder/solution-qdrant/src/backend/src/plugins/_chat.qdrant.ts" "$target_folder/solution-qdrant/src/backend/src/plugins/chat.ts"
 rm -rf "$target_folder/solution-qdrant/.azure"
 rm -rf "$target_folder/solution-qdrant/.qdrant"
 rm -rf "$target_folder/solution-qdrant/.env"
