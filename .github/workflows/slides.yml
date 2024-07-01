@@ -30,7 +30,7 @@ jobs:
       - name: Build slides
         run: |
           cd docs/slides 
-          bs export --web slides-java-quarkus.md --output dist/java-quarkus
+          bs export --web slides.md
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
