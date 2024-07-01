@@ -54,34 +54,6 @@ We have the starting point to implement our chat service. Let's have a look at t
 
 We'll now replace the `// TODO: initialize clients here` with the actual code to set up our clients.
 
-#### Qdrant client
-
-Next we'll create the Qdrant client. Add this import at the top of the file:
-
-```ts
-import { QdrantClient } from '@qdrant/js-client-rest';
-```
-
-Then add this code below the `const config = fastify.config;` line:
-
-```ts
-// Set up Qdrant client
-const qdrantClient = new QdrantClient({
-  url: config.qdrantUrl,
-  // Port needs to be set explicitly if it's not the default,
-  // see https://github.com/qdrant/qdrant-js/issues/59
-  port: Number(config.qdrantUrl.split(':')[2])
-});
-```
-
-We just need to provide the URL of our Qdrant service.
-
-<div class="info" data-title="note">
-
-> You can optionally define an [authentication key](https://qdrant.tech/documentation/guides/security/#authentication) to secure your Qdrant service. If you do that, you'll need to pass it to the `QdrantClient` constructor using the `apiKey` property.
-
-</div>
-
 #### Managing Azure credentials
 
 Before we can create the clients, we need to retrieve the credentials to access our Azure services. We'll use the [Azure Identity SDK](https://learn.microsoft.com/javascript/api/overview/azure/identity-readme?view=azure-node-latest) to do that.
@@ -89,23 +61,29 @@ Before we can create the clients, we need to retrieve the credentials to access 
 Add this import at the top of the file:
 
 ```ts
-import { DefaultAzureCredential } from '@azure/identity';
+import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 ```
 
-Then add this code to retrieve the credentials below the Qdrant client initialization:
+Then add this code below the `const config = fastify.config;` line:
 
 ```ts
-// Automatic Azure identity is not supported in the local dev environment, so we use a dummy key.
-let openAIApiKey = '__dummy';
-try {
-  // Use the current user identity to authenticate with Azure OpenAI.
-  // (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
-  const credential = new DefaultAzureCredential();
-  const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
-  openAIApiKey = openAiToken.token;
-} catch {
-  fastify.log.warn('Failed to get Azure OpenAI token, using dummy key');
-}
+// Use the current user identity to authenticate.
+// No secrets needed, it uses `az login` or `azd auth login` locally,
+// and managed identity when deployed on Azure.
+const credentials = new DefaultAzureCredential();
+
+// Set up OpenAI token provider
+const getToken = getBearerTokenProvider(credentials, 'https://cognitiveservices.azure.com/.default');
+const azureADTokenProvider = async () => {
+  try {
+    return await getToken();
+  } catch {
+    // Azure identity is not supported in local container environment,
+    // so we use a dummy key (only works when using an OpenAI proxy).
+    fastify.log.warn('Failed to get Azure OpenAI token, using dummy key');
+    return '__dummy';
+  }
+};
 ```
 
 This will use the current user identity to authenticate with Azure OpenAI. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
@@ -117,63 +95,58 @@ This will use the current user identity to authenticate with Azure OpenAI. We do
 
 </div>
 
-#### LangChain clients
+#### LangChain.js clients
 
-Finally, it's time to create the LangChain clients. Add this code below the below the credentials retrieval:
+Next we'll create the LangChain.js clients. First add these imports at the top of the file:
 
 ```ts
-// Show the OpenAI URL used in the logs
-fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);
-
-// Set common options for the clients
-const commonOptions = {
-  openAIApiKey,
-  azureOpenAIApiVersion: '2024-02-01',
-  azureOpenAIApiKey: openAIApiKey,
-  azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,
-};
-
-// Create a getter for the OpenAI chat client
-const chatClient = (options?: Partial<OpenAIChatInput>) =>
-  new ChatOpenAI({
-    ...options,
-    ...commonOptions,
-    azureOpenAIApiDeploymentName: config.azureOpenAiChatGptDeployment,
-  });
-
-// Create a getter for the OpenAI embeddings client
-const embeddingsClient = (options?: Partial<OpenAIEmbeddingsParams>) =>
-  new OpenAIEmbeddings({
-    ...options,
-    ...commonOptions,
-    azureOpenAIApiDeploymentName: config.azureOpenAiEmbeddingDeployment,
-  });
+import { QdrantClient } from '@qdrant/qdrant-js';
+import { QdrantVectorStore } from '@langchain/qdrant';
+import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/openai';
 ```
 
-We first have to set up a few common options for the clients. Then instead of directly creating the clients, we create getter functions that will return the clients. We do it this way so we can pass additional options to change the behavior of the clients when needed.
+Then add this code below the below the credentials retrieval:
+
+```ts
+// Set up LangChain.js clients
+fastify.log.info(`Using OpenAI at ${config.azureOpenAiApiEndpoint}`);
+
+const model = new AzureChatOpenAI({
+  azureADTokenProvider,
+  // Controls randomness. 0 = deterministic, 1 = maximum randomness
+  temperature: 0.7,
+  // Maximum number of tokens to generate
+  maxTokens: 1024,
+  // Number of completions to generate
+  n: 1,
+});
+const embeddings = new AzureOpenAIEmbeddings({ azureADTokenProvider });
+const vectorStore = new QdrantVectorStore(embeddings, {
+  client: new QdrantClient({
+    url: config.qdrantUrl,
+    // https://github.com/qdrant/qdrant-js/issues/59
+    port: Number(config.qdrantUrl.split(':')[2]),
+  }),
+});
+```
+
+Here we create the clients for the Azure OpenAI chat model and the Azure OpenAI embeddings model, using the `azureADTokenProvider` method we created earlier. For the vector database, we create a `QdrantVectorStore` instance that will be used to interact with the Qdrant service.
+
+<div class="info" data-title="note">
+
+> You can optionally define an [authentication key](https://qdrant.tech/documentation/guides/security/#authentication) to secure your Qdrant service. If you do that, you'll need to pass it to the `QdrantClient` constructor using the `apiKey` property.
+
+</div>
 
 ### Creating the ChatService
 
 Now that we have created all the clients, it's time to properly initialize the `ChatService` instance. Uncomment the parameters in the `ChatService` constructor call like this:
 
 ```ts
-const chatService = new ChatService(
-  config,
-  qdrantClient,
-  chatClient,
-  embeddingsClient,
-  config.azureOpenAiChatGptModel,
-  config.azureOpenAiEmbeddingModel,
-  config.kbFieldsSourcePage,
-  config.kbFieldsContent,
-);
+const chatService = new ChatService(config, model, vectorStore);
 ```
 
-We feed the `ChatService` instance with the different clients we created, and the a few configuration options that we need:
-- The name of the GPT model to use (`gpt-35-turbo`)
-- The name of the embedding model to use (`text-embedding-ada-002`)
-- The name of the field in the search index that contains the page number of the document (`sourcepage`)
-- The name of the field in the search index that contains the content of the document (`content`)
+We feed the `ChatService` instance with the current configuration, the Azure OpenAI chat model client, and the Qdrant vector store client.
 
 #### Retrieving the documents
 

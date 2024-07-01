@@ -21,17 +21,7 @@ export default fp(
 
     // TODO: initialize clients here
 
-    const chatService = new ChatService(
-      /*
-      searchClient,
-      chatClient,
-      embeddingsClient,
-      config.azureOpenAiChatGptModel,
-      config.azureOpenAiEmbeddingModel,
-      config.kbFieldsSourcePage,
-      config.kbFieldsContent,
-      */
-    );
+    const chatService = new ChatService(config, model, vectorStore);
 
     fastify.decorate('chat', chatService);
   },
@@ -60,99 +50,79 @@ Before we can create the clients, we need to retrieve the credentials to access 
 Add this import at the top of the file:
 
 ```ts
-import { DefaultAzureCredential } from '@azure/identity';
+import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 ```
 
-Then add this code to retrieve the credentials below the `const config = fastify.config;` line:
+Then add this code below the `const config = fastify.config;` line:
 
 ```ts
-// Use the current user identity to authenticate with Azure OpenAI and AI Search.
-// (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
-const credential = new DefaultAzureCredential();
-```
+// Use the current user identity to authenticate.
+// No secrets needed, it uses `az login` or `azd auth login` locally,
+// and managed identity when deployed on Azure.
+const credentials = new DefaultAzureCredential();
 
-This will use the current user identity to authenticate with Azure OpenAI and AI Search. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
-
-#### Azure AI Search client
-
-Next we'll create the Azure AI Search client. Add this import at the top of the file:
-
-```ts
-import { SearchClient } from '@azure/search-documents';
-```
-
-Then add this code below the credentials retrieval:
-
-```ts
-// Set up Azure AI Search client
-const searchClient = new SearchClient<any>(
-  `https://${config.azureSearchService}.search.windows.net`,
-  config.indexName,
-  credential,
-);
-```
-
-We need to provide the URL of our Azure AI Search service, the name of the index we want to use, and the credentials we retrieved earlier.
-
-#### LangChain clients
-
-Finally, it's time to create the LangChain clients. Add this code below the Azure AI Search client initialization:
-
-```ts
-// Show the OpenAI URL used in the logs
-fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);
-
-// Get the OpenAI token from the credentials
-const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
-
-// Set common options for the clients
-const commonOptions = {
-  openAIApiKey: openAiToken.token,
-  azureOpenAIApiVersion: '2024-02-01',
-  azureOpenAIApiKey: openAiToken.token,
-  azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,
+// Set up OpenAI token provider
+const getToken = getBearerTokenProvider(credentials, 'https://cognitiveservices.azure.com/.default');
+const azureADTokenProvider = async () => {
+  try {
+    return await getToken();
+  } catch {
+    // Azure identity is not supported in local container environment,
+    // so we use a dummy key (only works when using an OpenAI proxy).
+    fastify.log.warn('Failed to get Azure OpenAI token, using dummy key');
+    return '__dummy';
+  }
 };
-
-// Create a getter for the OpenAI chat client
-const chatClient = (options?: Partial<OpenAIChatInput>) =>
-  new ChatOpenAI({
-    ...options,
-    ...commonOptions,
-    azureOpenAIApiDeploymentName: config.azureOpenAiChatGptDeployment,
-  });
-
-// Create a getter for the OpenAI embeddings client
-const embeddingsClient = (options?: Partial<OpenAIEmbeddingsParams>) =>
-  new OpenAIEmbeddings({
-    ...options,
-    ...commonOptions,
-    azureOpenAIApiDeploymentName: config.azureOpenAiEmbeddingDeployment,
-  });
 ```
 
-We first have to set up a few common options for the clients. Then instead of directly creating the clients, we create getter functions that will return the clients. We do it this way so we can pass additional options to change the behavior of the clients when needed.
+This will use the current user identity to authenticate with Azure OpenAI. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
+
+<div class="info" data-title="note">
+
+> When run locally inside a container, the Azure Identity SDK will not be able to retrieve the current user identity from the Azure Developer CLI. For simplicity, we'll use a dummy key in this case but it only works if you use the OpenAI proxy we provide if you attend this workshop in-person.
+> If need to properly authenticate locally, you should either run the app outside of a container with `npm run dev`, or create a [Service Principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal), assign it the needed permissions and pass the environment variables to the container.
+
+</div>
+
+#### LangChain.js clients
+
+Next we'll create the LangChain.js clients. First add these imports at the top of the file:
+
+```ts
+import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/openai';
+import { AzureAISearchVectorStore } from '@langchain/community/vectorstores/azure_aisearch';
+```
+
+Then add this code below the below the credentials retrieval:
+
+```ts
+// Set up LangChain.js clients
+fastify.log.info(`Using OpenAI at ${config.azureOpenAiApiEndpoint}`);
+
+const model = new AzureChatOpenAI({
+  azureADTokenProvider,
+  // Controls randomness. 0 = deterministic, 1 = maximum randomness
+  temperature: 0.7,
+  // Maximum number of tokens to generate
+  maxTokens: 1024,
+  // Number of completions to generate
+  n: 1,
+});
+const embeddings = new AzureOpenAIEmbeddings({ azureADTokenProvider });
+const vectorStore = new AzureAISearchVectorStore(embeddings, { credentials });
+```
+
+Here we create the clients for the Azure OpenAI chat model and the Azure OpenAI embeddings model, using the `azureADTokenProvider` method we created earlier. For the vector database, we create a `AzureAISearchVectorStore` instance that will be used to interact with the AI Search service.
 
 ### Creating the ChatService
 
 Now that we have created all the clients, it's time to properly initialize the `ChatService` instance. Uncomment the parameters in the `ChatService` constructor call like this:
 
 ```ts
-const chatService = new ChatService(
-  searchClient,
-  chatClient,
-  embeddingsClient,
-  config.azureOpenAiChatGptModel,
-  config.azureOpenAiEmbeddingModel,
-  config.kbFieldsSourcePage,
-  config.kbFieldsContent,
-);
+const chatService = new ChatService(config, model, vectorStore);
 ```
 
-We feed the `ChatService` instance with the different clients we created, and the a few configuration options that we need:
-- The name of the GPT model to use (`gpt-35-turbo`)
-- The name of the embedding model to use (`text-embedding-ada-002`)
-- The name of the field in the Azure AI Search index that contains the page number of the document (`sourcepage`)
-- The name of the field in the Azure AI Search index that contains the content of the document (`content`)
+We feed the `ChatService` instance with the current configuration, the Azure OpenAI chat model client, and the Azure AI Search vector store client.
 
 #### Retrieving the documents
 

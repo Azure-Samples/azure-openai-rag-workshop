@@ -120,10 +120,6 @@ if [ "$template_name" == "qdrant" ]; then
   echo "Preparing project template for Qdrant..."
 
   echo -e "import fp from 'fastify-plugin';
-import { QdrantClient } from '@qdrant/qdrant-js';
-import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
-import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/openai';
-import { QdrantVectorStore } from '@langchain/qdrant';
 import { type BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { type VectorStore } from '@langchain/core/vectorstores';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
@@ -151,7 +147,7 @@ export default fp(
 
     // TODO: initialize clients here
 
-    const chatService = new ChatService(config, model, vectorStore);
+    const chatService = new ChatService(/* config, model, vectorStore */);
 
     fastify.decorate('chat', chatService);
   },
@@ -201,9 +197,6 @@ elif [ "$template_name" == "aisearch" ]; then
   echo "Preparing project template for Azure AI Search..."
 
   echo -e "import fp from 'fastify-plugin';
-import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
-import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/openai';
-import { AzureAISearchVectorStore } from '@langchain/community/vectorstores/azure_aisearch';
 import { type BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { type VectorStore } from '@langchain/core/vectorstores';
 import { type Message, MessageBuilder, type ChatResponse, type ChatResponseChunk } from '../lib/index.js';
@@ -231,7 +224,7 @@ export default fp(
 
     // TODO: initialize clients here
 
-    const chatService = new ChatService(config, model, vectorStore);
+    const chatService = new ChatService(/* config, model, vectorStore */);
 
     fastify.decorate('chat', chatService);
   },
