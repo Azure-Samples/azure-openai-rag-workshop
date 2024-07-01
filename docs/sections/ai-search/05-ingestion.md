@@ -70,7 +70,7 @@ Once the ingestion is deployed, you can run the ingestion process by running the
 ./scripts/ingest-data.sh
 ```
 
-!!!TODO UPDATE ![Screenshot of the ingestion CLI](./assets/ingestion-cli.png)
+![Screenshot of the ingestion result](./assets/ingestion-result.png)
 
 Once this process is executed, a new index will be available in your Azure AI Search service, where you can see the documents that were ingested.
 

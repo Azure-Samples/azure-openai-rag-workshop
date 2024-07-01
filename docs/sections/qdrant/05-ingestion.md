@@ -76,7 +76,7 @@ Once all services are started, you can run the ingestion process by opening a ne
 ./scripts/ingest-data.sh
 ```
 
-TODO update!!!! ![Screenshot of the ingestion CLI](./assets/ingestion-cli.png)
+![Screenshot of the ingestion result](./assets/ingestion-result.png)
 
 <div class="tip" data-title="tip">
 
