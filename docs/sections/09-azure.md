@@ -51,7 +51,7 @@ azd env new openai-rag-workshop
 
 As we have deployed an Open AI service for you, run this command to set the OpenAI URL we want to use:
 
-```
+```sh
 azd env set AZURE_OPENAI_URL $$proxy$$
 ```
 
@@ -85,6 +85,10 @@ perl -pi -e 's/\"//g' .env
 This will create a `.env` file at the root of your repository, containing the environment variables needed to connect to your Azure services.
 
 As this file may sometimes contains application secrets, it's a best practice to keep it safe and not commit it to your repository. We already added it to the `.gitignore` file, so you don't have to worry about it.
+
+At this stage, if you go to the Azure Portal at https://portal.azure.com you should see something similar to this:
+
+![Resource deployed on Azure](./assets/azure-portal-azd.png)
 
 ### Deploying the ingestion service
 
@@ -158,7 +162,6 @@ When we ran `azd provision`, it created a resource group named `rg-openai-rag-wo
 ### Introducing Infrastructure as Code
 
 Infrastructure as Code (IaC) is a practice that enables the management of infrastructure using configuration files. It ensures that our infrastructure deployment is repeatable and consistent, much like our application code. This code is committed to your project repository so you can use it to create, update, and delete your infrastructure as part of your CI/CD pipeline or locally.
-
 
 There are many existing tools to manage your infrastructure as code, such as Terraform, Pulumi, or [Azure Resource Manager (ARM) templates](https://learn.microsoft.com/azure/azure-resource-manager/templates/overview). ARM templates are JSON files that allows you to define and configure Azure resources.
 
