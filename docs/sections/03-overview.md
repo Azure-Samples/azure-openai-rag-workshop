@@ -27,7 +27,7 @@ We generated the base code of our differents services with the respective CLI or
 
 ### The Chat API specification
 
-Creating a chat-like experience requires two main components: a user interface and a service API. The [ChatBootAI OpenAPI specification](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) standardizes their interactions. This standardization allows for the development of different client applications (like mobile apps) that can interact seamlessly with chat services written in various programming languages.
+Creating a chat-like experience requires two main components: a user interface and a service API. The [AI Chat Protocol API specification](https://aka.ms/chatprotocol) standardizes their interactions. This standardization allows for the development of different client applications (like mobile apps) that can interact seamlessly with chat services written in various programming languages.
 
 #### The Chat request
 
@@ -41,9 +41,7 @@ A chat request is sent in JSON format, and must contain at least the user's mess
       "role": "user"
     }
   ],
-  "stream": false,
-  "context": { ... },
-  "session_state": null
+  "context": { ... }
 }
 ```
 
@@ -53,20 +51,15 @@ The chat service responds with a JSON object representing the generated response
 
 ```json
 {
-  "choices": [
-    {
-      "index": 0,
-      "message": {
-        "content": "There is no information available about Scuba diving in the provided sources.",
-        "role": "assistant",
-        "context": { ... }
-      }
-    }
-  ],
+  "message": {
+    "content": "There is no information available about Scuba diving in the provided sources.",
+    "role": "assistant",
+  },
+  "context": { ... }
 }
 ```
 
-You can learn more about the [ChatBootAI OpenAPI specification here](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) and on [the GitHub repo](https://github.com/ChatBootAI/chatbootai-openapi).
+You can learn more about the [AI Chat Protocol API specification here](https://aka.ms/chatprotocol).
 
 <div class="info" data-title="note">
 
