@@ -19,7 +19,7 @@ export class DebugComponent extends LitElement {
   @property({ type: Boolean }) showThoughtProcess = true;
 
   protected renderThoughtProcess = (thoughtProcess: string) => {
-    return html`${unsafeHTML(thoughtProcess)}`;
+    return html`<div class="card">${unsafeHTML(thoughtProcess)}</div>`;
   };
 
   protected renderDataPoints = (dataPoints: string[]) => {
@@ -94,6 +94,13 @@ export class DebugComponent extends LitElement {
       padding: var(--space-xl);
       margin: 0px auto;
       max-width: 1024px;
+      font-family:
+        'Segoe UI',
+        -apple-system,
+        BlinkMacSystemFont,
+        Roboto,
+        'Helvetica Neue',
+        sans-serif;
     }
     .content {
       flex: 1;
