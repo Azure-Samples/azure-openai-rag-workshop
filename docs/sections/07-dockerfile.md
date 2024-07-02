@@ -78,7 +78,7 @@ Open the `docker-compose.yml` file at the project root, and uncomment the `backe
     build:
       dockerfile: ./src/backend/Dockerfile
     environment:
-      - AZURE_OPENAI_URL=${AZURE_OPENAI_URL}
+      - AZURE_OPENAI_API_ENDPOINT=${AZURE_OPENAI_API_ENDPOINT}
       - QDRANT_URL=http://qdrant:6333
       - LOCAL=true
     ports:
