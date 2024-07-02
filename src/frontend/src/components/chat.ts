@@ -159,9 +159,9 @@ export class ChatComponent extends LitElement {
           },
         };
         for await (const chunk of chunks) {
-          if (chunk.delta.context?.['data_points']) {
-            message.context!['data_points'] = chunk.delta.context?.['data_points'];
-            message.context!['thoughts'] = chunk.delta.context?.['thoughts'] ?? '';
+          if (chunk.context?.['data_points']) {
+            message.context!['data_points'] = chunk.context?.['data_points'];
+            message.context!['thoughts'] = chunk.context?.['thoughts'] ?? '';
           } else if (chunk.delta.content) {
             message.content += chunk.delta.content;
             this.messages = [...messages, message];
@@ -170,7 +170,11 @@ export class ChatComponent extends LitElement {
         }
       } else {
         const chatResponse = response as AIChatCompletion;
-        this.messages = [...this.messages, chatResponse.message];
+        const message = {
+          context: chatResponse.context,
+          ...chatResponse.message,
+        };
+        this.messages = [...this.messages, message];
         this.scrollToLastMessage();
       }
 
