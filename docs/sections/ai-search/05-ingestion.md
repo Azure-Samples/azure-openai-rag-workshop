@@ -76,9 +76,9 @@ Once this process is executed, a new index will be available in your Azure AI Se
 
 ### Test the vector database
 
-In the [Azure Portal](https://portal.azure.com/), you can now find again the service named `gptkb-<your_random_name>`, which will have a new index named `kbindex`.
+In the [Azure Portal](https://portal.azure.com/), you can now find again the service named `gptkb-<your_random_name>`, which will have a new index named `vectorsearch`.
 
-In the **Search management** section on the left, select the **Indexes** tab. You should see the `kbindex` index in the list.
+In the **Search management** section on the left, select the **Indexes** tab. You should see the `vectorsearch` index in the list.
 
 ![Screenshot of the Azure AI Search indexes](./assets/azure-ai-search-indexes.png)
 
