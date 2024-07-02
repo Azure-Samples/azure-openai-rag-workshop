@@ -199,6 +199,8 @@ declare module 'fastify' {
     volumes:
       - .qdrant:/qdrant/storage:z
 " > docker-compose.yml
+
+  echo "Running npm install..."
   npm install
 elif [ "$template_name" == "aisearch" ]; then
   echo "Preparing project template for Azure AI Search..."
@@ -249,6 +251,7 @@ declare module 'fastify' {
 }
 " > src/backend/src/plugins/chat.ts
 
+  echo "Running npm install..."
   npm install
 else
   echo "Invalid template name. Please use 'aisearch' or 'qdrant' as the template name."
