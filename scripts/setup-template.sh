@@ -129,7 +129,7 @@ if [ "$template_name" == "qdrant" ]; then
   echo -e "import fp from 'fastify-plugin';
 import { type BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { type VectorStore } from '@langchain/core/vectorstores';
-import { AIChatMessage, AIChatCompletionDelta, AIChatCompletion } from '@microsoft/ai-chat-protocol';
+import { type AIChatMessage, type AIChatCompletionDelta, type AIChatCompletion } from '@microsoft/ai-chat-protocol';
 import { MessageBuilder } from '../lib/message-builder.js';
 import { type AppConfig } from './config.js';
 
@@ -209,7 +209,7 @@ elif [ "$template_name" == "aisearch" ]; then
   echo -e "import fp from 'fastify-plugin';
 import { type BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { type VectorStore } from '@langchain/core/vectorstores';
-import { AIChatMessage, AIChatCompletionDelta, AIChatCompletion } from '@microsoft/ai-chat-protocol';
+import { type AIChatMessage, type AIChatCompletionDelta, type AIChatCompletion } from '@microsoft/ai-chat-protocol';
 import { MessageBuilder } from '../lib/message-builder.js';
 import { type AppConfig } from './config.js';
 
