@@ -220,7 +220,7 @@ const systemMessage = SYSTEM_MESSAGE_PROMPT;
 const userMessage = `${messages[messages.length - 1].content}\n\nSources:\n${content}`;
 
 // Create the messages prompt
-const messageBuilder = new MessageBuilder(systemMessage, this.chatGptModel);
+const messageBuilder = new MessageBuilder(systemMessage, this.config.azureOpenAiApiModelName);
 messageBuilder.appendMessage('user', userMessage);
 ```
 
