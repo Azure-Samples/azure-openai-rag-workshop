@@ -108,7 +108,8 @@ export async function* getChunksFromResponse<T>(response: Response, intervalMs: 
 " > src/frontend/src/api.ts
 
 rm -rf src/backend/Dockerfile
-echo -e "import { type FastifyReply, type FastifyPluginAsync } from 'fastify';
+echo -e "import { Readable } from 'node:stream';
+import { type FastifyPluginAsync } from 'fastify';
 
 const root: FastifyPluginAsync = async (fastify, options): Promise<void> => {
   fastify.get('/', async function (request, reply) {
