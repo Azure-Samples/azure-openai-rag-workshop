@@ -38,9 +38,6 @@
     "embeddingsModelVersion": {
       "value": "${AZURE_OPENAI_API_EMBEDDINGS_MODEL_VERSION=2}"
     },
-    "indexName": {
-      "value": "${INDEX_NAME=kbindex}"
-    },
     "useQdrant": {
       "value": "${USE_QDRANT=false}"
     },
