@@ -52,7 +52,7 @@ qdrant-1  | | (_| | (_| | | | (_| | | | | |_
 qdrant-1  |  \__, |\__,_|_|  \__,_|_| |_|\__| 
 qdrant-1  |     |_|                           
 qdrant-1  | 
-qdrant-1  | Version: 1.9.7, build: 5c29cad7
+qdrant-1  | Version: 1.8.2, build: 5c29cad7
 qdrant-1  | Access web UI at http://localhost:6333/dashboard
 qdrant-1  | 
 qdrant-1  | 2024-07-02T08:12:18.712387Z  INFO storage::content_manager::consensus::persistent: Initializing new raft state at ./storage/raft_state.json
