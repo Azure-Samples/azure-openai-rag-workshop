@@ -184,6 +184,8 @@ export default fp(
 
     const model = new AzureChatOpenAI({
       azureADTokenProvider,
+      // Only needed because we make the OpenAI endpoint configurable
+      azureOpenAIBasePath: `${config.azureOpenAiApiEndpoint}/openai/deployments`,
       // Controls randomness. 0 = deterministic, 1 = maximum randomness
       temperature: 0.7,
       // Maximum number of tokens to generate
@@ -191,7 +193,11 @@ export default fp(
       // Number of completions to generate
       n: 1,
     });
-    const embeddings = new AzureOpenAIEmbeddings({ azureADTokenProvider });
+    const embeddings = new AzureOpenAIEmbeddings({
+      azureADTokenProvider,
+      // Only needed because we make the OpenAI endpoint configurable
+      azureOpenAIBasePath: `${config.azureOpenAiApiEndpoint}/openai/deployments`,
+    });
     const vectorStore = new QdrantVectorStore(embeddings, {
       client: new QdrantClient({
         url: config.qdrantUrl,

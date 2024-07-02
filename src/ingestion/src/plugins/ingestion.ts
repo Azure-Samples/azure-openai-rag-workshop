@@ -78,12 +78,26 @@ export default fp(
     const credentials = new DefaultAzureCredential();
 
     // Set up OpenAI token provider
-    const azureADTokenProvider = getBearerTokenProvider(credentials, 'https://cognitiveservices.azure.com/.default');
+    const getToken = getBearerTokenProvider(credentials, 'https://cognitiveservices.azure.com/.default');
+    const azureADTokenProvider = async () => {
+      try {
+        return await getToken();
+      } catch {
+        // Azure identity is not supported in local container environment,
+        // so we use a dummy key (only works when using an OpenAI proxy).
+        fastify.log.warn('Failed to get Azure OpenAI token, using dummy key');
+        return '__dummy';
+      }
+    };
 
     // Set up LangChain clients
     fastify.log.info(`Using OpenAI at ${config.azureOpenAiApiEndpoint}`);
 
-    const embeddings = new AzureOpenAIEmbeddings({ azureADTokenProvider });
+    const embeddings = new AzureOpenAIEmbeddings({
+      azureADTokenProvider,
+      // Only needed because we make the OpenAI endpoint configurable
+      azureOpenAIBasePath: `${config.azureOpenAiApiEndpoint}/openai/deployments`,
+    });
     let vectorStore: VectorStore;
 
     if (config.qdrantUrl === unusedService) {
