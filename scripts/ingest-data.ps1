@@ -18,10 +18,6 @@ if ([string]::IsNullOrEmpty($env:INGESTION_API_URI)) {
   [Environment]::SetEnvironmentVariable('INGESTION_API_URI', 'http://localhost:3001')
 }
 
-if ([string]::IsNullOrEmpty($env:INDEX_NAME)) {
-  [Environment]::SetEnvironmentVariable('INDEX_NAME', 'kbindex')
-}
-
 Write-Host 'Uploading PDF files to the ingestion API'
 Invoke-RestMethod -Uri "$env:INGESTION_API_URI/documents" -Method Post -InFile "./data/privacy-policy.pdf"
 Invoke-RestMethod -Uri "$env:INGESTION_API_URI/documents" -Method Post -InFile "./data/support.pdf"
