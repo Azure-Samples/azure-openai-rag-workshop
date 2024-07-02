@@ -142,7 +142,7 @@ export class ChatService {
     private vectorStore: VectorStore,
   ) {}
 
-  async run(messages: Message[]): Promise<ChatResponse> {
+  async run(messages: AIChatMessage[]): Promise<AIChatCompletion> {
 
     // TODO: implement Retrieval Augmented Generation (RAG) here
 
@@ -222,7 +222,7 @@ export class ChatService {
     private vectorStore: VectorStore,
   ) {}
 
-  async run(messages: Message[]): Promise<ChatResponse> {
+  async run(messages: AIChatMessage[]): Promise<AIChatCompletion> {
 
     // TODO: implement Retrieval Augmented Generation (RAG) here
 
