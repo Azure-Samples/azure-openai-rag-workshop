@@ -1,22 +1,14 @@
 # Tasks
-- [x] rework ingestion to use langchainjs
-- [x] use new openai sdk + azure identity
-- [x] ingestion: delete existing data
-- [x] use updated chat protocol
-- [ ] update docs
-  * [ ] ingestion CLI screenshots
-  * [x] qdrant path
-  * [x] aisearch path
+- [x] test with proxy
+- [ ] test Qdrant no proxy
+- [ ] test AISearch no proxy
+  * [ ] update index search result screenshot
 
 - [ ] Ollama support
 
-- [ ] test Qdrant
-- [ ] test AISearch
-- [ ] test with proxy
-
 - [ ] update trainer infra
   * [ ] vars
-  * [ ] GPT-4, make version identical
+  * [x] GPT-4, make version identical
 
 ## For later
 - [ ] Add troubleshooting for npm run dev backend if it fails (restart) timeout (node-qdrant)
@@ -26,9 +18,7 @@
 - [ ] add npm i troubleshooting section (npm install) / codespaces
 
 - [ ] improve frontend client
-  * [ ] better catch errors when API is not available
-  * [ ] fix fonts
-  * [ ] clean up code
+  * [ ] add retry button in chat
 
 ## Trainer infra
 - [ ] add event key to restrict access
