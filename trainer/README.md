@@ -38,5 +38,5 @@ https://aka.ms/ws/openai-rag?vars=proxy:<proxy_url>
 Share this URL with your attendees, and make them run this command **before** their provision their own infrastructure (if they already did it, they'll just have to provision again):
 
 ```bash
-azd env set AZURE_OPENAI_API_ENDPOINT <proxy_url>
+azd env set AZURE_OPENAI_URL <proxy_url>
 ```
