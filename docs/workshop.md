@@ -349,7 +349,7 @@ azd env new openai-rag-workshop
 As we have deployed an Open AI service for you, run this command to set the OpenAI URL we want to use:
 
 ```
-azd env set AZURE_OPENAI_URL $$proxy$$
+azd env set AZURE_OPENAI_API_ENDPOINT $$proxy$$
 ```
 
 </div>
