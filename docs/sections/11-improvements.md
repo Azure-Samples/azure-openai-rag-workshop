@@ -133,7 +133,7 @@ fastify.post('/chat/stream', async function (request, reply) {
   const { messages } = request.body as any;
   try {
     const chunks = createNdJsonStream(await fastify.chat.runWithStreaming(messages));
-    reply.type('application/x-ndjson').send(Readable.from(chunks));
+    return reply.type('application/x-ndjson').send(Readable.from(chunks));
   } catch (_error: unknown) {
     const error = _error as Error;
     fastify.log.error(error);
@@ -144,7 +144,7 @@ fastify.post('/chat/stream', async function (request, reply) {
 
 This time we call the `runWithStreaming()` method instead of `run()`. One key difference here is that we don't return the response directly, but we use a new helper function `createNdJsonStream()` to create the response chunks, then send them to the client as a stream using the `Readable.from()` method.
 
-Let's add this new function to our file:
+Let's add this new function at the bottom of your file:
 
 ```ts
 // Transform the response chunks into a JSON stream

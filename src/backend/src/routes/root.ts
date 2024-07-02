@@ -21,7 +21,7 @@ const root: FastifyPluginAsync = async (fastify, _options): Promise<void> => {
     const { messages } = request.body as any;
     try {
       const chunks = createNdJsonStream(await fastify.chat.runWithStreaming(messages));
-      reply.type('application/x-ndjson').send(Readable.from(chunks));
+      return reply.type('application/x-ndjson').send(Readable.from(chunks));
     } catch (_error: unknown) {
       const error = _error as Error;
       fastify.log.error(error);
