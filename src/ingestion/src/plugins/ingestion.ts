@@ -81,7 +81,7 @@ export default fp(
     const azureADTokenProvider = getBearerTokenProvider(credentials, 'https://cognitiveservices.azure.com/.default');
 
     // Set up LangChain clients
-    fastify.log.info(`Using OpenAI at ${config.azureOpenAiEndpoint}`);
+    fastify.log.info(`Using OpenAI at ${config.azureOpenAiApiEndpoint}`);
 
     const embeddings = new AzureOpenAIEmbeddings({ azureADTokenProvider });
     let vectorStore: VectorStore;

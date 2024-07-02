@@ -177,7 +177,7 @@ declare module 'fastify' {
   #   build:
   #     dockerfile: ./src/backend/Dockerfile
   #   environment:
-  #     - AZURE_OPENAI_ENDPOINT=\${AZURE_OPENAI_URL}
+  #     - AZURE_OPENAI_API_ENDPOINT=\${AZURE_OPENAI_URL}
   #     - QDRANT_URL=http://qdrant:6333
   #     - LOCAL=true
   #   ports:
@@ -187,7 +187,7 @@ declare module 'fastify' {
     build:
       dockerfile: ./src/ingestion/Dockerfile
     environment:
-      - AZURE_OPENAI_ENDPOINT=\${AZURE_OPENAI_URL}
+      - AZURE_OPENAI_API_ENDPOINT=\${AZURE_OPENAI_URL}
       - QDRANT_URL=http://qdrant:6333
     ports:
       - 3001:3001

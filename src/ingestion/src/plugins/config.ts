@@ -5,9 +5,9 @@ import fp from 'fastify-plugin';
 
 export interface AppConfig {
   azureAiSearchEndpoint: string;
-  azureOpenAiEndpoint: string;
-  azureOpenAiDeploymentName: string;
-  azureOpenAiEmbeddingDeploymentName: string;
+  azureOpenAiApiEndpoint: string;
+  azureOpenAiApiDeploymentName: string;
+  azureOpenAiApiEmbeddingDeploymentName: string;
   qdrantUrl: string;
 }
 
@@ -24,9 +24,9 @@ export default fp(
 
     const config: AppConfig = {
       azureAiSearchEndpoint: process.env.AZURE_AISEARCH_ENDPOINT || '',
-      azureOpenAiEndpoint: process.env.AZURE_OPENAI_API_ENDPOINT || '',
-      azureOpenAiDeploymentName: process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME || 'gpt-4',
-      azureOpenAiEmbeddingDeploymentName:
+      azureOpenAiApiEndpoint: process.env.AZURE_OPENAI_API_ENDPOINT || '',
+      azureOpenAiApiDeploymentName: process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME || 'gpt-4',
+      azureOpenAiApiEmbeddingDeploymentName:
         process.env.AZURE_OPENAI_API_EMBEDDINGS_DEPLOYMENT_NAME || 'text-embedding-ada-002',
       qdrantUrl: process.env.QDRANT_URL || '',
     };
