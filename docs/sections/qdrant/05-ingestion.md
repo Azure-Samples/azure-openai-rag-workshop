@@ -97,7 +97,7 @@ Open the Qdrant dashboard again by opening the following URL in your browser: [h
 
 <div class="important" data-title="important">
 
-> In Codespaces, you need to select the **Ports** tab in the bottom panel, right click on the URL in the **Forwarded Address** column next to the `6333` port, and select **Open in browser**.
+> In Codespaces, you need to select the **Ports** tab in the bottom panel, right click on the URL in the **Forwarded Address** column next to the `6333` port, and select **Open in browser**. Once the web page is loaded, add `/dashboard` at the end of the URL.
 
 </div>
 
