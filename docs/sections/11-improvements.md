@@ -73,7 +73,7 @@ To enable streaming, we first have to implement it in the backend. Open the file
 First, make a copy of your method `run()` and give it the name `runWithStreaming()`. Update the method signature with this one:
 
 ```ts
-async *runWithStreaming(messages: Message[]): AsyncGenerator<AIChatCompletionDelta, void> {
+async *runWithStreaming(messages: AIChatMessage[]): AsyncGenerator<AIChatCompletionDelta, void> {
 ```
 
 You can notice a few changes here:
