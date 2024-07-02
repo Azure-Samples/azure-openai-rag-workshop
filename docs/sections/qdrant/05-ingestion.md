@@ -101,7 +101,7 @@ Open the Qdrant dashboard again by opening the following URL in your browser: [h
 
 </div>
 
-You should see the collection named `kbindex` in the list:
+You should see the collection named `documents` in the list:
 
 ![Screenshot of the Qdrant dashboard](./assets/qdrant-dashboard.png)
 
