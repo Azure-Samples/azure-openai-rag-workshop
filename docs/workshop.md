@@ -14,7 +14,7 @@ banner_url: assets/banner.jpg
 duration_minutes: 120
 audience: students, devs
 level: intermediate
-tags: chatgpt, openai, langchain, retrieval-augmented-generation, azure, containers, docker, static web apps, javascript, typescript, node.js, azure ai search, fastify, azure container apps
+tags: chatgpt, openai, langchain, retrieval-augmented-generation, azure, containers, docker, static web apps, javascript, typescript, node.js, azure ai search, fastify, azure container apps, langchain.js
 published: false
 wt_id: javascript-0000-cxa
 sections_title:
@@ -30,12 +30,14 @@ In this workshop, we'll explore the fundamentals of custom ChatGPT experiences b
 - Create a knowledge base using a vector database.
 - Ingest documents in a vector database.
 - Create a Web API with [Fastify](https://www.fastify.io).
-- Use [OpenAI](https://openai.com) models and [LangChain](https://js.langchain.com/docs/) to generate answers based on a prompt.
+- Use [OpenAI](https://openai.com) models and [LangChain.js](https://js.langchain.com/docs/) to generate answers based on a prompt.
 - Query a vector database and augment a prompt to generate responses.
 - Connect your Web API to a ChatGPT-like website.
 - Deploy your application on Azure.
 
 ## Prerequisites
+
+<div data-hidden="$$proxy$$">
 
 | | |
 |----------------------|------------------------------------------------------|
@@ -45,11 +47,23 @@ In this workshop, we'll explore the fundamentals of custom ChatGPT experiences b
 | A Web browser        | [Get Microsoft Edge](https://www.microsoft.com/edge) |
 | JavaScript knowledge | [JavaScript tutorial on MDN documentation](https://developer.mozilla.org/docs/Web/JavaScript)<br>[JavaScript for Beginners on YouTube](https://www.youtube.com/playlist?list=PLlrxD0HtieHhW0NCG7M536uHGOtJ95Ut2) |
 
+</div>
+
+<div data-visible="$$proxy$$">
+
+| | |
+|----------------------|------------------------------------------------------|
+| GitHub account       | [Get a free GitHub account](https://github.com/join) |
+| A Web browser        | [Get Microsoft Edge](https://www.microsoft.com/edge) |
+| JavaScript knowledge | [JavaScript tutorial on MDN documentation](https://developer.mozilla.org/docs/Web/JavaScript)<br>[JavaScript for Beginners on YouTube](https://www.youtube.com/playlist?list=PLlrxD0HtieHhW0NCG7M536uHGOtJ95Ut2) |
+
+</div>
+
 We'll use [GitHub Codespaces](https://github.com/features/codespaces) to have an instant dev environment already prepared for this workshop.
 
 If you prefer to work locally, we'll also provide instructions to setup a local dev environment using either VS Code with a [dev container](https://aka.ms/vscode/ext/devcontainer) or a manual install of the needed tools.
 
-<div class="info" data-title="note">
+<div class="info" data-title="note" data-hidden="$$proxy$$">
 
 > Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner). Your account also needs `Microsoft.Resources/deployments/write` permissions at a subscription level to allow deployment of Azure resources.
 >
@@ -78,15 +92,17 @@ Below is the architecture of the application we're going to build:
 
 ![Application architecture](./assets/architecture.png)
 
-Our application consists of four main components:
+Our application consists of five main components:
 
-1. **Vector Database and Ingestion Service**: The vector database stores mathematical representations of our documents, known as _embeddings_. These are used by the Chat API to find documents relevant to a user's question. An ingestion service is required to feed data from your documents into this vector database.
+1. **Vector Database**: The vector database stores mathematical representations of our documents, known as _embeddings_. These are used by the Chat API to find documents relevant to a user's question.
 
-2. **Chat API**: This API enables a client application to send chat messages and receive answers generated from the documents in the vector database.
+2. **Ingestion Service**: The ingestion service feeds data from your documents into this vector database.
 
-3. **Chat Website**: This site offers a ChatGPT-like interface for users to ask questions and receive answers about the ingested documents.
+3. **Chat API**: This API enables a client application to send chat messages and receive answers generated from the documents in the vector database.
 
-4. **OpenAI Model Deployment**: We will use the `gpt-3.5-turbo` model, hosted on Azure, for this workshop. The code can also be adapted to work with OpenAI's APIs with minimal changes.
+4. **Chat Website**: This site offers a ChatGPT-like interface for users to ask questions and receive answers about the ingested documents.
+
+5. **OpenAI Model Deployment**: We will use the `gpt-3.5-turbo` model, hosted on Azure, for this workshop. The code can also be adapted to work with OpenAI's APIs or Ollame with minimal changes.
 
 ### What is Retrievial-Augmented Generation?
 
@@ -94,7 +110,7 @@ Retrieval-Augmented generation (RAG) is a powerful technique that combines the s
 
 At its core, RAG involves two main components:
 
-- **Retriever**: Think "_like a search engine_", finding relevant information from a database. The retriever usually searches in a vector database. It could also - for some use cases - search on application dabases, APIs and other sources of information. In this workshop, we will implement this login in the _Chat API_.
+- **Retriever**: Think "_like a search engine_", finding relevant information from a database. The retriever usually searches in a vector database. It could also - for some use cases - search on application dabases, APIs and other sources of information. In this workshop, we will implement this logic in the _Chat API_.
 
 - **Generator**: Acts like a writer, taking the prompt and information retrieved to craft a response. In this workshop, OpenAI `gpt-3.5-turbo` will be our generator.
 
@@ -186,7 +202,6 @@ If you want to work locally without using a dev container, you need to clone the
 | Node.js v20+  | [Get Node.js](https://nodejs.org) |
 | GitHub CLI    | [Get GitHub CLI](https://cli.github.com/manual/installation) |
 | Azure Developer CLI | [Get Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd) |
-| GitHub CLI    | [Get GitHub CLI](https://cli.github.com/manual/installation) |
 | Bash v3+      | [Get bash](https://www.gnu.org/software/bash/) (Windows users can use **Git bash** that comes with Git) |
 | A code editor | [Get VS Code](https://aka.ms/get-vscode) |
 
@@ -230,6 +245,7 @@ src/            # Source code for the application's services
 |- frontend/    # The Chat website
 |- ingestion/   # Service for document ingestion
 package.json    # Configuration for NPM workspace
+.env            # File that you created for environment variables
 ```
 
 We're using Node.js for our APIs and website, and have set up an [NPM workspace](https://docs.npmjs.com/cli/using-npm/workspaces) to manage dependencies across all projects from a single place. Running `npm install` at the root installs dependencies for all projects, simplifying monorepo management.
@@ -244,7 +260,7 @@ We generated the base code of our differents services with the respective CLI or
 
 ### The Chat API specification
 
-Creating a chat-like experience requires two main components: a user interface and a service API. The [ChatBootAI OpenAPI specification](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) standardizes their interactions. This standardization allows for the development of different client applications (like mobile apps) that can interact seamlessly with chat services written in various programming languages.
+Creating a chat-like experience requires two main components: a user interface and a service API. The [AI Chat Protocol API specification](https://aka.ms/chatprotocol) standardizes their interactions. This standardization allows for the development of different client applications (like mobile apps) that can interact seamlessly with chat services written in various programming languages.
 
 #### The Chat request
 
@@ -258,12 +274,9 @@ A chat request is sent in JSON format, and must contain at least the user's mess
       "role": "user"
     }
   ],
-  "stream": false,
-  "context": { ... },
-  "session_state": null
+  "context": { ... }
 }
 ```
-
 
 #### The chat response
 
@@ -271,20 +284,15 @@ The chat service responds with a JSON object representing the generated response
 
 ```json
 {
-  "choices": [
-    {
-      "index": 0,
-      "message": {
-        "content": "There is no information available about Scuba diving in the provided sources.",
-        "role": "assistant",
-        "context": { ... }
-      }
-    }
-  ],
+  "message": {
+    "content": "There is no information available about Scuba diving in the provided sources.",
+    "role": "assistant",
+  },
+  "context": { ... }
 }
 ```
 
-You can learn more about the [ChatBootAI OpenAPI specification here](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) and on [the GitHub repo](https://github.com/ChatBootAI/chatbootai-openapi).
+You can learn more about the [AI Chat Protocol API specification here](https://aka.ms/chatprotocol).
 
 <div class="info" data-title="note">
 
@@ -348,7 +356,7 @@ azd env new openai-rag-workshop
 
 As we have deployed an Open AI service for you, run this command to set the OpenAI URL we want to use:
 
-```
+```sh
 azd env set AZURE_OPENAI_API_ENDPOINT $$proxy$$
 ```
 
@@ -382,6 +390,10 @@ perl -pi -e 's/\"//g' .env
 This will create a `.env` file at the root of your repository, containing the environment variables needed to connect to your Azure services.
 
 As this file may sometimes contains application secrets, it's a best practice to keep it safe and not commit it to your repository. We already added it to the `.gitignore` file, so you don't have to worry about it.
+
+At this stage, if you go to the Azure Portal at https://portal.azure.com you should see something similar to this:
+
+![Resource deployed on Azure](./assets/azure-portal-azd.png)
 
 ### Deploying the ingestion service
 
@@ -456,7 +468,6 @@ When we ran `azd provision`, it created a resource group named `rg-openai-rag-wo
 
 Infrastructure as Code (IaC) is a practice that enables the management of infrastructure using configuration files. It ensures that our infrastructure deployment is repeatable and consistent, much like our application code. This code is committed to your project repository so you can use it to create, update, and delete your infrastructure as part of your CI/CD pipeline or locally.
 
-
 There are many existing tools to manage your infrastructure as code, such as Terraform, Pulumi, or [Azure Resource Manager (ARM) templates](https://learn.microsoft.com/azure/azure-resource-manager/templates/overview). ARM templates are JSON files that allows you to define and configure Azure resources.
 
 For this workshop, we're using [Bicep](https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview?tabs=bicep), a language that simplifies the authoring of ARM templates.
@@ -499,7 +510,6 @@ Bicep streamlines the template creation process, and you can get started with ex
 
 ---
 
-
 ## The vector database
 
 We'll start by creating a vector database. Vectors are arrays of numbers that represent the features or characteristics of the data. For example, an image can be converted into a vector of pixels, or a word can be converted into a vector of semantic meaning. A vector database can perform fast and accurate searches based on the similarity or distance between the vectors, rather than exact matches. This enables applications such as image recognition, natural language processing, recommendation systems, and more.
@@ -516,12 +526,17 @@ This will be used in the first component (the *Retriever*) of the Retrieval Augm
 
 There are many available vector databases, and a good list can be found in the supported Vector stores list from the LangChain project: [https://js.langchain.com/docs/integrations/vectorstores/](https://js.langchain.com/docs/integrations/vectorstores/).
 
-Some of the most popular ones are:
+Some of the popular ones are:
 
 - [MemoryVectorStore](https://js.langchain.com/docs/integrations/vectorstores/memory) which is an in-memory vector store, which is great for testing and development, but not for production.
 - [Qdrant](https://qdrant.tech/)
 - [pgvector](https://github.com/pgvector/pgvector)
 - [Redis](https://redis.io)
+
+On Azure, you can run the vector databases listed above, or use specific Azure services that also provide this functionality, such as:
+
+- [Azure AI Search](https://azure.microsoft.com/services/search/)
+- [Azure Cosmos DB for MongoDB vCore](https://learn.microsoft.com/azure/cosmos-db/mongodb/vcore/)
 
 ### Introducing Azure AI Search
 
@@ -555,7 +570,7 @@ The code of this is already written for you, but let's have a look at how it wor
 
 ### The ingestion process
 
-The `src/ingestion/src/lib/ingestor.ts` file contains the code that is used to ingest the data in the vector database. This runs inside a Node.js application, and deployed to Azure Container Apps.
+The file `src/ingestion/src/plugins/ingestion.ts` contains the code that is used to ingest the data in the vector database. This runs inside a Node.js application, and deployed to Azure Container Apps.
 
 PDFs files, which are stored in the `data` folder, will be sent to this Node.js application using the command line. The files provided here are for demo purpose only, and suggested prompts we'll use later in the workshop are based on those files.
 
@@ -567,44 +582,39 @@ PDFs files, which are stored in the `data` folder, will be sent to this Node.js 
 
 #### Reading the PDF files content
 
-The content the PDFs files will be used as part of the *Retriever* component of the RAG architecture, to generate answers to your questions using the GPT-3.5 model.
+The content the PDFs files will be used as part of the *Retriever* component of the RAG architecture, to generate answers to your questions using the GPT model.
 
-Text from the PDF files is extracted in the `src/ingestion/src/lib/document-processor.ts` file, using the [pdf.js library](https://mozilla.github.io/pdf.js/). You can have a look at code of the `extractTextFromPdf()` function if you're curious about how it works.
-
-#### Computing the embeddings
-
-After the text is extracted, it's then transformed into embeddings using the [OpenAI JavaScript library](https://github.com/openai/openai-node):
+Text from the PDF files is extracted in the `src/ingestion/src/plugins/ingestion.ts` file, using the [pdf.js library](https://mozilla.github.io/pdf.js/) through LangChain.js [PDF file loader](https://js.langchain.com/docs/integrations/document_loaders/file_loaders/pdf/). Once the text is extracted, we split it into smaller chunks to improve the search results.
 
 ```ts
-async createEmbedding(text: string): Promise<number[]> {
-  const embeddingsClient = await this.openai.getEmbeddings();
-  const result = await embeddingsClient.create({ input: text, model: this.embeddingModelName });
-  return result.data[0].embedding;
-}
+// Extract text from the PDF
+const blob = new Blob([file.data]);
+const loader = new PDFLoader(blob, {
+  splitPages: false,
+});
+const rawDocuments = await loader.load();
+rawDocuments[0].metadata.source = file.filename;
+
+// Split the text into smaller chunks
+const splitter = new RecursiveCharacterTextSplitter({
+  chunkSize: 1500,
+  chunkOverlap: 100,
+});
+const documents = await splitter.splitDocuments(rawDocuments);
 ```
 
 #### Adding the documents to the vector database
 
-The embeddings along with the original texts are then added to the vector database using the [Azure AI Search JavaScript client library](https://www.npmjs.com/package/@azure/search-documents). This process is done in batches, to improve performance and limit the number of requests:
+LangChain.js vector store integrations then takes care of the heavy lifting for you. For every document:
+1. The embeddings are computed.
+2. A new document is created combining the original text and the embeddings (vector).
+3. The document is added to the vector database, using the [Azure AI Search JavaScript client library](https://www.npmjs.com/package/@azure/search-documents).
+
+This process is done in batches, to improve performance and limit the number of requests.
 
 ```ts
-const searchClient = this.azure.searchIndex.getSearchClient(indexName);
-
-const batchSize = INDEXING_BATCH_SIZE;
-let batch: Section[] = [];
-
-for (let index = 0; index < sections.length; index++) {
-  batch.push(sections[index]);
-
-  if (batch.length === batchSize || index === sections.length - 1) {
-    // Send the batch of documents to the vector database
-    const { results } = await searchClient.uploadDocuments(batch);
-    const succeeded = results.filter((r) => r.succeeded).length;
-    const indexed = batch.length;
-    this.logger.debug(`Indexed ${indexed} sections, ${succeeded} succeeded`);
-    batch = [];
-  }
-}
+// Generate embeddings and save in database
+await this.vectorStore.addDocuments(documents);
 ```
 
 ### Running the ingestion process
@@ -623,21 +633,22 @@ Once the ingestion is deployed, you can run the ingestion process by running the
 ./scripts/ingest-data.sh
 ```
 
-![Screenshot of the ingestion CLI](./assets/ingestion-cli.png)
+![Screenshot of the ingestion result](./assets/ingestion-result.png)
 
 Once this process is executed, a new index will be available in your Azure AI Search service, where you can see the documents that were ingested.
 
 ### Test the vector database
 
-In the [Azure Portal](https://portal.azure.com/), you can now find again the service named `gptkb-<your_random_name>`, which will have a new index named `kbindex`.
+In the [Azure Portal](https://portal.azure.com/), you can now find again the service named `gptkb-<your_random_name>`, which will have a new index named `vectorsearch`.
 
-In the **Search management** section on the left, select the **Indexes** tab. You should see the `kbindex` index in the list.
+In the **Search management** section on the left, select the **Indexes** tab. You should see the `vectorsearch` index in the list.
 
 ![Screenshot of the Azure AI Search indexes](./assets/azure-ai-search-indexes.png)
 
 You can select that index and browse it. For example, in the **Search explorer** tab, if you ingested the original PDF files that were about the *Contoso Real Estate* company, you can search for `rentals` and see the results:
 
 ![Screenshot of the search results in the index](./assets/azure-ai-search-results.png)
+
 
 ---
 
@@ -664,17 +675,7 @@ export default fp(
 
     // TODO: initialize clients here
 
-    const chatService = new ChatService(
-      /*
-      searchClient,
-      chatClient,
-      embeddingsClient,
-      config.azureOpenAiChatGptModel,
-      config.azureOpenAiEmbeddingModel,
-      config.kbFieldsSourcePage,
-      config.kbFieldsContent,
-      */
-    );
+    const chatService = new ChatService(/* config, model, vectorStore */);
 
     fastify.decorate('chat', chatService);
   },
@@ -703,158 +704,124 @@ Before we can create the clients, we need to retrieve the credentials to access 
 Add this import at the top of the file:
 
 ```ts
-import { DefaultAzureCredential } from '@azure/identity';
+import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 ```
 
-Then add this code to retrieve the credentials below the `const config = fastify.config;` line:
+Then add this code below the `const config = fastify.config;` line:
 
 ```ts
-// Use the current user identity to authenticate with Azure OpenAI and AI Search.
-// (no secrets needed, just use 'az login' locally, and managed identity when deployed on Azure).
-const credential = new DefaultAzureCredential();
-```
+// Use the current user identity to authenticate.
+// No secrets needed, it uses `az login` or `azd auth login` locally,
+// and managed identity when deployed on Azure.
+const credentials = new DefaultAzureCredential();
 
-This will use the current user identity to authenticate with Azure OpenAI and AI Search. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
-
-#### Azure AI Search client
-
-Next we'll create the Azure AI Search client. Add this import at the top of the file:
-
-```ts
-import { SearchClient } from '@azure/search-documents';
-```
-
-Then add this code below the credentials retrieval:
-
-```ts
-// Set up Azure AI Search client
-const searchClient = new SearchClient<any>(
-  `https://${config.azureSearchService}.search.windows.net`,
-  config.indexName,
-  credential,
-);
-```
-
-We need to provide the URL of our Azure AI Search service, the name of the index we want to use, and the credentials we retrieved earlier.
-
-#### LangChain clients
-
-Finally, it's time to create the LangChain clients. Add this code below the Azure AI Search client initialization:
-
-```ts
-// Show the OpenAI URL used in the logs
-fastify.log.info(`Using OpenAI at ${config.azureOpenAiUrl}`);
-
-// Get the OpenAI token from the credentials
-const openAiToken = await credential.getToken('https://cognitiveservices.azure.com/.default');
-
-// Set common options for the clients
-const commonOptions = {
-  openAIApiKey: openAiToken.token,
-  azureOpenAIApiVersion: '2024-02-01',
-  azureOpenAIApiKey: openAiToken.token,
-  azureOpenAIBasePath: `${config.azureOpenAiUrl}/openai/deployments`,
+// Set up OpenAI token provider
+const getToken = getBearerTokenProvider(credentials, 'https://cognitiveservices.azure.com/.default');
+const azureADTokenProvider = async () => {
+  try {
+    return await getToken();
+  } catch {
+    // Azure identity is not supported in local container environment,
+    // so we use a dummy key (only works when using an OpenAI proxy).
+    fastify.log.warn('Failed to get Azure OpenAI token, using dummy key');
+    return '__dummy';
+  }
 };
-
-// Create a getter for the OpenAI chat client
-const chatClient = (options?: Partial<OpenAIChatInput>) =>
-  new ChatOpenAI({
-    ...options,
-    ...commonOptions,
-    azureOpenAIApiDeploymentName: config.azureOpenAiChatGptDeployment,
-  });
-
-// Create a getter for the OpenAI embeddings client
-const embeddingsClient = (options?: Partial<OpenAIEmbeddingsParams>) =>
-  new OpenAIEmbeddings({
-    ...options,
-    ...commonOptions,
-    azureOpenAIApiDeploymentName: config.azureOpenAiEmbeddingDeployment,
-  });
 ```
 
-We first have to set up a few common options for the clients. Then instead of directly creating the clients, we create getter functions that will return the clients. We do it this way so we can pass additional options to change the behavior of the clients when needed.
+This will use the current user identity to authenticate with Azure OpenAI. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
+
+<div class="info" data-title="note">
+
+> When run locally inside a container, the Azure Identity SDK will not be able to retrieve the current user identity from the Azure Developer CLI. For simplicity, we'll use a dummy key in this case but it only works if you use the OpenAI proxy we provide if you attend this workshop in-person.
+> If need to properly authenticate locally, you should either run the app outside of a container with `npm run dev`, or create a [Service Principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal), assign it the needed permissions and pass the environment variables to the container.
+
+</div>
+
+#### LangChain.js clients
+
+Next we'll create the LangChain.js clients. First add these imports at the top of the file:
+
+```ts
+import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/openai';
+import { AzureAISearchVectorStore } from '@langchain/community/vectorstores/azure_aisearch';
+```
+
+Then add this code below the below the credentials retrieval:
+
+```ts
+// Set up LangChain.js clients
+fastify.log.info(`Using OpenAI at ${config.azureOpenAiApiEndpoint}`);
+
+const model = new AzureChatOpenAI({
+  azureADTokenProvider,
+  // Only needed because we make the OpenAI endpoint configurable
+  azureOpenAIBasePath: `${config.azureOpenAiApiEndpoint}/openai/deployments`,
+  // Controls randomness. 0 = deterministic, 1 = maximum randomness
+  temperature: 0.7,
+  // Maximum number of tokens to generate
+  maxTokens: 1024,
+  // Number of completions to generate
+  n: 1,
+});
+const embeddings = new AzureOpenAIEmbeddings({
+  azureADTokenProvider,
+  // Only needed because we make the OpenAI endpoint configurable
+  azureOpenAIBasePath: `${config.azureOpenAiApiEndpoint}/openai/deployments`,
+});
+const vectorStore = new AzureAISearchVectorStore(embeddings, { credentials });
+```
+
+Here we create the clients for the Azure OpenAI chat model and the Azure OpenAI embeddings model, using the `azureADTokenProvider` method we created earlier. We pass a few options to control the behavior of the chat model:
+- `temperature` controls the randomness of the model. A value of 0 will make the model deterministic, and a value of 1 will make it generate the most random answers.
+- `maxTokens` is the maximum number of tokens the model will generate. If you set it too low, the model will not be able to generate long answers. If you set it too high, the model may generate answers that are too long.
+- `n` is the number of answers the model will generate. In our case we only want one answer, so we set it to 1.
+
+For the vector database, we create a `AzureAISearchVectorStore` instance that will be used to interact with the AI Search service.
 
 ### Creating the ChatService
 
 Now that we have created all the clients, it's time to properly initialize the `ChatService` instance. Uncomment the parameters in the `ChatService` constructor call like this:
 
 ```ts
-const chatService = new ChatService(
-  searchClient,
-  chatClient,
-  embeddingsClient,
-  config.azureOpenAiChatGptModel,
-  config.azureOpenAiEmbeddingModel,
-  config.kbFieldsSourcePage,
-  config.kbFieldsContent,
-);
+const chatService = new ChatService(config, model, vectorStore);
 ```
 
-We feed the `ChatService` instance with the different clients we created, and the a few configuration options that we need:
-- The name of the GPT model to use (`gpt-35-turbo`)
-- The name of the embedding model to use (`text-embedding-ada-002`)
-- The name of the field in the Azure AI Search index that contains the page number of the document (`sourcepage`)
-- The name of the field in the Azure AI Search index that contains the content of the document (`content`)
+We feed the `ChatService` instance with the current configuration, the Azure OpenAI chat model client, and the Azure AI Search vector store client.
 
 #### Retrieving the documents
 
 It's time to start implementing the RAG pattern! The first step is to retrieve the documents from the vector database. In the `ChatService` class, there's a method named `run` that is currently empty with a `// TODO: implement Retrieval Augmented Generation (RAG) here`. This is where we'll implement the RAG pattern.
 
-Before retrieving the documents, we need to convert the question into a vector:
+Before retrieving the documents, we need to get the question:
 
 ```ts
 // Get the content of the last message (the question)
 const query = messages[messages.length - 1].content;
-
-// Compute an embedding for the query
-const embeddingsClient = this.embeddingsClient({ modelName: this.embeddingModel });
-const queryVector = await embeddingsClient.embedQuery(query);
 ```
 
-To compute the embedding, we first use the embeddings client we created earlier, and call the `embedQuery` method. This method will convert the query into a vector, using the embedding model we specified.
-
-Now that we have the query vector, we can call the Azure AI Search client to retrieve the documents:
+Next we'll retrieve the best 3 matching documents from the vector database. Note that LangChain.js automatically computes the embedding for the query before performing the search.
 
 ```ts
-// Performs a hybrid search (vectors + text)
-// For a vector search, replace the query by '*'
-const searchResults = await this.searchClient.search(query, {
-  top: 3,
-  vectorSearchOptions: {
-    queries: [
-      {
-        kind: 'vector',
-        vector: queryVector,
-        kNearestNeighborsCount: 50,
-        fields: ['embedding'],
-      },
-    ],
-  }
-});
+// Performs a vector similarity search.
+// Embedding for the query is automatically computed
+const documents = await this.vectorStore.similaritySearch(query, 3);
 ```
-
-We pass a few options to the `search` method:
-- The query, which is the question we want to ask. If we pass both a query and a vector, Azure AI Search will perform a hybrid search, which combines semantic and vector search in the same query. To only perform a vector search, we can pass an empty string as the query.
-- `top` is the number of documents we want to retrieve
-- `vectors` is an array of vectors to use for the search. In our case we only have one vector, the query vector we computed earlier. We also specify the number of nearest neighbors to retrieve, and the name of the field that contains the vector in the Azure AI Search index.
 
 Let's process the search results to extract the documents' content:
 
 ```ts
 const results: string[] = [];
-
-for await (const result of searchResults.results) {
-  const document = result.document;
-  const sourcePage = document[this.sourcePageField];
-  const content = document[this.contentField].replaceAll(/[\n\r]+/g, ' ')
-  results.push(`${sourcePage}: ${content}`);
+for await (const document of documents) {
+  const source = document.metadata.source;
+  const content = document.pageContent.replaceAll(/[\n\r]+/g, ' ');
+  results.push(`${source}: ${content}`);
 }
 
 const content = results.join('\n');
 ```
 
-The object `searchResults.results` containing the search results is an [AsyncIterator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator), so we need to use a `for await` loop to iterate over the results. For each result, we extract the page information and the content of the document, and add it to an array.
+The object `documents` containing the search results is an [AsyncIterator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator), so we need to use a `for await` loop to iterate over the results. For each document in the results, we extract the page information and the content of the document, and create a string from it.
 For the content, we use a regular expression to replace all the new lines with spaces, so it's easier to feed it to the GPT model later.
 
 Finally we join all the results into a single string, and separate each document with a new line. We'll use this content to generate the augmented prompt.
@@ -907,7 +874,7 @@ const systemMessage = SYSTEM_MESSAGE_PROMPT;
 const userMessage = `${messages[messages.length - 1].content}\n\nSources:\n${content}`;
 
 // Create the messages prompt
-const messageBuilder = new MessageBuilder(systemMessage, this.chatGptModel);
+const messageBuilder = new MessageBuilder(systemMessage, this.config.azureOpenAiApiModelName);
 messageBuilder.appendMessage('user', userMessage);
 ```
 
@@ -939,39 +906,24 @@ Here we create a `thoughts` string that we'll return along the answer, that cont
 We're now ready to generate the response from the model. Add this code below the previous one:
 
 ```ts
-const chatClient = this.chatClient({
-  temperature: 0.7,
-  maxTokens: 1024,
-  n: 1,
-});
-const completion = await chatClient.invoke(messageBuilder.getMessages());
+const completion = await this.model.invoke(messageBuilder.getMessages());
 ```
 
-First we create the LangChain chat client and pass a few options to control the behavior of the model:
-- `temperature` controls the randomness of the model. A value of 0 will make the model deterministic, and a value of 1 will make it generate the most random answers.
-- `maxTokens` is the maximum number of tokens the model will generate. If you set it too low, the model will not be able to generate long answers. If you set it too high, the model may generate answers that are too long.
-- `n` is the number of answers the model will generate. In our case we only want one answer, so we set it to 1.
-
-Then we call the `invoke` method to generate the response. We pass the messages we created earlier as input.
+We call the `invoke` method to generate the response, passing the messages we created earlier as input.
 
 The final step is to return the result in the Chat specification format:
 
 ```ts
 // Return the response in the Chat specification format
 return {
-  choices: [
-    {
-      index: 0,
-      message: {
-        content: completion.content as string,
-        role: 'assistant',
-        context: {
-          data_points: results,
-          thoughts: thoughts,
-        },
-      },
-    },
-  ],
+  message: {
+    content: completion.content as string,
+    role: 'assistant',
+  },
+  context: {
+    data_points: results,
+    thoughts: thoughts,
+  },
 };
 ```
 
@@ -1240,7 +1192,7 @@ Now it's your turn to complete the code! 🙂
 ```ts
 const response = await fetch(`${apiUrl}/chat`, {
   method: 'POST',
-  headers: {'Content-Type': 'application/json' },
+  headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     messages: options.messages,
   }),
@@ -1274,7 +1226,7 @@ Our application is now ready to be deployed to Azure!
 
 We'll use [Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/overview) to deploy the frontend, and [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/overview) to deploy the backend and ingestion services.
 
-Run this command from the root of the project to build and deploy the application:
+Run this command from the root of the project to build and deploy the application (this command deploys all services listed in the `azure.yaml` file located in the project root):
 
 ```bash
 azd deploy
@@ -1374,58 +1326,47 @@ To enable streaming, we first have to implement it in the backend. Open the file
 First, make a copy of your method `run()` and give it the name `runWithStreaming()`. Update the method signature with this one:
 
 ```ts
-async *runWithStreaming(messages: Message[]): AsyncGenerator<ChatResponseChunk, void> {
+async *runWithStreaming(messages: AIChatMessage[]): AsyncGenerator<AIChatCompletionDelta, void> {
 ```
 
 You can notice a few changes here:
 - The star `*` after `async` indicates that this method is an [async generator function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/async_function*#description). Generators are functions that can be exited and later re-entered, yielding multiple values. In our case, we'll use it to yield the response chunks as they are generated.
-- We update the return type of the method to `AsyncGenerator<ChatResponseChunk, void>`. Since the method is now an async generator, it will yield partial results as they are generated. The `ChatResponseChunk` type is a new type similar to the `ChatResponse` type, but with a `delta` property in place of `message`, containing the new content delta since the last chunk.
+- We update the return type of the method to `AsyncGenerator<AIChatCompletionDelta, void>`. Since the method is now an async generator, it will yield partial results as they are generated. The `AIChatCompletionDelta` type is a new type similar to the `AIChatCompletion` type, but with a `delta` property in place of `message`, containing the new content delta since the last chunk.
 
 Now that we update the signature, we need to update the method body to make it work. We need to change the last part of the method, where we call the chat client to get the completion result. Replace this code:
 
 ```ts
-const completion = await chatClient.invoke(messageBuilder.getMessages());
+const completion = await this.model.invoke(messageBuilder.getMessages());
 
 return {
-  choices: [
-    {
-      index: 0,
-      message: {
-      content: completion.content as string,
-      role: 'assistant',
-      context: {
-          data_points: results,
-          thoughts: thoughts,
-      },
-      },
-    },
-  ],
+  message: {
+    content: completion.content as string,
+    role: 'assistant',
+  },
+  context: {
+    data_points: results,
+    thoughts: thoughts,
+  },
 };
 ```
 
 with this:
 
 ```ts
-const completion = await chatClient.stream(messageBuilder.getMessages());
+const completion = await this.model.stream(messageBuilder.getMessages());
 let id = 0;
 
 // Process the completion in chunks
 for await (const chunk of completion) {
   const responseChunk = {
-    choices: [
-      {
-        index: 0,
-        delta: {
-          content: (chunk.content as string) ?? '',
-          role: 'assistant' as const,
-          context: {
-            data_points: id === 0 ? results : undefined,
-            thoughts: id === 0 ? thoughts : undefined,
-          },
-        },
-        finish_reason: '',
-      },
-    ],
+    delta: {
+      content: (chunk.content as string) ?? '',
+      role: 'assistant' as const,
+    },
+    context: id === 0 ? {
+      data_points: results,
+      thoughts,
+    } : {},
   };
   yield responseChunk;
   id++;
@@ -1438,13 +1379,14 @@ Let's analyze the changes to understand what's going on:
 - We fill the `context` only for the first chunk, since we don't want to send the same data points and thoughts for each chunk.
 - We use `yield` to return the response chunk to the caller. This is the syntax used to return values from a generator.
 
-Now that we have our new method, we need to update the `/chat` endpoint to use it. Open the file `src/backend/src/routes/root.ts` and replace this code:
+Now that we have our new method, we need to add a new `/chat/stream` endpoint to use it. Open the file `src/backend/src/routes/root.ts` and add this code:
 
 ```ts
-fastify.post('/chat', async function (request, reply) {
+fastify.post('/chat/stream', async function (request, reply) {
   const { messages } = request.body as any;
   try {
-    return await fastify.chat.run(messages);
+    const chunks = createNdJsonStream(await fastify.chat.runWithStreaming(messages));
+    return reply.type('application/x-ndjson').send(Readable.from(chunks));
   } catch (_error: unknown) {
     const error = _error as Error;
     fastify.log.error(error);
@@ -1453,66 +1395,33 @@ fastify.post('/chat', async function (request, reply) {
 });
 ```
 
-with this:
+This time we call the `runWithStreaming()` method instead of `run()`. One key difference here is that we don't return the response directly, but we use a new helper function `createNdJsonStream()` to create the response chunks, then send them to the client as a stream using the `Readable.from()` method.
+
+Let's add this new function at the bottom of your file:
 
 ```ts
-fastify.post('/chat', async function (request, reply) {
-  const { messages, stream } = request.body as any;
-  try {
-    if (stream) {
-      const chunks = await fastify.chat.runWithStreaming(messages);
-      await replyNdJsonStream(reply, chunks);
-    } else {
-      return await fastify.chat.run(messages);
-    }
-  } catch (_error: unknown) {
-    const error = _error as Error;
-    fastify.log.error(error);
-    return reply.internalServerError(error.message);
-  }
-});
-```
-
-We retrieve now a `stream` property from the request body, and if it's set to `true`, we call the `runWithStreaming()` method instead of `run()`. One key difference here is that we don't return the response directly, but we use a new helper function `replyNdJsonStream()` to send the response chunks to the client.
-
-Let's add this new function to our file:
-
-```ts
-// Reply to a request with a stream of NDJSON chunks
-async function replyNdJsonStream(reply: FastifyReply, chunks: AsyncGenerator<object>) {
-  // Create a new stream buffer
-  const buffer = new Readable();
-  // We must implement the _read method, but we don't need to do anything
-  buffer._read = () => {};
-
-  // Start streaming the buffer to the client
-  reply.type('application/x-ndjson').send(buffer);
-
+// Transform the response chunks into a JSON stream
+async function* createNdJsonStream(chunks: AsyncGenerator<object>) {
   for await (const chunk of chunks) {
-    // Send JSON chunks, separated by newlines
-    buffer.push(JSON.stringify(chunk) + '\n');
+    // Format response chunks in Newline delimited JSON
+    // see https://github.com/ndjson/ndjson-spec
+    yield JSON.stringify(chunk) + '\n';
   }
-
-  // Signal end of stream
-  buffer.push(null);
 }
 ```
-
-This function is a bit technical, but its overall goal it to transform the async iterable returned by `runWithStreaming()` into a stream that we can send to the client.
 
 We use the [Newline Delimited JSON (ndjson) format](https://github.com/ndjson/ndjson-spec) to send the chunks to the client. This format is a sequence of JSON objects separated by newlines. 
 
 At this point, you can run the backend again with `docker compose up --build` and test your changes using either the `REST Client` extension, or with this cURL command:
 
 ```bash
-curl -X POST "http://localhost:3000/chat" \
+curl -X POST "http://localhost:3000/chat/stream" \
   -H "Content-Type: application/json" \
   -d '{
     "messages": [{
       "content": "How to search and book rentals?",
       "role": "user"
-    }],
-    "stream": true
+    }]
   }'
 ```
 
@@ -1527,12 +1436,11 @@ export const defaultOptions: ChatComponentOptions = {
   ...
 ```
 
-This was the final step! Mae sure you still have the backend running, and run the command `npm run dev` from the `src/frontend` folder to start the frontend. You should now see the chat response being streamed as it's generated:
+This was the final step! Make sure you still have the backend running, and run the command `npm run dev` from the `src/frontend` folder to start the frontend. You should now see the chat response being streamed as it's generated:
 
 ![Screenshot of the chat response streaming](./assets/chat-streaming.gif)
 
 You can now redeploy your improved app by running `azd deploy` and test it in production.
-
 
 <!-- TODO: explore langchain integrations: document retrievers & tools -->
 
@@ -1577,6 +1485,7 @@ This workshop is based on the enterprise-ready sample **ChatGPT + Enterprise dat
 - [Python version](https://github.com/Azure-Samples/azure-search-openai-demo/)
 - [Java version](https://github.com/Azure-Samples/azure-search-openai-demo-java)
 - [C# version](https://github.com/Azure-Samples/azure-search-openai-demo-csharp)
+- [Serverless JavaScript version](https://github.com/Azure-Samples/serverless-chat-langchainjs)
 
 If you want to go further with more advanced use-cases, authentication, history and more, you should check it out!
 
