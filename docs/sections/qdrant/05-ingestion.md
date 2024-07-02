@@ -82,10 +82,9 @@ Once all services are started, you can run the ingestion process by opening a ne
 
 > Alternatively, you can run the ingestion process by simply using cURL to send the PDF files:
 > ```bash
-> curl -F "file=@./data/privacy-policy.pdf" \
->  -F "file=@./data/support.pdf" \
->  -F "file=@./data/terms-of-service.pdf" \
->  http://localhost:3001/documents
+> curl -F "file=@./data/privacy-policy.pdf" http://localhost:3001/documents
+> curl -F "file=@./data/support.pdf" http://localhost:3001/documents
+> curl -F "file=@./data/terms-of-service.pdf" http://localhost:3001/documents
 > ```
 
 </div>
