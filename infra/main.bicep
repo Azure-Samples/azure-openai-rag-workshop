@@ -77,6 +77,7 @@ var ingestionApiIdentityName = '${abbrs.managedIdentityUserAssignedIdentities}in
 var backendApiIdentityName = '${abbrs.managedIdentityUserAssignedIdentities}backend-api-${resourceToken}'
 var qdrantIdentityName = '${abbrs.managedIdentityUserAssignedIdentities}qdrant-${resourceToken}'
 var searchUrl = useQdrant ? '' : 'https://${searchService.outputs.name}.search.windows.net'
+var openAiInstanceName = empty(openAiUrl) ? openAi.outputs.name : ''
 
 // Organize resources in a resource group
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -155,7 +156,7 @@ module backendApi './core/host/container-app.bicep' = {
     env: [
       {
         name: 'AZURE_OPENAI_API_INSTANCE_NAME'
-        value: openAi.outputs.name
+        value: openAiInstanceName
       }
       {
         name: 'AZURE_OPENAI_API_ENDPOINT'
@@ -232,7 +233,7 @@ module ingestionApi './core/host/container-app.bicep' = {
     env: [
       {
         name: 'AZURE_OPENAI_API_INSTANCE_NAME'
-        value: openAi.outputs.name
+        value: openAiInstanceName
       }
       {
         name: 'AZURE_OPENAI_API_ENDPOINT'
@@ -475,7 +476,7 @@ output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerApps.outputs.registry
 output AZURE_CONTAINER_REGISTRY_NAME string = containerApps.outputs.registryName
 
 output AZURE_OPENAI_API_ENDPOINT string = finalOpenAiUrl
-output AZURE_OPENAI_API_INSTANCE_NAME string = openAi.outputs.name
+output AZURE_OPENAI_API_INSTANCE_NAME string = openAiInstanceName
 output AZURE_OPENAI_API_VERSION string = openAiApiVersion
 output AZURE_OPENAI_API_DEPLOYMENT_NAME string = chatDeploymentName
 output AZURE_OPENAI_API_EMBEDDINGS_DEPLOYMENT_NAME string = embeddingsDeploymentName

@@ -53,7 +53,7 @@ azd env set USE_QDRANT true
 As we have deployed an Open AI service for you, run this command to set the OpenAI URL we want to use:
 
 ```sh
-azd env set AZURE_OPENAI_API_ENDPOINT $$proxy$$
+azd env set AZURE_OPENAI_URL $$proxy$$
 ```
 
 </div>
