@@ -45,10 +45,18 @@ docker compose up qdrant
 This will pull the Docker image, start Qdrant on port `6333` and mount a volume to store the data in the `.qdrant` folder. You should see logs that look like:
 
 ```text
-qdrant-1  | INFO qdrant::actix: Qdrant HTTP listening on 6333    
-qdrant-1  | INFO actix_server::builder: Starting 9 workers
-qdrant-1  | INFO qdrant::tonic: Qdrant gRPC listening on
-qdrant-1  | INFO actix_server::server: Actix runtime found; starting in Actix runtime
+qdrant-1  |            _                 _    
+qdrant-1  |   __ _  __| |_ __ __ _ _ __ | |_  
+qdrant-1  |  / _` |/ _` | '__/ _` | '_ \| __| 
+qdrant-1  | | (_| | (_| | | | (_| | | | | |_  
+qdrant-1  |  \__, |\__,_|_|  \__,_|_| |_|\__| 
+qdrant-1  |     |_|                           
+qdrant-1  | 
+qdrant-1  | Version: 1.9.7, build: 5c29cad7
+qdrant-1  | Access web UI at http://localhost:6333/dashboard
+qdrant-1  | 
+qdrant-1  | 2024-07-02T08:12:18.712387Z  INFO storage::content_manager::consensus::persistent: Initializing new raft state at ./storage/raft_state.json
+qdrant-1  | 2024-07-02T08:12:18.769197Z  INFO qdrant: Distributed mode disabled    
 ```
 
 You can test that Qdrant is running by opening the following URL in your browser: [http://localhost:6333/dashboard](http://localhost:6333/dashboard).
