@@ -44,7 +44,7 @@ export class ChatService {
     const documents = await this.vectorStore.similaritySearch(query, 3);
 
     const results: string[] = [];
-    for await (const document of documents) {
+    for (const document of documents) {
       const source = document.metadata.source;
       const content = document.pageContent.replaceAll(/[\n\r]+/g, ' ');
       results.push(`${source}: ${content}`);
@@ -102,7 +102,7 @@ export class ChatService {
     const documents = await this.vectorStore.similaritySearch(query, 3);
 
     const results: string[] = [];
-    for await (const document of documents) {
+    for (const document of documents) {
       const source = document.metadata.source;
       const content = document.pageContent.replaceAll(/[\n\r]+/g, ' ');
       results.push(`${source}: ${content}`);
