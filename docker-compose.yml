@@ -25,3 +25,13 @@ services:
     volumes:
       - .qdrant:/qdrant/storage:z
 
+  backend:
+    build:
+      dockerfile: ./src/backend/Dockerfile
+    environment:
+      - AZURE_OPENAI_API_ENDPOINT=${AZURE_OPENAI_API_ENDPOINT}
+      - QDRANT_URL=http://qdrant:6333
+      - LOCAL=true
+    ports:
+      - 3000:3000
+
