@@ -35,7 +35,7 @@ Retrieval-Augmented generation (RAG) is a powerful technique that combines the s
 
 At its core, RAG involves two main components:
 
-- **Retriever**: Think "_like a search engine_", finding relevant information from a database. The retriever usually searches in a vector database. It could also - for some use cases - search on application dabases, APIs and other sources of information. In this workshop, we will implement this logic in the _Chat API_.
+- **Retriever**: Think "_like a search engine_", finding relevant information from a database. The retriever usually searches in a vector database. It could also - for some use cases - search on application databases, APIs and other sources of information. In this workshop, we will implement this logic in the _Chat API_.
 
 - **Generator**: Acts like a writer, taking the prompt and information retrieved to craft a response. In this workshop, OpenAI `gpt-3.5-turbo` will be our generator.
 

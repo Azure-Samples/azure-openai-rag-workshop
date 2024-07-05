@@ -171,7 +171,7 @@ Let's process the search results to extract the documents' content:
 
 ```ts
 const results: string[] = [];
-for await (const document of documents) {
+for (const document of documents) {
   const source = document.metadata.source;
   const content = document.pageContent.replaceAll(/[\n\r]+/g, ' ');
   results.push(`${source}: ${content}`);
