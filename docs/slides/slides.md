@@ -19,32 +19,13 @@ background-image: url(images/ai.jpg)
 .full-layer.who.text-right.small.middle.light-text.darkened[
   .ms.responsive[![](images/ms-full-logo.svg)]
   |
-  Yohan | Christopher | Julien
-  <!-- Yohan | Olivier -->
+
 ]
 
 ---
 
 class: center, middle, hide-handle
 # Who are we?
-
-<!-- .table.row.middle.center[
-.col-2[]
-.col-3.center[
-  .w-70.responsive.avatar.bounceInLeft.animated[![](images/yohan.jpg)]
-
-  **Yohan Lasorsa**<br>
-  .fab.fa-linkedin[] .e[/yohanlasorsa]<br>
-  .fab.fa-x-twitter[] .e[@sinedied]
-]
-.col-3.center[
-  .w-70.responsive.avatar.bounceInUp.animated[![](images/olivier.jpg)]
-
-  **Olivier Mertens**<br>
-  .fab.fa-linkedin[] .e[/olivMertens]<br>
-  .fab.fa-x-twitter[] .e[@xam1311]
-]
-] -->
 
 .table.row.middle.center[
 .col-2[]
@@ -70,6 +51,12 @@ class: center, middle, hide-handle
   .fab.fa-x-twitter[] .e[@juliendubois]
 ]
 ]
+
+---
+
+class: center, middle
+
+# [aka.ms/chrisgpt](https://aka.ms/chrisgpt)
 
 ---
 
@@ -443,6 +430,14 @@ class: center, middle, big-text
 # The workshop
 
 .bit-larger[👉 https://aka.ms/ws/openai-rag]
+
+---
+
+exclude: true
+class: center
+# Give your feedback 🙏
+
+![](./images/qrcode.png)
 
 ---
 
