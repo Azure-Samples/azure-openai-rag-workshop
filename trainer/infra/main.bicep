@@ -26,11 +26,11 @@ param openAiCapacity int // Set in main.parameters.json
 
 param chatGptDeploymentName string // Set in main.parameters.json
 param chatGptDeploymentCapacity int = openAiCapacity
-param chatGptModelName string = 'gpt-4'
-param chatGptModelVersion string = 'turbo-2024-04-09'
+param chatGptModelName string // Set in main.parameters.json
+param chatGptModelVersion string // Set in main.parameters.json
 param embeddingDeploymentName string // Set in main.parameters.json
 param embeddingDeploymentCapacity int = openAiCapacity
-param embeddingModelName string = 'text-embedding-ada-002'
+param embeddingModelName string // Set in main.parameters.json
 
 @description('Id of the user or app to assign application roles')
 param principalId string = ''

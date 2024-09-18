@@ -21,9 +21,13 @@ To deploy it, run:
 azd auth login # if needed
 azd env new openai-trainer
 azd env set AZURE_OPENAI_LOCATION <location> # optional, default is swedencentral
-azd env set AZURE_OPENAI_CAPACITY <tokens_per_minutes> # optional, default is 200
+azd env set AZURE_OPENAI_CAPACITY <tokens_per_minutes> # optional, default is 5
 azd up
 ```
+
+> [!IMPORTANT]
+> Because of very restrictive quotas on our new BAMI tenants, we set the default capacity to **a very low value** to reduce the risk of failed deployments.
+> Make sure to adjust it to a higher value (you can do it after deployment in the AI portal), requesting additional quota if needed. **A good value for 50 attendees is 200 TPM**, for both chat and embedding models.
 
 You'll get a container app instance URL of the proxy when the deployment is complete.
 

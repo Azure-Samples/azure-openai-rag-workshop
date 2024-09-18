@@ -18,13 +18,22 @@
       "value": "${AZURE_OPENAI_LOCATION=swedencentral}"
     },
     "openAiCapacity": {
-      "value": "${AZURE_OPENAI_CAPACITY=100}"
+      "value": "${AZURE_OPENAI_CAPACITY=5}"
     },
     "chatGptDeploymentName": {
       "value": "${AZURE_OPENAI_CHATGPT_DEPLOYMENT=gpt-4}"
     },
+    "chatGptModelName": {
+      "value": "${AZURE_OPENAI_CHATGPT_MODEL_NAME=gpt-4}"
+    },
+    "chatGptModelVersion": {
+      "value": "${AZURE_OPENAI_CHATGPT_MODEL_VERSION=turbo-2024-04-09}"
+    },
     "embeddingDeploymentName": {
       "value": "${AZURE_OPENAI_EMBEDDING_DEPLOYMENT=text-embedding-ada-002}"
+    },
+    "embeddingModelName": {
+      "value": "${AZURE_OPENAI_EMBEDDING_MODEL_NAME=text-embedding-ada-002}"
     }
   }
 }
