@@ -4,9 +4,10 @@
 ##################################################################
 
 @api_host = http://localhost:3000
+@model = gpt-4o-mini
 
 # Chat with the bot
-POST {{api_host}}/openai/deployments/gpt-35-turbo/chat/completions?api-version=2024-02-01
+POST {{api_host}}/openai/deployments/{{model}}/chat/completions?api-version=2024-02-01
 Content-Type: application/json
 api-key: toto
 
@@ -26,7 +27,7 @@ api-key: toto
 ###
 
 # Chat with the bot using streaming
-POST {{api_host}}/openai/deployments/gpt-35-turbo/chat/completions?api-version=2024-02-01
+POST {{api_host}}/openai/deployments/{{model}}/chat/completions?api-version=2024-02-01
 content-type: application/json
 api-key: toto
 
