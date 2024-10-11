@@ -26,7 +26,7 @@ export default fp(
 
     process.env.AZURE_OPENAI_API_INSTANCE_NAME ??= '__proxy';
     process.env.AZURE_OPENAI_API_VERSION ??= '2024-02-01';
-    process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME ??= 'gpt-4';
+    process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME ??= 'gpt-4o-mini';
     process.env.AZURE_OPENAI_API_EMBEDDINGS_DEPLOYMENT_NAME ??= 'text-embedding-ada-002';
 
     const config: AppConfig = {
