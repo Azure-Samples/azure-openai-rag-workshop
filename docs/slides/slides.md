@@ -54,12 +54,6 @@ class: center, middle, hide-handle
 
 ---
 
-class: center, middle
-
-# [aka.ms/chrisgpt](https://aka.ms/chrisgpt)
-
----
-
 class: center
 
 # What are we talking about?
