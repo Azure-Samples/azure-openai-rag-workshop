@@ -19,11 +19,36 @@ background-image: url(images/ai.jpg)
 .full-layer.who.text-right.small.middle.light-text.darkened[
   .ms.responsive[![](images/ms-full-logo.svg)]
   |
-  Yohan | Christopher
+  Yohan | Thomas
+]
+
+
+---
+
+class: center, middle, hide-handle
+# Who are we?
+
+.table.row.middle.center[
+.col-2[]
+.col-3.center[
+  .w-70.responsive.avatar.bounceInLeft.animated[![](images/yohan.jpg)]
+
+  **Yohan Lasorsa**<br>
+  .fab.fa-linkedin[] .e[/yohanlasorsa]<br>
+  .fab.fa-x-twitter[] .e[@sinedied]
+]
+.col-3.center[
+  .w-70.responsive.avatar.bounceInUp.animated[![](images/thomas.jpg)]
+
+  **Thomas Rannou**<br>
+  .fab.fa-linkedin[] .e[/thomasrannou]<br>
+  .fab.fa-x-twitter[] .e[@thomas_rannou]
+]
 ]
 
 ---
 
+exclude: true
 class: center, middle, hide-handle
 # Who are we?
 
@@ -44,12 +69,6 @@ class: center, middle, hide-handle
   .fab.fa-x-twitter[] .e[@cmaneu]
 ]
 ]
-
----
-
-class: center, middle
-
-# [aka.ms/chrisgpt](https://aka.ms/chrisgpt)
 
 ---
 
@@ -411,15 +430,18 @@ class: center, middle, big-text
 
 <!-- .bit-larger[👉 https://aka.ms/ws/openai-rag] -->
 
-.bit-larger[👉 https://aka.ms/sunnytech24]
+.bit-larger[👉 https://aka.ms/ws/nantes2024]
 
 ---
 
-class: center
-# Give your feedback 🙏
+class: center, middle
+# 👉 Learn more: https://aka.ms/genai-js
 
+-------
+
+# Give your feedback 🙏
 .center[
-  .w-45.responsive[![](./images/qrcode.png)]
+  .w-35.responsive[![](./images/qrcode.png)]
 ]
 
 ---
