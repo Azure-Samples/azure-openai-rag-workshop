@@ -428,9 +428,7 @@ Microsoft Azure is a cloud computing platform that offers a wide range of servic
 class: center, middle, big-text
 # The workshop
 
-<!-- .bit-larger[👉 https://aka.ms/ws/openai-rag] -->
-
-.bit-larger[👉 https://aka.ms/ws/nantes2024]
+.bit-larger[👉 https://aka.ms/ws/openai-rag]
 
 ---
 
