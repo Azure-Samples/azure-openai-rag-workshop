@@ -167,7 +167,7 @@ for (const document of documents) {
 const content = results.join('\n');
 ```
 
-The object `documents` containing the search results is an [AsyncIterator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator), so we need to use a `for await` loop to iterate over the results. For each document in the results, we extract the page information and the content of the document, and create a string from it.
+For each document in the results, we extract the page information and the content of the document, and create a string from it.
 For the content, we use a regular expression to replace all the new lines with spaces, so it's easier to feed it to the GPT model later.
 
 Finally we join all the results into a single string, and separate each document with a new line. We'll use this content to generate the augmented prompt.
