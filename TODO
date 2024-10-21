@@ -1,4 +1,7 @@
 # Tasks
+- [ ] add github models docs
+- [ ] Ollama: test Phi3.5 vs Mistral:v0.2
+
 - [ ] test AISearch no proxy
   * [ ] update index search result screenshot
 
@@ -17,3 +20,5 @@
 
 ## Trainer infra
 - [ ] add event key to restrict access
+
+https://aka.ms/ws/nantes2024
