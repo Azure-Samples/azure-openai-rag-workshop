@@ -6,7 +6,7 @@ It also contains a proxy that you can use to share your Azure OpenAI instance wi
 
 ## Content
 
-- The introduction slides are in the `docs/slides` folder, and available at https://azure-samples.github.io/azure-openai-rag-workshop-java/
+- The introduction slides are in the `docs/slides` folder, and available at https://github.com/Azure-Samples/azure-openai-rag-workshop-java/tree/main
 - The workshop is in the `docs/workshop` folder, and available at https://aka.ms/ws/openai-rag
 
 ## Preparation
