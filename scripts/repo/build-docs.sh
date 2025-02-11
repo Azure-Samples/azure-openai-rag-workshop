@@ -9,8 +9,10 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 
 DOCS_HOME=/tmp/azure-openai-rag-workshop-docs
 GH_USER=$(git config user.name)
-REPO=https://$GH_USER:$GH_TOKEN@github.com/Azure-Samples/azure-openai-rag-workshop.git
+REPO=$(git remote get-url origin)
+BASE=$(pwd)
 
+echo "Target repository: $REPO"
 echo "Preparing all workshop docs..."
 echo "(temp folder: $DOCS_HOME)"
 rm -rf "$DOCS_HOME"
@@ -30,13 +32,14 @@ if [[ ${1-} == "--local" ]]; then
   open "$DOCS_HOME"
 else
   # Update git repo
-  git init
-  git checkout -b docs
-  git remote add origin "$REPO"
+  cd "$BASE"
+  git fetch --depth=1
+  git checkout docs --
+  git rm -r '*'
+  cp -R "$DOCS_HOME"/docs/* .
   git add .
-  git commit -m "docs: prepare workshop docs"
+  git commit --amend -m "docs: prepare workshop docs"
   git push -u origin docs --force
-
   rm -rf "$DOCS_HOME"
 fi
 
