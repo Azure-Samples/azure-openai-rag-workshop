@@ -57,6 +57,15 @@ azd env set AZURE_OPENAI_URL $$proxy$$
 
 </div>
 
+<div class="important" data-title="Important">
+
+> If you're using an Azure for Students or Free Trial account that you just created, you need to run the following command:
+> ```sh
+> azd env set USE_AZURE_FREE true
+> ```
+
+</div>
+
 #### Deploy Azure Infrastructure
 
 Now it's time to deploy the Azure infrastructure for the workshop. Execute the following command:

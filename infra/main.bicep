@@ -48,11 +48,11 @@ param frontendLocation string = 'eastus2'
 param chatModelName string // Set in main.parameters.json
 param chatDeploymentName string = chatModelName
 param chatModelVersion string // Set in main.parameters.json
-param chatDeploymentCapacity int = 15
+param chatDeploymentCapacity int = useAzureFree ? 1 : 15
 param embeddingsModelName string // Set in main.parameters.json
 param embeddingsModelVersion string // Set in main.parameters.json
 param embeddingsDeploymentName string = embeddingsModelName
-param embeddingsDeploymentCapacity int = 30
+param embeddingsDeploymentCapacity int = useAzureFree ? 1 : 30
 
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
@@ -62,6 +62,9 @@ param useQdrant bool = false
 
 @description('Qdrant port')
 param qdrantPort int // Set in main.parameters.json
+
+@description('Use Azure Free tier')
+param useAzureFree bool = false
 
 // Differentiates between automated and manual deployments
 param isContinuousDeployment bool = false
