@@ -45,7 +45,7 @@
       "value": "${QDRANT_PORT=6333}"
     },
     "useAzureFree": {
-      "value": "${AZURE_FREE=false}"
+      "value": "${USE_AZURE_FREE=false}"
     },
     "isContinuousDeployment": {
       "value": "${CI=false}"
