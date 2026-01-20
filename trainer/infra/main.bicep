@@ -13,13 +13,13 @@ param resourceGroupName string = ''
 param proxyApiName string = 'openai-proxy'
 param proxyApiImageName string = ''
 
-@description('Location for the OpenAI resource group')
-@allowed(['australiaeast', 'canadaeast', 'eastus', 'eastus2', 'francecentral', 'japaneast', 'northcentralus', 'swedencentral', 'switzerlandnorth', 'uksouth', 'westeurope'])
-@metadata({
-  azd: {
-    type: 'location'
-  }
-})
+// @description('Location for the OpenAI resource group')
+// @allowed(['australiaeast', 'canadaeast', 'eastus', 'eastus2', 'francecentral', 'japaneast', 'northcentralus', 'swedencentral', 'switzerlandnorth', 'uksouth', 'westeurope'])
+// @metadata({
+//   azd: {
+//     type: 'location'
+//   }
+// })
 param openAiLocation string // Set in main.parameters.json
 param openAiSkuName string = 'S0'
 param openAiCapacity int // Set in main.parameters.json
@@ -146,18 +146,9 @@ module openAi 'core/ai/cognitiveservices.bicep' = {
           version: chatGptModelVersion
         }
         sku: {
-          name: 'Standard'
+          name: 'GlobalStandard'
           capacity: chatGptDeploymentCapacity
         }
-      }
-      {
-        name: embeddingDeploymentName
-        model: {
-          format: 'OpenAI'
-          name: embeddingModelName
-          version: '2'
-        }
-        capacity: embeddingDeploymentCapacity
       }
     ]
   }
